@@ -1,0 +1,109 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/design-contract.schema.json",
+  "title": "DesignContractData",
+  "description": "Payload schema for Approved Design and Design Tokens Contract (Gate G2).",
+  "type": "object",
+  "required": [
+    "isApplicable",
+    "designSystem",
+    "responsiveBreakpoints",
+    "componentStates",
+    "accessibilityStandards"
+  ],
+  "properties": {
+    "isApplicable": { "type": "boolean" },
+    "exemptionRationale": { "type": "string" },
+    "visualDirection": {
+      "type": "object",
+      "properties": {
+        "aestheticStyle": { "type": "string" },
+        "referenceAssets": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["assetId", "pathOrUri", "description"],
+            "properties": {
+              "assetId": { "type": "string" },
+              "pathOrUri": { "type": "string" },
+              "description": { "type": "string" }
+            }
+          }
+        },
+        "colorPalette": {
+          "type": "object",
+          "required": ["primary", "secondary", "neutral", "semantic"],
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "neutral": { "type": "object" },
+            "semantic": {
+              "type": "object",
+              "required": ["success", "warning", "error", "info"],
+              "properties": {
+                "success": { "type": "string" },
+                "warning": { "type": "string" },
+                "error": { "type": "string" },
+                "info": { "type": "string" }
+              }
+            }
+          }
+        }
+      }
+    },
+    "designSystem": {
+      "type": "object",
+      "required": ["tokens", "typography", "spacingScale"],
+      "properties": {
+        "tokens": { "type": "object" },
+        "typography": {
+          "type": "object",
+          "required": ["fontFamily", "fontSizes", "lineHeights"],
+          "properties": {
+            "fontFamily": { "type": "object" },
+            "fontSizes": { "type": "object" },
+            "lineHeights": { "type": "object" }
+          }
+        },
+        "spacingScale": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "responsiveBreakpoints": {
+      "type": "object",
+      "required": ["mobile", "tablet", "desktop"],
+      "properties": {
+        "mobile": { "type": "string" },
+        "tablet": { "type": "string" },
+        "desktop": { "type": "string" },
+        "wide": { "type": "string" }
+      }
+    },
+    "componentStates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["componentName", "statesSupported"],
+        "properties": {
+          "componentName": { "type": "string" },
+          "statesSupported": {
+            "type": "array",
+            "items": { "type": "string", "enum": ["default", "hover", "focus", "active", "disabled", "loading", "error"] }
+          }
+        }
+      }
+    },
+    "accessibilityStandards": {
+      "type": "object",
+      "required": ["wcagLevel", "minimumContrastRatioNormal", "keyboardNavigableRequired"],
+      "properties": {
+        "wcagLevel": { "type": "string", "enum": ["A", "AA", "AAA"] },
+        "minimumContrastRatioNormal": { "type": "number", "minimum": 3.0 },
+        "keyboardNavigableRequired": { "type": "boolean" }
+      }
+    }
+  },
+  "additionalProperties": false
+}

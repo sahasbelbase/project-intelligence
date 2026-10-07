@@ -1,0 +1,68 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/project-contract.schema.json",
+  "title": "ProjectContractData",
+  "description": "Payload schema for Project Objectives and Scope Contract (Gate G0).",
+  "type": "object",
+  "required": [
+    "projectName",
+    "projectSlug",
+    "missionStatement",
+    "targetAudience",
+    "inScope",
+    "outOfScope",
+    "constraints",
+    "assumptions",
+    "supportedPlatforms"
+  ],
+  "properties": {
+    "projectName": { "type": "string", "minLength": 2 },
+    "projectSlug": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "missionStatement": { "type": "string", "minLength": 10 },
+    "targetAudience": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "inScope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "outOfScope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "constraints": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["type", "description"],
+        "properties": {
+          "type": { "type": "string", "enum": ["TECHNICAL", "SECURITY", "PRIVACY", "TIME", "BUDGET", "ORGANIZATIONAL"] },
+          "description": { "type": "string" }
+        }
+      }
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "supportedPlatforms": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "repositoryContext": {
+      "type": "object",
+      "required": ["isExistingRepo", "branchBaseline"],
+      "properties": {
+        "isExistingRepo": { "type": "boolean" },
+        "branchBaseline": { "type": "string" },
+        "existingConventionsPreserved": { "type": "array", "items": { "type": "string" } }
+      }
+    }
+  },
+  "additionalProperties": false
+}

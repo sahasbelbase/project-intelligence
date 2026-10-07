@@ -1,0 +1,99 @@
+{
+  "skillId": "architecture-and-contracts",
+  "name": "Architecture and Contracts",
+  "purpose": "Formulate system architecture, component boundaries, schemas, API contracts, threat models, and architectural decision records (ADRs) to clear G3.",
+  "whenToUse": [
+    "Defining software subsystem boundaries, data models, and component interfaces",
+    "Selecting technologies, frameworks, and third-party dependencies with formal rationale",
+    "Writing Architecture Decision Records (ADRs) for critical technical trade-offs",
+    "Drafting contracts/architecture/contract.json to fulfill Gate G3 approval criteria"
+  ],
+  "prerequisites": [
+    "Gate G1 approved (contracts/requirements/contract.json in APPROVED status)",
+    "Gate G2 approved or formally exempted (contracts/design/contract.json)",
+    "Access to architecture-contract.schema.json in core/schemas/"
+  ],
+  "inputs": [
+    {
+      "name": "requirementsContract",
+      "type": "object",
+      "description": "Approved requirements contract containing functional and non-functional specifications"
+    },
+    {
+      "name": "designContract",
+      "type": "object",
+      "description": "Approved design contract or formal exemption record"
+    },
+    {
+      "name": "systemConstraints",
+      "type": "array",
+      "description": "Performance, security, modularity, and operational constraints"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Subsystem Decomposition and Component Mapping",
+      "action": "Partition system functionality into decoupled components with clear single responsibilities, inputs, outputs, and failure boundaries."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Data Flow and Interface Contract Specification",
+      "action": "Specify interface schemas (JSON Schema, OpenAPI, TypeScript types, or protobuf) for communication between components and external services."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Technology Selection and Dependency Vetting",
+      "action": "Select runtime libraries and tools against quality criteria (license compatibility, maintenance activity, security history, zero unnecessary dependencies)."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Threat Modeling and Security Boundary Analysis",
+      "action": "Conduct STRIDE threat analysis. Identify trust boundaries, secret management strategies, authentication checkpoints, and input sanitization layers."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Architectural Decision Record (ADR) Generation",
+      "action": "Author ADR markdown documents in docs/decisions/ capturing context, alternatives considered, chosen solution, and positive/negative trade-offs."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Architecture Contract Assembly",
+      "action": "Assemble findings into contracts/architecture/contract.json adhering to core/schemas/architecture-contract.schema.json and submit for G3 review."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/architecture/contract.json adhering to architecture-contract.schema.json",
+    "Component diagram and subsystem specification in docs/architecture/",
+    "New ADR entries in docs/decisions/ documenting architectural choices"
+  ],
+  "applicableApprovalGates": [
+    "G3"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Circularity in component dependency graph",
+      "Attempting to add unvetted third-party dependencies without architectural approval",
+      "Ambiguous interface contracts without explicit schema definitions"
+    ],
+    "recoveryStrategy": "Refactor component boundaries using Dependency Inversion or Event-Driven patterns to eliminate cycles. Run dependency vulnerability audit before approving new packages. Enforce strict JSON Schema or TypeScript typing for all interfaces."
+  },
+  "verificationCriteria": [
+    "contracts/architecture/contract.json passes validation against core/schemas/architecture-contract.schema.json",
+    "All components declare explicit dependencies with no circular references",
+    "Technology selections explicitly document license compatibility and rationale",
+    "Every major architectural trade-off is accompanied by an ADR in docs/decisions/"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/requirements/contract.json",
+      "contracts/design/contract.json",
+      "contracts/architecture/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.goals",
+      "backlogAndHistory.decisionHistory"
+    ]
+  }
+}

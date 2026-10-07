@@ -1,0 +1,89 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "quality-contract-001",
+  "contractType": "quality",
+  "title": "Project Intelligence Quality & Verification Standards",
+  "status": "APPROVED",
+  "lifecycleGate": "G5",
+  "createdAt": "2026-10-07T11:35:00Z",
+  "updatedAt": "2026-10-07T12:20:00Z",
+  "author": {
+    "role": "Quality Agent",
+    "identifier": "antigravity-quality"
+  },
+  "approval": {
+    "approvedBy": "Human Lead Architect",
+    "approvedAt": "2026-10-07T12:25:00Z",
+    "rationale": "Active profile set to STANDARD; all mandatory baseline anti-slop rules enforced."
+  },
+  "traceability": {
+    "parentContractId": "impl-contract-001",
+    "upstreamRequirements": ["REQ-002", "NFR-001", "NFR-002", "NFR-003"],
+    "downstreamTasks": ["TASK-VERIF-01"],
+    "verificationIds": ["VERIF-G5-01"]
+  },
+  "data": {
+    "activeProfile": "STANDARD",
+    "baselineRulesEnforced": [
+      "BL-001: disallowGratuitousEmoji",
+      "BL-002: disallowFakeDataInProd",
+      "BL-003: disallowUnimplementedPlaceholders",
+      "BL-004: disallowUnexplainedWorkarounds",
+      "BL-005: disallowUnapprovedDependencies",
+      "BL-006: strictVerificationHonesty",
+      "BL-007: secretLeakagePrevention"
+    ],
+    "verificationSuites": [
+      {
+        "suiteName": "Schema Validation Suite",
+        "command": "python -m unittest validation/schema-tests/test_schemas.py",
+        "mandatory": true,
+        "status": "PASSED",
+        "evidenceLocation": "validation/reports/schema_test_results.log"
+      },
+      {
+        "suiteName": "Lifecycle State Machine Suite",
+        "command": "python -m unittest validation/lifecycle-tests/test_lifecycle.py",
+        "mandatory": true,
+        "status": "PASSED",
+        "evidenceLocation": "validation/reports/lifecycle_test_results.log"
+      },
+      {
+        "suiteName": "Quality Evaluator Suite",
+        "command": "python -m unittest validation/quality-tests/test_quality.py",
+        "mandatory": true,
+        "status": "PASSED",
+        "evidenceLocation": "validation/reports/quality_test_results.log"
+      },
+      {
+        "suiteName": "Memory Reconciliation Suite",
+        "command": "python -m unittest validation/memory-tests/test_memory.py",
+        "mandatory": true,
+        "status": "PASSED",
+        "evidenceLocation": "validation/reports/memory_test_results.log"
+      },
+      {
+        "suiteName": "Adapter Conformance Suite",
+        "command": "python -m unittest validation/adapter-conformance/test_adapters.py",
+        "mandatory": true,
+        "status": "PASSED",
+        "evidenceLocation": "validation/reports/adapter_test_results.log"
+      }
+    ],
+    "antiSlopPolicy": {
+      "disallowGratuitousEmoji": true,
+      "disallowFakeDataInProd": true,
+      "disallowUnimplementedPlaceholders": true,
+      "disallowUnexplainedWorkarounds": true,
+      "disallowUnapprovedDependencies": true
+    },
+    "checksSummary": {
+      "totalChecks": 5,
+      "passed": 5,
+      "failed": 0,
+      "blocked": 0,
+      "skipped": 0,
+      "unavailable": 0
+    }
+  }
+}

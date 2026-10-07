@@ -1,0 +1,101 @@
+{
+  "version": "1.0.0",
+  "mandatoryBaseline": {
+    "name": "Mandatory Engineering Baseline",
+    "description": "Non-negotiable quality rules applied to all projects regardless of chosen profile.",
+    "rules": [
+      {
+        "ruleId": "BL-001",
+        "name": "disallowGratuitousEmoji",
+        "description": "Gratuitous decorative emoji and arbitrary icons are forbidden in professional code, logs, and commit messages."
+      },
+      {
+        "ruleId": "BL-002",
+        "name": "disallowFakeDataInProd",
+        "description": "Hardcoded mock values and fake production data are forbidden in production logic."
+      },
+      {
+        "ruleId": "BL-003",
+        "name": "disallowUnimplementedPlaceholders",
+        "description": "Non-functional placeholder buttons, empty stubs, and unresolved TODOs are prohibited in approved deliverables."
+      },
+      {
+        "ruleId": "BL-004",
+        "name": "disallowUnexplainedWorkarounds",
+        "description": "Workarounds without documented root cause and tests are prohibited."
+      },
+      {
+        "ruleId": "BL-005",
+        "name": "disallowUnapprovedDependencies",
+        "description": "Adding third-party dependencies without architectural approval and rationale is forbidden."
+      },
+      {
+        "ruleId": "BL-006",
+        "name": "strictVerificationHonesty",
+        "description": "Verification statuses must be honest: PASSED, FAILED, BLOCKED, SKIPPED, or UNAVAILABLE. A skipped or unavailable check may never be reported as passed."
+      },
+      {
+        "ruleId": "BL-007",
+        "name": "secretLeakagePrevention",
+        "description": "API keys, passwords, and tokens must never be written to repository memory, contracts, or commits."
+      }
+    ]
+  },
+  "profiles": {
+    "PROTOTYPE": {
+      "name": "Prototype Quality Profile",
+      "description": "Rapid proof-of-concept development while preserving mandatory engineering baseline.",
+      "minCoveragePercent": 0,
+      "requiresLinting": true,
+      "requiresUnitTests": true,
+      "requiresSecurityScan": false,
+      "requiresAccessibilityAudit": false,
+      "requiresIndependentReview": true
+    },
+    "STANDARD": {
+      "name": "Standard Application Profile",
+      "description": "Robust production-oriented development for web, backend, or CLI tools.",
+      "minCoveragePercent": 70,
+      "requiresLinting": true,
+      "requiresUnitTests": true,
+      "requiresSecurityScan": true,
+      "requiresAccessibilityAudit": false,
+      "requiresIndependentReview": true
+    },
+    "PRODUCTION_READY": {
+      "name": "Production-Ready Profile",
+      "description": "Mission-critical enterprise applications requiring high reliability.",
+      "minCoveragePercent": 85,
+      "requiresLinting": true,
+      "requiresUnitTests": true,
+      "requiresSecurityScan": true,
+      "requiresAccessibilityAudit": true,
+      "requiresIndependentReview": true
+    },
+    "SECURITY_SENSITIVE": {
+      "name": "Security-Sensitive Profile",
+      "description": "Systems dealing with authentication, payments, cryptography, or sensitive personal data.",
+      "minCoveragePercent": 90,
+      "requiresLinting": true,
+      "requiresUnitTests": true,
+      "requiresSecurityScan": true,
+      "requiresAccessibilityAudit": false,
+      "requiresIndependentReview": true,
+      "requiresDependencyAudit": true,
+      "requiresStaticAnalysis": true
+    },
+    "DESIGN_INTENSIVE": {
+      "name": "Design-Intensive Product Profile",
+      "description": "User-facing web, mobile, smartwatch, or TV apps requiring pixel-perfect fidelity.",
+      "minCoveragePercent": 75,
+      "requiresLinting": true,
+      "requiresUnitTests": true,
+      "requiresSecurityScan": false,
+      "requiresAccessibilityAudit": true,
+      "requiresIndependentReview": true,
+      "requiresDesignTokenCompliance": true,
+      "requiresResponsiveVerification": true,
+      "wcagComplianceLevel": "AA"
+    }
+  }
+}

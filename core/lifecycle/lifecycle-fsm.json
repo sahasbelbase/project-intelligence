@@ -1,0 +1,123 @@
+{
+  "version": "1.0.0",
+  "gates": [
+    {
+      "gateId": "G0",
+      "name": "Discovery",
+      "description": "Inspect project environment, repository state, existing instructions, relevant tools, and baseline risks.",
+      "requiredContractType": "project",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Repository accessible",
+        "Environment inspection executed"
+      ],
+      "exitCriteria": [
+        "Working tree status verified (clean or documented uncommitted changes)",
+        "Project boundaries and scope established",
+        "Project contract approved"
+      ]
+    },
+    {
+      "gateId": "G1",
+      "name": "Requirements Approval",
+      "description": "Confirm scope, constraints, objectives, and acceptance criteria.",
+      "requiredContractType": "requirements",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Gate G0 approved"
+      ],
+      "exitCriteria": [
+        "Functional and non-functional requirements documented",
+        "Acceptance criteria defined with testable scenarios",
+        "Requirements contract signed off"
+      ]
+    },
+    {
+      "gateId": "G2",
+      "name": "Design Approval",
+      "description": "For visual products, approve visual direction, tokens, and specifications before interface implementation.",
+      "requiredContractType": "design",
+      "allowedExemption": true,
+      "entryCriteria": [
+        "Gate G1 approved"
+      ],
+      "exitCriteria": [
+        "Design tokens defined or formal exemption recorded with justification",
+        "Responsive breakpoints and component states specified",
+        "Design contract signed off or exempted"
+      ]
+    },
+    {
+      "gateId": "G3",
+      "name": "Architecture & Plan Approval",
+      "description": "Approve material technical decisions, interfaces, dependencies, phases, and verification plans.",
+      "requiredContractType": "architecture",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Gate G1 approved",
+        "Gate G2 approved or formally exempted"
+      ],
+      "exitCriteria": [
+        "System components, dependencies, and boundaries defined",
+        "Implementation WBS and task dependency graph approved",
+        "Security model and ADRs documented"
+      ]
+    },
+    {
+      "gateId": "G4",
+      "name": "Implementation Verification",
+      "description": "Inspect actual changes and evaluate acceptance criteria using applicable checks.",
+      "requiredContractType": "implementation",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Gate G3 approved",
+        "File ownership boundaries respected"
+      ],
+      "exitCriteria": [
+        "All assigned tasks implemented within bounded files",
+        "Applicable test suites and linters executed with passing evidence",
+        "No unapproved scope expansion or anti-slop violations"
+      ]
+    },
+    {
+      "gateId": "G5",
+      "name": "Independent Review",
+      "description": "Review correctness, regressions, maintainability, security, scope compliance, and quality evidence.",
+      "requiredContractType": "quality",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Gate G4 completed with test evidence"
+      ],
+      "exitCriteria": [
+        "Independent reviewer verifies code diff against requirements",
+        "Quality profile standards evaluated and passed",
+        "No unresolved blocking defects"
+      ]
+    },
+    {
+      "gateId": "G6",
+      "name": "Release or Handoff",
+      "description": "Record verified deliverables, outstanding defects, exceptions, limitations, deferred work, and next steps.",
+      "requiredContractType": "release",
+      "allowedExemption": false,
+      "entryCriteria": [
+        "Gate G5 passed"
+      ],
+      "exitCriteria": [
+        "Release contract signed off",
+        "Git-aware memory state synchronized with repository",
+        "Handoff checklist complete"
+      ]
+    }
+  ],
+  "transitions": [
+    { "fromGate": "G0", "toGate": "G1", "condition": "G0_APPROVED", "requiresHumanApproval": true },
+    { "fromGate": "G1", "toGate": "G2", "condition": "G1_APPROVED", "requiresHumanApproval": true },
+    { "fromGate": "G2", "toGate": "G3", "condition": "G2_APPROVED_OR_EXEMPTED", "requiresHumanApproval": true },
+    { "fromGate": "G3", "toGate": "G4", "condition": "G3_APPROVED", "requiresHumanApproval": true },
+    { "fromGate": "G4", "toGate": "G5", "condition": "G4_VERIFIED", "requiresHumanApproval": false },
+    { "fromGate": "G5", "toGate": "G6", "condition": "G5_PASSED", "requiresHumanApproval": true },
+    { "fromGate": "G4", "toGate": "G4", "condition": "TASK_RETRY", "requiresHumanApproval": false },
+    { "fromGate": "G5", "toGate": "G4", "condition": "REVIEW_DEFECTS_FOUND", "requiresHumanApproval": false }
+  ]
+}

@@ -1,0 +1,102 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "design-contract-001",
+  "contractType": "design",
+  "title": "Project Intelligence Design Tokens & CLI/Dashboard Design Specification",
+  "status": "APPROVED",
+  "lifecycleGate": "G2",
+  "createdAt": "2026-10-07T11:20:00Z",
+  "updatedAt": "2026-10-07T11:50:00Z",
+  "author": {
+    "role": "Design Agent",
+    "identifier": "antigravity-design"
+  },
+  "approval": {
+    "approvedBy": "Human Lead Architect",
+    "approvedAt": "2026-10-07T11:55:00Z",
+    "rationale": "Design tokens and CLI terminal layout standards approved; core framework exemption documented for non-visual engine parts."
+  },
+  "traceability": {
+    "parentContractId": "req-contract-001",
+    "upstreamRequirements": ["REQ-002"],
+    "downstreamTasks": ["TASK-006"],
+    "verificationIds": ["VERIF-G2-01"]
+  },
+  "data": {
+    "isApplicable": true,
+    "exemptionRationale": "Visual design is applicable for future dashboard and terminal reporting surfaces; core engine algorithms operate headlessly.",
+    "visualDirection": {
+      "aestheticStyle": "Modern technical minimalism with high-contrast typography and subtle structural borders",
+      "referenceAssets": [
+        {
+          "assetId": "ASSET-CLI-01",
+          "pathOrUri": "docs/design/terminal-mockup.txt",
+          "description": "Unicode box-drawing terminal layout with status badges"
+        }
+      ],
+      "colorPalette": {
+        "primary": "#1E293B",
+        "secondary": "#0EA5E9",
+        "neutral": {
+          "gray50": "#F8FAFC",
+          "gray100": "#F1F5F9",
+          "gray800": "#1E293B",
+          "gray900": "#0F172A"
+        },
+        "semantic": {
+          "success": "#10B981",
+          "warning": "#F59E0B",
+          "error": "#EF4444",
+          "info": "#3B82F6"
+        }
+      }
+    },
+    "designSystem": {
+      "tokens": {
+        "borderRadius": "4px",
+        "borderWidth": "1px",
+        "focusRing": "2px solid #0EA5E9"
+      },
+      "typography": {
+        "fontFamily": {
+          "code": "JetBrains Mono, Menlo, monospace",
+          "prose": "Inter, -apple-system, BlinkMacSystemFont, sans-serif"
+        },
+        "fontSizes": {
+          "xs": "12px",
+          "sm": "14px",
+          "base": "16px",
+          "lg": "18px",
+          "xl": "20px"
+        },
+        "lineHeights": {
+          "dense": "1.2",
+          "normal": "1.5",
+          "relaxed": "1.75"
+        }
+      },
+      "spacingScale": ["0px", "4px", "8px", "12px", "16px", "24px", "32px", "48px"]
+    },
+    "responsiveBreakpoints": {
+      "mobile": "320px",
+      "tablet": "768px",
+      "desktop": "1024px",
+      "wide": "1440px"
+    },
+    "componentStates": [
+      {
+        "componentName": "GateStatusBadge",
+        "statesSupported": ["default", "hover", "active", "disabled"]
+      },
+      {
+        "componentName": "VerificationReportCard",
+        "statesSupported": ["default", "loading", "error"]
+      }
+    ],
+    "accessibilityStandards": {
+      "wcagLevel": "AA",
+      "minimumContrastRatioNormal": 4.5,
+      "keyboardNavigableRequired": true
+    }
+  }
+}

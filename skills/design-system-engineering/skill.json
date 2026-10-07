@@ -1,0 +1,93 @@
+{
+  "skillId": "design-system-engineering",
+  "name": "Design System Engineering",
+  "purpose": "Translate design decisions into concrete design tokens, component APIs, responsive breakpoints, accessible themes, and CSS/styling contracts.",
+  "whenToUse": [
+    "Transforming high-level design concepts into executable CSS variables, Tailwind tokens, or theme structures",
+    "Standardizing UI components (buttons, dialogs, inputs, tables) with deterministic interactive states",
+    "Enforcing design token compliance and responsive layout rules during frontend engineering",
+    "Implementing dark/light theme switching with zero layout shift (CLS) and WCAG AA contrast compliance"
+  ],
+  "prerequisites": [
+    "Approved design contract or active G2 transition",
+    "Identified frontend styling framework (CSS Modules, Tailwind, Styled Components, vanilla CSS)",
+    "Access to design-contract.schema.json"
+  ],
+  "inputs": [
+    {
+      "name": "designContract",
+      "type": "object",
+      "description": "Active design contract data containing colors, typography, spacing, and breakpoints"
+    },
+    {
+      "name": "stylingFramework",
+      "type": "string",
+      "description": "Selected styling engine (e.g., tailwindcss, css-variables, styled-components, scss)"
+    },
+    {
+      "name": "componentInventory",
+      "type": "array",
+      "description": "List of core UI primitives required (Button, Input, Modal, Card, Table, Toast)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Design Token Codification",
+      "action": "Formulate design tokens for spacing (4px, 8px, 16px, 24px, 32px), typography (scales, font-family, line-height), color scales (50-900), shadows, and z-index layers."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Token File Generation",
+      "action": "Export tokens to framework-native configuration files (e.g., globals.css with CSS custom properties, tailwind.config.js, or tokens.ts)."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Component State Specification",
+      "action": "Specify interactive states for all component inventory items: default, hover, active, focus-visible, disabled, loading, and error."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Responsive Layout and Breakpoint Implementation",
+      "action": "Codify responsive media queries and container query rules for small (sm: 640px), medium (md: 768px), large (lg: 1024px), and extra-large (xl: 1280px) viewports."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Accessibility and Motion Tokens Integration",
+      "action": "Ensure prefers-reduced-motion media query tokens are established and text-to-background contrast tokens meet WCAG 2.1 AA standards."
+    }
+  ],
+  "expectedOutputs": [
+    "Generated design token stylesheets or configuration files (tokens.css, theme.ts)",
+    "Component specification matrix documenting props and states",
+    "Design system compliance verification report for G2 exit"
+  ],
+  "applicableApprovalGates": [
+    "G2",
+    "G3"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Hardcoded magic numbers in CSS violating design token rules",
+      "Insufficient color contrast between foreground text and interactive backgrounds",
+      "Missing focus-visible indicators causing keyboard accessibility failures"
+    ],
+    "recoveryStrategy": "Replace all raw hex/px values with semantic token variables. Adjust token color values using lightness/saturation curves until contrast passes 4.5:1. Automatically inject 2px solid offset outline tokens for focus-visible states."
+  },
+  "verificationCriteria": [
+    "Zero hardcoded color hex values or arbitrary pixel margins in component files",
+    "All interactive components define hover, focus-visible, active, and disabled styles",
+    "Contrast ratios between text and background tokens achieve minimum 4.5:1 ratio",
+    "Design tokens match definitions in contracts/design/contract.json"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/design/contract.json",
+      "contracts/architecture/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.codingConventions",
+      "durableKnowledge.domainVocabulary"
+    ]
+  }
+}

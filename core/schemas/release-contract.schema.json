@@ -1,0 +1,75 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/release-contract.schema.json",
+  "title": "ReleaseContractData",
+  "description": "Payload schema for Release Acceptance and Session Handoff Contract (Gate G6).",
+  "type": "object",
+  "required": [
+    "releaseVersion",
+    "acceptanceStatus",
+    "verifiedDeliverables",
+    "knownLimitations",
+    "deferredBacklog",
+    "handoffChecklist"
+  ],
+  "properties": {
+    "releaseVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "acceptanceStatus": {
+      "type": "string",
+      "enum": ["ACCEPTED", "ACCEPTED_WITH_EXCEPTIONS", "REJECTED"]
+    },
+    "verifiedDeliverables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["deliverableName", "evidenceRef", "verificationPassed"],
+        "properties": {
+          "deliverableName": { "type": "string" },
+          "evidenceRef": { "type": "string" },
+          "verificationPassed": { "type": "boolean" }
+        }
+      }
+    },
+    "knownLimitations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["issueId", "description", "impact", "mitigation"],
+        "properties": {
+          "issueId": { "type": "string" },
+          "description": { "type": "string" },
+          "impact": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] },
+          "mitigation": { "type": "string" }
+        }
+      }
+    },
+    "deferredBacklog": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["backlogId", "title", "reasonDeferred"],
+        "properties": {
+          "backlogId": { "type": "string" },
+          "title": { "type": "string" },
+          "reasonDeferred": { "type": "string" }
+        }
+      }
+    },
+    "handoffChecklist": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["item", "completed", "signoffBy"],
+        "properties": {
+          "item": { "type": "string" },
+          "completed": { "type": "boolean" },
+          "signoffBy": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

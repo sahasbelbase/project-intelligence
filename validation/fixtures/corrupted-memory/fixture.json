@@ -1,0 +1,42 @@
+{
+  "fixtureType": "corrupted-memory",
+  "description": "Representative corrupted or drifted project memory state for testing recovery and rejection.",
+  "corruptedMemoryPayload": {
+    "schemaVersion": "1.0.0",
+    "lastReconciledCommit": "deadbeef99999999999999999999999999999999",
+    "lastReconciledAt": "2020-01-01T00:00:00Z",
+    "durableKnowledge": {
+      "goals": ["Build fast"],
+      "architecturalDecisions": [],
+      "codingConventions": [],
+      "domainVocabulary": {}
+    },
+    "executionState": {
+      "currentGate": "G4",
+      "activePhase": 2,
+      "activeTasks": ["TASK-001"],
+      "completedTasks": [],
+      "blockedTasks": []
+    },
+    "backlogAndHistory": {
+      "bugs": [],
+      "technicalDebt": [],
+      "deferredItems": [],
+      "decisionHistory": []
+    }
+  },
+  "injectedDefects": [
+    {
+      "type": "STALE_COMMIT_HASH",
+      "description": "Commit deadbeef does not match repository HEAD."
+    },
+    {
+      "type": "SECRET_LEAK_IN_PAYLOAD",
+      "sample": "api_key=sk-ant-api03-testkey999999"
+    },
+    {
+      "type": "ANTI_SLOP_VIOLATION",
+      "sample": "TODO: implement later and fake_production_data"
+    }
+  ]
+}

@@ -1,0 +1,98 @@
+{
+  "skillId": "testing-and-verification",
+  "name": "Testing and Verification",
+  "purpose": "Execute verification suites (unit, integration, linting, security, coverage, a11y) to generate verifiable, honest proof of correctness for G4 exit.",
+  "whenToUse": [
+    "Validating implemented features against active quality profile thresholds",
+    "Measuring code coverage and running end-to-end regression suites",
+    "Auditing dependency security vulnerabilities and static analysis lints",
+    "Compiling honest verification evidence (PASSED, FAILED, BLOCKED, SKIPPED, UNAVAILABLE) to satisfy Gate G4 exit criteria"
+  ],
+  "prerequisites": [
+    "Code changes implemented within Gate G4",
+    "Active quality profile identified in core/quality/profiles.json or contracts/quality/contract.json",
+    "Test runner and verification tools installed in environment"
+  ],
+  "inputs": [
+    {
+      "name": "qualityProfile",
+      "type": "string",
+      "description": "Active profile name (PROTOTYPE, STANDARD, PRODUCTION_READY, SECURITY_SENSITIVE, DESIGN_INTENSIVE)"
+    },
+    {
+      "name": "testTargets",
+      "type": "array",
+      "description": "List of test files, directories, or suites to execute"
+    },
+    {
+      "name": "coverageThreshold",
+      "type": "integer",
+      "description": "Minimum required test coverage percentage as specified by active profile"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Quality Profile Rules Extraction",
+      "action": "Load active profile settings from core/quality/profiles.json. Determine required suites: linting, unit tests, coverage percentage, security scans, accessibility."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Static Analysis and Linter Execution",
+      "action": "Run configured static analysis tools (e.g., eslint, ruff, flake8, mypy, tsc). Verify zero errors and zero unsuppressed warnings."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Automated Test Suite Execution",
+      "action": "Run unit and integration test runners (e.g., pytest, jest, vitest, go test). Record pass/fail counts, duration, and test output."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Code Coverage Measurement",
+      "action": "Execute coverage analyzer (e.g., coverage.py, istanbul/c8). Calculate line and branch coverage percentage. Verify against profile threshold."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Security and Dependency Vulnerability Audit",
+      "action": "If mandated by profile, execute dependency vulnerability audit (e.g., pip-audit, npm audit, trivy). Confirm zero high/critical vulnerabilities."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Honest Verification Evidence Compilation",
+      "action": "Compile comprehensive evidence report. Record each check with strict honest status: PASSED, FAILED, BLOCKED, SKIPPED, or UNAVAILABLE. Never report unexecuted checks as passed."
+    }
+  ],
+  "expectedOutputs": [
+    "Honest verification evidence report with execution commands, exit codes, and coverage metrics",
+    "Contracts/quality/contract.json updated with verification results",
+    "Defect tickets in memory/state.json backlog if tests fail"
+  ],
+  "applicableApprovalGates": [
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Test failure in unit or integration suite",
+      "Code coverage below active profile threshold",
+      "Missing test tool in host environment"
+    ],
+    "recoveryStrategy": "If tests fail, mark task as FAILED, log detailed assertion traceback, and route back to implementation. If coverage is below threshold, write tests for uncovered branches. If tool is unavailable, honestly report status as UNAVAILABLE with remediation instructions."
+  },
+  "verificationCriteria": [
+    "All executed tests pass with exit code 0",
+    "Measured code coverage meets or exceeds active profile threshold",
+    "Static analysis reports zero errors",
+    "Verification report strictly conforms to honesty standards with zero hallucinated passes"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/implementation/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.completedTasks",
+      "backlogAndHistory.bugs"
+    ]
+  }
+}

@@ -1,0 +1,84 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "proj-contract-001",
+  "contractType": "project",
+  "title": "Project Intelligence Core Framework",
+  "status": "APPROVED",
+  "lifecycleGate": "G0",
+  "createdAt": "2026-10-07T11:00:00Z",
+  "updatedAt": "2026-10-07T11:30:00Z",
+  "author": {
+    "role": "Lead Orchestrator",
+    "identifier": "antigravity-lead"
+  },
+  "approval": {
+    "approvedBy": "Human Lead Architect",
+    "approvedAt": "2026-10-07T11:35:00Z",
+    "rationale": "Initial framework discovery and charter approved."
+  },
+  "traceability": {
+    "parentContractId": "none",
+    "upstreamRequirements": [],
+    "downstreamTasks": ["TASK-001", "TASK-002"],
+    "verificationIds": ["VERIF-G0-01"]
+  },
+  "data": {
+    "projectName": "Project Intelligence",
+    "projectSlug": "project-intelligence",
+    "missionStatement": "Deliver a reusable, portable, local-first AI Project Orchestrator framework establishing shared contracts, deterministic lifecycle gates, and anti-slop quality standards.",
+    "targetAudience": [
+      "AI Coding Agents (Claude Code, GitHub Copilot, Codex, Antigravity)",
+      "Software Engineers and Architects",
+      "Engineering Teams managing multi-agent development"
+    ],
+    "inScope": [
+      "Canonical JSON schema definitions for all project contracts",
+      "G0-G6 lifecycle state machine and gate enforcement",
+      "Git-aware 3-tier memory and reconciliation engine",
+      "Mandatory baseline and specialized quality profiles",
+      "12 reusable composable skills",
+      "9 logical agent definitions with handoffs",
+      "Declarative platform adapters",
+      "Automated zero-dependency validation test suite"
+    ],
+    "outOfScope": [
+      "Hosted cloud service or SaaS control plane",
+      "Custom GUI or desktop application",
+      "Vendor-specific binary plugins or marketplace distribution",
+      "Automatic unapproved production deployment"
+    ],
+    "constraints": [
+      {
+        "type": "TECHNICAL",
+        "description": "Zero external mandatory dependencies for core validation; run on standard Python 3.10+."
+      },
+      {
+        "type": "SECURITY",
+        "description": "Local-first privacy; no secrets or private repository code sent to remote endpoints."
+      },
+      {
+        "type": "ORGANIZATIONAL",
+        "description": "Strict preservation of existing repository conventions and uncommitted user edits."
+      }
+    ],
+    "assumptions": [
+      "Environment provides a standard command execution shell and file system access.",
+      "Git is installed and configured in the repository root."
+    ],
+    "supportedPlatforms": [
+      "Anthropic Claude Code",
+      "GitHub Copilot (VS Code & CLI)",
+      "OpenAI Codex / Agents SDK",
+      "Google Antigravity"
+    ],
+    "repositoryContext": {
+      "isExistingRepo": false,
+      "branchBaseline": "main",
+      "existingConventionsPreserved": [
+        "Git standard commit standards",
+        "Standard JSON schema drafting",
+        "PEP 8 Python styling"
+      ]
+    }
+  }
+}

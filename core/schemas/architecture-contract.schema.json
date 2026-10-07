@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/architecture-contract.schema.json",
+  "title": "ArchitectureContractData",
+  "description": "Payload schema for Architecture and Technical Decisions Contract (Gate G3).",
+  "type": "object",
+  "required": [
+    "systemOverview",
+    "components",
+    "technologyStack",
+    "interfaceContracts",
+    "dataOwnership",
+    "securityModel",
+    "adrReferences"
+  ],
+  "properties": {
+    "systemOverview": { "type": "string", "minLength": 20 },
+    "components": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["componentId", "name", "responsibility", "boundaries"],
+        "properties": {
+          "componentId": { "type": "string" },
+          "name": { "type": "string" },
+          "responsibility": { "type": "string" },
+          "boundaries": {
+            "type": "object",
+            "required": ["allowedDependencies", "forbiddenDependencies"],
+            "properties": {
+              "allowedDependencies": { "type": "array", "items": { "type": "string" } },
+              "forbiddenDependencies": { "type": "array", "items": { "type": "string" } }
+            }
+          }
+        }
+      }
+    },
+    "technologyStack": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["layer", "technology", "version", "rationale"],
+        "properties": {
+          "layer": { "type": "string", "enum": ["RUNTIME", "FRAMEWORK", "DATABASE", "TESTING", "BUILD_TOOL", "LINTER"] },
+          "technology": { "type": "string" },
+          "version": { "type": "string" },
+          "rationale": { "type": "string" }
+        }
+      }
+    },
+    "interfaceContracts": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["interfaceId", "protocol", "endpointOrSymbol", "inputSchemaRef", "outputSchemaRef"],
+        "properties": {
+          "interfaceId": { "type": "string" },
+          "protocol": { "type": "string", "enum": ["REST", "GRAPHQL", "GRPC", "INTERNAL_API", "CLI", "EVENT"] },
+          "endpointOrSymbol": { "type": "string" },
+          "inputSchemaRef": { "type": "string" },
+          "outputSchemaRef": { "type": "string" }
+        }
+      }
+    },
+    "dataOwnership": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["entity", "ownerComponent", "storageType", "isPersistent"],
+        "properties": {
+          "entity": { "type": "string" },
+          "ownerComponent": { "type": "string" },
+          "storageType": { "type": "string", "enum": ["LOCAL_FILE", "SQL_DB", "NOSQL_DB", "IN_MEMORY", "GIT"] },
+          "isPersistent": { "type": "boolean" }
+        }
+      }
+    },
+    "securityModel": {
+      "type": "object",
+      "required": ["secretsHandling", "inputValidationPolicy", "leastPrivilegePrinciples"],
+      "properties": {
+        "secretsHandling": { "type": "string" },
+        "inputValidationPolicy": { "type": "string" },
+        "leastPrivilegePrinciples": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "adrReferences": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["adrId", "title", "status", "path"],
+        "properties": {
+          "adrId": { "type": "string" },
+          "title": { "type": "string" },
+          "status": { "type": "string" },
+          "path": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

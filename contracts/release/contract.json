@@ -1,0 +1,119 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "release-contract-001",
+  "contractType": "release",
+  "title": "Project Intelligence Core Framework Release v1.0.0",
+  "status": "UNDER_REVIEW",
+  "lifecycleGate": "G6",
+  "createdAt": "2026-10-07T11:40:00Z",
+  "updatedAt": "2026-10-07T13:50:00Z",
+  "author": {
+    "role": "Documentation and Memory Agent",
+    "identifier": "antigravity-doc-memory"
+  },
+  "approval": {
+    "approvedBy": "Pending Human Lead Architect Sign-off",
+    "approvedAt": "2026-10-07T13:50:00Z",
+    "rationale": "All core deliverables verified against framework requirements; independent review completed with conditional recommendation pending initial Git baseline commit."
+  },
+  "traceability": {
+    "parentContractId": "quality-contract-001",
+    "upstreamRequirements": ["REQ-001", "REQ-002", "REQ-003", "REQ-004", "NFR-001", "NFR-002", "NFR-003"],
+    "downstreamTasks": [],
+    "verificationIds": ["VERIF-G6-01"]
+  },
+  "data": {
+    "releaseVersion": "1.0.0",
+    "acceptanceStatus": "ACCEPTED_WITH_EXCEPTIONS",
+    "verifiedDeliverables": [
+      {
+        "deliverableName": "Core Schemas (12 Draft-07 JSON Schemas)",
+        "evidenceRef": "validation/reports/schema_test_results.log",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "Lifecycle State Machine Engine & G0-G6 Gates",
+        "evidenceRef": "validation/reports/lifecycle_test_results.log",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "Mandatory Baseline & Quality Profiles Engine",
+        "evidenceRef": "validation/reports/quality_test_results.log",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "Git-Aware 3-Tier Memory Reconciler",
+        "evidenceRef": "validation/reports/memory_test_results.log",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "12 Composable Skills Definitions",
+        "evidenceRef": "skills/",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "9 Logical Agent Definitions with Permissions and Handoffs",
+        "evidenceRef": "agents/",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "Platform Adapters (Claude Code, GitHub Copilot, Codex)",
+        "evidenceRef": "adapters/",
+        "verificationPassed": true
+      },
+      {
+        "deliverableName": "Zero-Dependency Automated Test Suite",
+        "evidenceRef": "validation/test_runner.py",
+        "verificationPassed": true
+      }
+    ],
+    "knownLimitations": [
+      {
+        "issueId": "LIM-001",
+        "description": "Provider-specific live binary installers and cloud dashboards deferred to future phases.",
+        "impact": "LOW",
+        "mitigation": "Core framework operates cleanly via local files, Python CLI, and native adapter configs."
+      },
+      {
+        "issueId": "LIM-002",
+        "description": "Repository working tree is currently untracked on unborn master branch with 0 commits; initial Git baseline commit pending repository owner authorization.",
+        "impact": "MEDIUM",
+        "mitigation": "Memory reconciler explicitly handles unborn branches and zero-commit SHAs; user must perform initial git commit to establish cryptographic baseline."
+      }
+    ],
+    "deferredBacklog": [
+      {
+        "backlogId": "BL-FUTURE-01",
+        "title": "Interactive GUI Dashboard for visual gate monitoring",
+        "reasonDeferred": "Out of scope for initial core framework release per Section 16."
+      },
+      {
+        "backlogId": "BL-FUTURE-02",
+        "title": "Automated Package Manager installer (npm / pip package)",
+        "reasonDeferred": "Out of scope for initial core framework release per Section 16."
+      }
+    ],
+    "handoffChecklist": [
+      {
+        "item": "All 7 canonical contracts validated against schemas",
+        "completed": true,
+        "signoffBy": "Lead Orchestrator"
+      },
+      {
+        "item": "All 12 skills adhere to Section 6 schema",
+        "completed": true,
+        "signoffBy": "Skills & Instructions Subagent"
+      },
+      {
+        "item": "Memory state synchronized with repository git log",
+        "completed": true,
+        "signoffBy": "Memory & State Subagent"
+      },
+      {
+        "item": "Independent Review completed with no blocking defects",
+        "completed": true,
+        "signoffBy": "Independent Reviewer Subagent"
+      }
+    ]
+  }
+}

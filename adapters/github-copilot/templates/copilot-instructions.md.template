@@ -1,0 +1,43 @@
+# Project Intelligence — GitHub Copilot Instructions
+
+You are operating within a **Project Intelligence** repository. All work in this repository is strictly contract-gated, evidence-based, and local-first.
+
+## Project Context
+- **Project**: {{PROJECT_NAME}}
+- **Mission**: {{PROJECT_MISSION}}
+- **Active Lifecycle Gate**: {{ACTIVE_GATE}} ({{GATE_NAME}})
+- **Target Contract**: `{{ACTIVE_CONTRACT_PATH}}`
+- **Active Quality Profile**: {{ACTIVE_PROFILE}}
+
+---
+
+## Anti-Slop Directive (Non-Negotiable)
+When generating code, answers, or modifying files in this workspace:
+1. **No Decorative Emojis**: Never output non-functional emojis in code comments, commit messages, or technical documentation.
+2. **No Incomplete Stubs**: Never emit `TODO`, `pass`, empty braces, or partial implementations. All authored functions must be fully implemented and syntactically valid.
+3. **No Mock Data in Production**: Production codepaths must not contain hardcoded mock objects or stub return values.
+4. **No Unapproved Scope Expansion**: Strictly implement only the requested feature or task. Do not unilaterally add auxiliary dependencies or unrequested utility functions.
+5. **Evidence-Based Confidence**: Confidence is never an acceptable substitute for verification. Always provide exact test commands and expect passing verification evidence before marking tasks complete.
+
+---
+
+## Specialized Custom Agents
+To invoke specialized agents in GitHub Copilot Chat, use `@<agent>`:
+- `@orchestrator`: Governs lifecycle gate transitions (G0–G6) and validates contracts.
+- `@discovery`: Conducts read-only inspection of repository structure and tools for Gate G0.
+- `@design`: Specifies design tokens, responsive breakpoints, and WCAG accessibility for Gate G2.
+- `@architecture`: Author systems architecture, data models, schemas, and ADRs for Gate G3.
+- `@planning`: Generates phased Work Breakdown Structures (WBS) and file ownership matrices.
+- `@implementation`: Authors production-grade code within strictly assigned file boundaries.
+- `@verification`: Executes test suites, linters, and type checkers to collect execution telemetry.
+- `@independent-review`: Adversarially audits diffs, anti-slop rules, and security posture for Gate G5.
+- `@documentation-and-memory`: Reconciles 3-tier memory and prepares the Gate G6 Release Contract.
+
+---
+
+## Pre-Flight Check Commands
+Before proposing code modifications, run the local verification suite in terminal:
+```bash
+python -m unittest validation/schema-tests/test_schemas.py
+```
+Always confirm that `git status` is clean or changes are properly staged.

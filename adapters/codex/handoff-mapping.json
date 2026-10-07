@@ -1,0 +1,76 @@
+{
+  "platform": "openai-agents-sdk",
+  "handoffProtocol": "AgentsSDK_Handoff",
+  "agents": [
+    {
+      "sourceAgent": "orchestrator",
+      "availableHandoffs": [
+        { "targetAgent": "discovery", "toolName": "transfer_to_discovery", "gate": "G0" },
+        { "targetAgent": "design", "toolName": "transfer_to_design", "gate": "G2" },
+        { "targetAgent": "architecture", "toolName": "transfer_to_architecture", "gate": "G3" },
+        { "targetAgent": "planning", "toolName": "transfer_to_planning", "gate": "G3" },
+        { "targetAgent": "implementation", "toolName": "transfer_to_implementation", "gate": "G4" },
+        { "targetAgent": "verification", "toolName": "transfer_to_verification", "gate": "G4" },
+        { "targetAgent": "independent-review", "toolName": "transfer_to_independent_review", "gate": "G5" },
+        { "targetAgent": "documentation-and-memory", "toolName": "transfer_to_documentation_and_memory", "gate": "G6" }
+      ]
+    },
+    {
+      "sourceAgent": "discovery",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G0" },
+        { "targetAgent": "planning", "toolName": "transfer_to_planning", "gate": "G0" }
+      ]
+    },
+    {
+      "sourceAgent": "design",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G2" },
+        { "targetAgent": "architecture", "toolName": "transfer_to_architecture", "gate": "G2" }
+      ]
+    },
+    {
+      "sourceAgent": "architecture",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G3" },
+        { "targetAgent": "planning", "toolName": "transfer_to_planning", "gate": "G3" }
+      ]
+    },
+    {
+      "sourceAgent": "planning",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G3" },
+        { "targetAgent": "implementation", "toolName": "transfer_to_implementation", "gate": "G4" }
+      ]
+    },
+    {
+      "sourceAgent": "implementation",
+      "availableHandoffs": [
+        { "targetAgent": "verification", "toolName": "transfer_to_verification", "gate": "G4" },
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G4" }
+      ]
+    },
+    {
+      "sourceAgent": "verification",
+      "availableHandoffs": [
+        { "targetAgent": "independent-review", "toolName": "transfer_to_independent_review", "gate": "G5" },
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G4" },
+        { "targetAgent": "implementation", "toolName": "transfer_to_implementation", "gate": "G4" }
+      ]
+    },
+    {
+      "sourceAgent": "independent-review",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G5" },
+        { "targetAgent": "implementation", "toolName": "transfer_to_implementation", "gate": "G4" },
+        { "targetAgent": "documentation-and-memory", "toolName": "transfer_to_documentation_and_memory", "gate": "G6" }
+      ]
+    },
+    {
+      "sourceAgent": "documentation-and-memory",
+      "availableHandoffs": [
+        { "targetAgent": "orchestrator", "toolName": "transfer_to_orchestrator", "gate": "G6" }
+      ]
+    }
+  ]
+}

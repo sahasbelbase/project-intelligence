@@ -1,0 +1,20 @@
+{
+  "schemaVersion": "1.0.0",
+  "lastReconciledCommit": "0000000000000000000000000000000000000000",
+  "lastReconciledAt": "2026-10-07T12:00:00Z",
+  "currentBranch": "master",
+  "currentGate": "G0",
+  "activePhase": 0,
+  "activeTasks": [
+    "WS-07: Implement git-aware memory schemas, templates, rules, and reconciler engine"
+  ],
+  "completedTasks": [
+    "WS-00: Platform Capabilities & Interoperability Research",
+    "WS-01: Core Schemas & Canonical Contracts"
+  ],
+  "blockedTasks": [],
+  "activeWorkstreamLedger": "docs/decisions/0001-work-ledger.md",
+  "uncommittedChanges": [],
+  "driftDetected": false,
+  "reconciliationStatus": "CLEAN"
+}

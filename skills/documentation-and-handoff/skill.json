@@ -1,0 +1,98 @@
+{
+  "skillId": "documentation-and-handoff",
+  "name": "Documentation and Handoff",
+  "purpose": "Generate comprehensive developer guides, release contracts, changelogs, operational runbooks, and synchronized memory states to clear G6.",
+  "whenToUse": [
+    "Finalizing a release, milestone, or sprint deliverable (Gate G6 entry)",
+    "Preparing the repository for clean handoff to human engineers or next AI agent sessions",
+    "Writing or updating README.md, CHANGELOG.md, and operational runbooks",
+    "Synchronizing Git-aware memory (memory/state.json) with current HEAD commit hash"
+  ],
+  "prerequisites": [
+    "Gate G5 approved (contracts/quality/contract.json in APPROVED status)",
+    "Clean working tree or ready-to-commit staging area",
+    "Access to release-contract.schema.json in core/schemas/"
+  ],
+  "inputs": [
+    {
+      "name": "releaseVersion",
+      "type": "string",
+      "description": "Semantic version of the release (e.g., 1.0.0, 0.1.0)"
+    },
+    {
+      "name": "verifiedDeliverables",
+      "type": "array",
+      "description": "List of completed and verified features, skills, contracts, or modules"
+    },
+    {
+      "name": "knownLimitations",
+      "type": "array",
+      "description": "Documented exceptions, temporary constraints, or deferred backlog items"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Release Deliverables and Artifact Inventory",
+      "action": "Enumerate all verified source files, schemas, tests, and contracts produced during the lifecycle. Confirm completeness against the project contract."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Changelog and Version Update",
+      "action": "Generate or update CHANGELOG.md following Keep a Changelog standard (Added, Changed, Deprecated, Removed, Fixed, Security) and update semver tags."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Developer Guides and Usage Documentation",
+      "action": "Author or update user documentation in docs/usage/ and root README.md with clear quick-start commands, configuration options, and troubleshooting steps."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Release Contract Assembly",
+      "action": "Synthesize data into contracts/release/contract.json conforming to core/schemas/release-contract.schema.json with status APPROVED."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Git-Aware Memory Reconciliation",
+      "action": "Query current git commit hash. Reconcile memory/state.json, updating lastReconciledCommit, setting executionState.currentGate to G6, and clearing activeTasks."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Final Handoff Summary Presentation",
+      "action": "Produce an executive summary detailing verified deliverables, known limitations, recommended next steps, and instructions for next agent session."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/release/contract.json adhering to release-contract.schema.json",
+    "Updated README.md, CHANGELOG.md, and documentation in docs/",
+    "Synchronized memory/state.json reflecting Gate G6 completion"
+  ],
+  "applicableApprovalGates": [
+    "G6"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Discrepancy between declared deliverables and actual files in repository",
+      "Memory state commit hash out of sync with git HEAD",
+      "Missing documentation for newly exposed CLI commands or interfaces"
+    ],
+    "recoveryStrategy": "Run git status and file check to reconcile deliverables against physical disk. Update lastReconciledCommit to git rev-parse HEAD. Generate missing API documentation before final handoff."
+  },
+  "verificationCriteria": [
+    "contracts/release/contract.json passes validation against core/schemas/release-contract.schema.json",
+    "README.md and CHANGELOG.md accurately reflect the released version and features",
+    "memory/state.json lastReconciledCommit matches git HEAD",
+    "All known limitations are documented transparently without omissions"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/release/contract.json"
+    ],
+    "memoryRecords": [
+      "lastReconciledCommit",
+      "durableKnowledge",
+      "executionState",
+      "backlogAndHistory"
+    ]
+  }
+}

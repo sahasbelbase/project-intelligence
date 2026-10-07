@@ -1,0 +1,166 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/memory/backlog.schema.json",
+  "title": "BacklogAndHistorySpecification",
+  "description": "Schema for project backlog, technical debt, deferred features, and decision history, conforming to core/schemas/memory.schema.json.",
+  "type": "object",
+  "definitions": {
+    "bugItem": {
+      "type": "object",
+      "required": ["id", "description", "severity"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^BUG-[0-9]{3,4}$",
+          "description": "Unique identifier of the defect (e.g., BUG-001)."
+        },
+        "description": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Detailed explanation of observed vs expected behavior."
+        },
+        "severity": {
+          "type": "string",
+          "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"],
+          "description": "Impact level of the defect."
+        },
+        "status": {
+          "type": "string",
+          "enum": ["OPEN", "INVESTIGATING", "RESOLVED", "WONT_FIX"],
+          "description": "Lifecycle state of the bug."
+        },
+        "detectedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the defect was logged."
+        },
+        "fixedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when resolution was verified."
+        }
+      },
+      "additionalProperties": false
+    },
+    "decisionHistoryItem": {
+      "type": "object",
+      "required": ["timestamp", "author", "summary"],
+      "properties": {
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of the logged decision."
+        },
+        "author": {
+          "type": "string",
+          "minLength": 2,
+          "description": "Role or identifier of the decision maker."
+        },
+        "summary": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Concise summary of what was decided and why."
+        },
+        "decisionId": {
+          "type": "string",
+          "description": "Cross-reference to an architectural decision (ADR) if applicable."
+        }
+      },
+      "additionalProperties": false
+    },
+    "backlogAndHistoryCore": {
+      "type": "object",
+      "required": ["bugs", "technicalDebt", "deferredItems", "decisionHistory"],
+      "properties": {
+        "bugs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/bugItem" },
+          "description": "Registry of known defects and their severity."
+        },
+        "technicalDebt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Known technical debt items requiring refactoring or hardening."
+        },
+        "deferredItems": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Items consciously postponed to future phases or milestones."
+        },
+        "decisionHistory": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/decisionHistoryItem" },
+          "description": "Chronological audit trail of key operational and technical choices."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "title": "StandaloneBacklogFile",
+      "description": "Standalone backlog.json file with top-level collections.",
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "bugs",
+        "technicalDebt",
+        "deferredItems",
+        "decisionHistory"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Semantic version of the memory schema (e.g., 1.0.0)."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of last modification."
+        },
+        "bugs": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/bugItem" },
+          "description": "Defect log."
+        },
+        "technicalDebt": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Technical debt register."
+        },
+        "deferredItems": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Deferred scope items."
+        },
+        "decisionHistory": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/decisionHistoryItem" },
+          "description": "Historical decision log."
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "WrappedBacklogFile",
+      "description": "Backlog and history document wrapped under the backlogAndHistory key.",
+      "type": "object",
+      "required": ["schemaVersion", "backlogAndHistory"],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "backlogAndHistory": {
+          "$ref": "#/definitions/backlogAndHistoryCore"
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

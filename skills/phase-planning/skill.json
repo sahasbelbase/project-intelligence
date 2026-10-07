@@ -1,0 +1,98 @@
+{
+  "skillId": "phase-planning",
+  "name": "Phase Planning",
+  "purpose": "Decompose architectural specifications into bounded, sequential phases, work breakdown structures (WBS), and atomic tasks with strict file ownership.",
+  "whenToUse": [
+    "Translating an approved architecture contract into an actionable implementation plan",
+    "Partitioning complex development work into discrete sequential phases (e.g., Foundations, Core Logic, Verification)",
+    "Assigning exclusive file ownership boundaries to prevent conflicts during parallel subagent operations",
+    "Formulating the implementation contract (contracts/implementation/contract.json) required to enter Gate G4"
+  ],
+  "prerequisites": [
+    "Gate G3 approved (contracts/architecture/contract.json in APPROVED status)",
+    "Access to implementation-contract.schema.json in core/schemas/",
+    "Available agent roles identified in core/schemas/agent-definition.schema.json"
+  ],
+  "inputs": [
+    {
+      "name": "architectureContract",
+      "type": "object",
+      "description": "Approved architecture contract with system components and technology stack"
+    },
+    {
+      "name": "workstreamId",
+      "type": "string",
+      "description": "Identifier for the target workstream (e.g., WS-04, WS-Implementation)"
+    },
+    {
+      "name": "availableSubagents",
+      "type": "array",
+      "description": "List of available agent definitions for task delegation"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Work Breakdown Structure (WBS) Formulation",
+      "action": "Deconstruct architecture components into sequential implementation phases (Phase 1: Foundations, Phase 2: Core, Phase 3: Integration, Phase 4: Polish)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Atomic Task Decomposition",
+      "action": "Break each phase into discrete atomic tasks. For each task, define explicit preconditions, deliverables, and acceptance criteria."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Exclusive File Ownership Boundary Mapping",
+      "action": "Assign exact file paths and directory globs to each task. Ensure zero overlapping file write permissions between concurrent tasks or subagents."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Dependency Graph and Critical Path Construction",
+      "action": "Map task prerequisites to create a DAG. Calculate critical path and identify tasks eligible for concurrent execution."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Verification Criteria Attachment",
+      "action": "Attach concrete validation commands (test suites, linter checks, type checking) to every task as mandatory completion criteria."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Implementation Contract Assembly",
+      "action": "Assemble data into contracts/implementation/contract.json conforming to core/schemas/implementation-contract.schema.json with initial status UNDER_REVIEW."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/implementation/contract.json adhering to implementation-contract.schema.json",
+    "Task dependency graph and workstream ledger in docs/decisions/0001-work-ledger.md",
+    "Updated memory/state.json with activePhase and activeTasks"
+  ],
+  "applicableApprovalGates": [
+    "G3"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "File ownership collisions between concurrent tasks",
+      "Circular dependencies in task prerequisite graph",
+      "Tasks defined too broadly leading to model context exhaustion"
+    ],
+    "recoveryStrategy": "Split contested files into distinct modules or serialize the tasks. Resolve circular dependencies by creating intermediate interface definitions. Break tasks larger than 3 target files into smaller atomic subtasks."
+  },
+  "verificationCriteria": [
+    "contracts/implementation/contract.json passes validation against core/schemas/implementation-contract.schema.json",
+    "Zero overlapping file write paths between concurrent workstream tasks",
+    "Every task specifies non-empty title, fileOwnership, and verificationCriteria",
+    "Task dependency graph is acyclic and terminates with verification tasks"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/implementation/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activePhase",
+      "executionState.activeTasks",
+      "executionState.activeWorkstreamLedger"
+    ]
+  }
+}

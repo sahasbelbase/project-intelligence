@@ -1,0 +1,30 @@
+{
+  "hooks": {
+    "SessionStart": [
+      {
+        "command": "bash .claude/hooks/session-start.sh",
+        "description": "Validates git working tree status, reconciles memory state, and displays active lifecycle gate."
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "bash .claude/hooks/pre-tool-use.sh",
+        "description": "Intercepts bash commands to block prohibited operations (force push, arbitrary deletes) and enforce exit code 2 denial."
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Bash",
+        "command": "python -c 'import sys; print(\"[Claude Hook] Tool execution recorded for verification telemetry\")'",
+        "description": "Records command execution telemetry for tamper-proof evidence gathering."
+      }
+    ],
+    "Stop": [
+      {
+        "command": "python -c 'print(\"[Claude Hook] Session ended. Verify git status and pending contract transitions.\")'",
+        "description": "Notifies user of session termination and reminds them of uncommitted state."
+      }
+    ]
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "name": "codex",
+  "displayName": "OpenAI Codex & Agents SDK Platform Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "openai-codex-agents-sdk",
+  "standingInstructionsFile": "system_prompt",
+  "sdkRuntime": "python-agents-sdk",
+  "supportedCapabilities": {
+    "systemPromptCompilation": true,
+    "programmaticHandoffs": true,
+    "toolCalling": true,
+    "strictSchemaEnforcement": true,
+    "sdkHooks": true,
+    "localFileAccess": true
+  },
+  "hookCadences": [
+    "on_tool_call",
+    "on_agent_handoff",
+    "on_turn_end"
+  ],
+  "degradationLevel": "LOW",
+  "adapterFiles": {
+    "manifest": "adapters/codex/adapter.json",
+    "compilationRules": "adapters/codex/system-prompt-compilation.md",
+    "systemPromptTemplate": "adapters/codex/templates/system-prompt.template",
+    "handoffMappingManifest": "adapters/codex/handoff-mapping.json",
+    "agentsSdkAdapterSpec": "adapters/codex/agents-sdk-adapter.md",
+    "featureDegradationReport": "adapters/codex/feature-degradation-report.md"
+  }
+}

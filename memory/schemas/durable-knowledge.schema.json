@@ -1,0 +1,130 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/memory/durable-knowledge.schema.json",
+  "title": "DurableKnowledgeSpecification",
+  "description": "Schema for durable project knowledge including charter goals, ADRs, coding conventions, and domain vocabulary, conforming to core/schemas/memory.schema.json.",
+  "type": "object",
+  "definitions": {
+    "architecturalDecision": {
+      "type": "object",
+      "required": ["decisionId", "title", "choice", "consequences"],
+      "properties": {
+        "decisionId": {
+          "type": "string",
+          "pattern": "^ADR-[0-9]{3,4}$",
+          "description": "Unique identifier for the architectural decision record (e.g., ADR-0001)."
+        },
+        "title": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Concise summary title of the decision."
+        },
+        "choice": {
+          "type": "string",
+          "minLength": 5,
+          "description": "The chosen architectural path or design solution."
+        },
+        "consequences": {
+          "type": "string",
+          "minLength": 5,
+          "description": "Positive, negative, and operational tradeoffs and impacts of this decision."
+        }
+      },
+      "additionalProperties": false
+    },
+    "durableKnowledgeCore": {
+      "type": "object",
+      "required": ["goals", "architecturalDecisions", "codingConventions", "domainVocabulary"],
+      "properties": {
+        "goals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "High-level durable project objectives and charter principles."
+        },
+        "architecturalDecisions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/architecturalDecision" },
+          "description": "Chronological or indexed registry of accepted architectural decisions."
+        },
+        "codingConventions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Durable language, style, privacy, and architectural coding standards."
+        },
+        "domainVocabulary": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Key domain terms, acronyms, and business vocabulary mapped to their authoritative definitions."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "title": "StandaloneDurableKnowledgeFile",
+      "description": "Durable knowledge structured as a standalone repository file with top-level fields.",
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "goals",
+        "architecturalDecisions",
+        "codingConventions",
+        "domainVocabulary"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Semantic version of the memory schema (e.g., 1.0.0)."
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of the most recent durable knowledge update."
+        },
+        "goals": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "High-level durable project objectives and charter principles."
+        },
+        "architecturalDecisions": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/architecturalDecision" },
+          "description": "Chronological or indexed registry of accepted architectural decisions."
+        },
+        "codingConventions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Durable language, style, privacy, and architectural coding standards."
+        },
+        "domainVocabulary": {
+          "type": "object",
+          "additionalProperties": { "type": "string" },
+          "description": "Key domain terms, acronyms, and business vocabulary mapped to their authoritative definitions."
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "WrappedDurableKnowledgeFile",
+      "description": "Durable knowledge document wrapped under the durableKnowledge key.",
+      "type": "object",
+      "required": ["schemaVersion", "durableKnowledge"],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "lastUpdated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "durableKnowledge": {
+          "$ref": "#/definitions/durableKnowledgeCore"
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

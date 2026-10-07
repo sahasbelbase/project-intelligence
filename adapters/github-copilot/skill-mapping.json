@@ -1,0 +1,66 @@
+{
+  "platform": "github-copilot",
+  "skillFormat": ".github/skills/",
+  "mappings": [
+    {
+      "canonicalSkillId": "project-discovery",
+      "copilotSkillDirectory": ".github/skills/project-discovery/",
+      "triggers": ["discovery", "init project", "inspect environment", "gate G0"]
+    },
+    {
+      "canonicalSkillId": "existing-project-analysis",
+      "copilotSkillDirectory": ".github/skills/existing-project-analysis/",
+      "triggers": ["analyze codebase", "extract conventions", "brownfield"]
+    },
+    {
+      "canonicalSkillId": "design-discovery",
+      "copilotSkillDirectory": ".github/skills/design-discovery/",
+      "triggers": ["visual requirements", "design tokens", "gate G2"]
+    },
+    {
+      "canonicalSkillId": "design-system-engineering",
+      "copilotSkillDirectory": ".github/skills/design-system-engineering/",
+      "triggers": ["design system", "component states", "accessibility audit", "WCAG"]
+    },
+    {
+      "canonicalSkillId": "architecture-and-contracts",
+      "copilotSkillDirectory": ".github/skills/architecture-and-contracts/",
+      "triggers": ["architect system", "draft ADR", "interface contracts", "gate G3"]
+    },
+    {
+      "canonicalSkillId": "phase-planning",
+      "copilotSkillDirectory": ".github/skills/phase-planning/",
+      "triggers": ["plan phases", "task decomposition", "file ownership", "WBS"]
+    },
+    {
+      "canonicalSkillId": "controlled-implementation",
+      "copilotSkillDirectory": ".github/skills/controlled-implementation/",
+      "triggers": ["implement task", "write code", "bounded edit", "gate G4"]
+    },
+    {
+      "canonicalSkillId": "testing-and-verification",
+      "copilotSkillDirectory": ".github/skills/testing-and-verification/",
+      "triggers": ["run tests", "verify implementation", "collect evidence", "lint"]
+    },
+    {
+      "canonicalSkillId": "independent-review",
+      "copilotSkillDirectory": ".github/skills/independent-review/",
+      "triggers": ["independent review", "code audit", "anti-slop check", "gate G5"]
+    },
+    {
+      "canonicalSkillId": "failure-recovery-and-improvement",
+      "copilotSkillDirectory": ".github/skills/failure-recovery-and-improvement/",
+      "triggers": ["test failure", "fix defect", "task retry", "recovery"]
+    },
+    {
+      "canonicalSkillId": "cross-platform-adaptation",
+      "copilotSkillDirectory": ".github/skills/cross-platform-adaptation/",
+      "triggers": ["adapt platform", "compile copilot instructions", "compile CLAUDE.md"]
+    },
+    {
+      "canonicalSkillId": "documentation-and-handoff",
+      "copilotSkillDirectory": ".github/skills/documentation-and-handoff/",
+      "triggers": ["generate release notes", "sync memory", "gate G6 handoff"]
+    }
+  ]
+}

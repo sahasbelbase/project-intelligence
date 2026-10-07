@@ -1,0 +1,48 @@
+# Project Intelligence — Claude Code Instructions
+
+## Project Context
+- **Project**: {{PROJECT_NAME}}
+- **Mission**: {{PROJECT_MISSION}}
+- **Active Lifecycle Gate**: {{ACTIVE_GATE}} ({{GATE_NAME}})
+- **Target Contract**: `{{ACTIVE_CONTRACT_PATH}}`
+- **Active Quality Profile**: {{ACTIVE_PROFILE}}
+
+---
+
+## Non-Negotiable Operational Rules (Anti-Slop Guardrails)
+1. **Evidence-Based Progress**: Never declare completion without executing real validation commands and observing exit code 0. Textual claims of "it works" without verbatim stdout/stderr logs are invalid.
+2. **Zero AI Slop**:
+   - NO decorative non-functional emojis in code, commits, or documentation.
+   - NO stub implementations (`pass`, `return null`, empty braces, or `// TODO`).
+   - NO fake mock data in production codepaths.
+   - NO unexplained workarounds or commented-out dead code.
+3. **Strict Gate Transitions**: Follow `core/lifecycle/lifecycle-fsm.json`. Never skip gates. Non-visual projects must record formal exemption rationale in Gate G2 (`contracts/design/contract.json`).
+4. **Preserve User Code & Conventions**: Never modify or overwrite uncommitted user changes found during session start. Preserve existing indentation, naming, and typing conventions.
+
+---
+
+## Tool Execution & Safety Boundaries
+- **Command Prefix Allowlist**: `{{ALLOWED_COMMAND_PREFIXES}}`
+- **Forbidden Commands**: `rm -rf /`, `git push --force`, `drop table`, `curl | bash`, package installs without virtual environments.
+- **Allowed Mutable Paths**:
+{{ALLOWED_MUTABLE_PATHS}}
+
+---
+
+## Available Skills & Triggers
+When encountering specific engineering workflows, invoke the matching skill from `skills/`:
+- `skills/project-discovery/`: Project initialization, charter drafting, environment inspection (`discovery`, `init`, `gate G0`).
+- `skills/architecture-and-contracts/`: System modeling, ADR drafting, interface contract design (`architecture`, `ADR`, `contract`).
+- `skills/phase-planning/`: Work breakdown structure, task scheduling, file ownership assignment (`plan`, `WBS`, `tasks`).
+- `skills/controlled-implementation/`: Production code authoring within bounded file paths (`implement`, `code`).
+- `skills/testing-and-verification/`: Automated test execution, evidence capture, linter auditing (`test`, `verify`, `lint`).
+- `skills/independent-review/`: Adversarial review of diffs, anti-slop verification (`review`, `audit`, `gate G5`).
+- `skills/documentation-and-handoff/`: 3-tier memory reconciliation, release notes, handoff contracts (`release`, `handoff`, `memory`).
+
+---
+
+## Subagent Delegation Protocol
+When executing subagent workflows:
+1. Maintain separate, isolated context per subagent.
+2. Assign disjoint, non-overlapping file ownership boundaries.
+3. Subagents write execution results directly to contract JSON files and structured logs.

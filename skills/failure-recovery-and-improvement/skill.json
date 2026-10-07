@@ -1,0 +1,102 @@
+{
+  "skillId": "failure-recovery-and-improvement",
+  "name": "Failure Recovery and Improvement",
+  "purpose": "Diagnose execution failures, gate rejections, test breakages, or memory corruption; execute rollback or remediation; update memory and post-mortem backlog.",
+  "whenToUse": [
+    "A task fails during Gate G4 execution or regression test suites break",
+    "Independent review (Gate G5) rejects a deliverable with blocking defects",
+    "Memory state drift or corruption is detected between memory/state.json and git HEAD",
+    "An unhandled runtime error or exception disrupts automated multi-agent orchestration",
+    "Conducting a post-mortem and updating durable memory to prevent recurring failures"
+  ],
+  "prerequisites": [
+    "Error logs, stack trace, or gate rejection rationale available",
+    "Git repository access to perform inspection, reset, or branch isolation",
+    "Write access to memory/state.json and backlogAndHistory"
+  ],
+  "inputs": [
+    {
+      "name": "failureContext",
+      "type": "object",
+      "description": "Details of the failure: failed task ID, error output, stack trace, or rejection report"
+    },
+    {
+      "name": "failureType",
+      "type": "string",
+      "description": "Classification: TEST_FAILURE, GATE_REJECTION, BOUNDARY_VIOLATION, MEMORY_DRIFT, BUILD_ERROR"
+    },
+    {
+      "name": "allowRollback",
+      "type": "boolean",
+      "description": "Whether automated git stash/reset rollback is permitted"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Root Cause Analysis (RCA)",
+      "action": "Analyze error stack trace, test assertion failures, or review comments. Trace error to exact root cause: logic defect, schema discrepancy, missing dependency, or race condition."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Blast Radius and Repository State Assessment",
+      "action": "Run git status and git diff. Assess whether uncommitted changes are safe or require stash/revert. Verify whether other modules or workstreams were impacted."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Safe Remediation or Rollback Execution",
+      "action": "If isolated, apply minimal targeted fix. If failure is destructive or pervasive and allowRollback is true, execute git checkout / revert to return to last known green commit."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Re-Verification Execution",
+      "action": "Re-run the failing test suite or gate check using testing-and-verification. Verify that the remediation resolves the root cause without introducing new regressions."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Memory State and Backlog Update",
+      "action": "Record the incident in memory/state.json: add bug or technical debt item to backlogAndHistory, update executionState, and document post-mortem lesson in durableKnowledge."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Process Improvement Rule Formulation",
+      "action": "Formulate a defensive rule or linter check to permanently prevent this class of failure in future development cycles."
+    }
+  ],
+  "expectedOutputs": [
+    "Resolved codebase with clean passing verification suites",
+    "Post-mortem summary report documenting root cause, remediation, and prevention rule",
+    "Updated memory/state.json capturing incident and durable learnings"
+  ],
+  "applicableApprovalGates": [
+    "G4",
+    "G5",
+    "G6"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Remediation attempt introduces secondary regressions in unrelated components",
+      "Rollback accidentally clobbers user's uncommitted manual modifications",
+      "Unreproducible or intermittent test failure"
+    ],
+    "recoveryStrategy": "Never use destructive git reset --hard without user confirmation. Stash uncommitted changes prior to any rollback. If test is flaky, isolate test in quarantine fixture and log critical defect."
+  },
+  "verificationCriteria": [
+    "Original failing condition is verified fixed by successful test execution (exit code 0)",
+    "No uncommitted changes outside the remediated task scope",
+    "Post-mortem record is logged in memory/state.json with actionable lesson learned",
+    "All full regression suites pass cleanly"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/implementation/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.blockedTasks",
+      "backlogAndHistory.bugs",
+      "backlogAndHistory.technicalDebt",
+      "backlogAndHistory.decisionHistory"
+    ]
+  }
+}

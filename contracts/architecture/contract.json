@@ -1,0 +1,141 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "arch-contract-001",
+  "contractType": "architecture",
+  "title": "Project Intelligence Architecture & Interface Contract",
+  "status": "APPROVED",
+  "lifecycleGate": "G3",
+  "createdAt": "2026-10-07T11:25:00Z",
+  "updatedAt": "2026-10-07T12:00:00Z",
+  "author": {
+    "role": "Architecture Agent",
+    "identifier": "antigravity-arch"
+  },
+  "approval": {
+    "approvedBy": "Human Lead Architect",
+    "approvedAt": "2026-10-07T12:05:00Z",
+    "rationale": "System boundaries, zero-dependency engine choice, and platform adapter interfaces approved."
+  },
+  "traceability": {
+    "parentContractId": "design-contract-001",
+    "upstreamRequirements": ["REQ-001", "REQ-003", "REQ-004", "NFR-001"],
+    "downstreamTasks": ["TASK-007", "TASK-008", "TASK-009"],
+    "verificationIds": ["VERIF-G3-01"]
+  },
+  "data": {
+    "systemOverview": "Project Intelligence is a local-first, schema-driven AI project orchestrator framework. It decouples canonical schemas, lifecycle FSMs, anti-slop quality engines, and Git-aware memory from vendor-specific AI coding tools via declarative platform adapters.",
+    "components": [
+      {
+        "componentId": "COMP-CORE-SCHEMAS",
+        "name": "Canonical Schemas Registry",
+        "responsibility": "Defines draft-07 JSON Schemas for all 7 contracts, memory, lifecycle, agents, and skills.",
+        "boundaries": {
+          "allowedDependencies": [],
+          "forbiddenDependencies": ["adapters/*", "validation/*"]
+        }
+      },
+      {
+        "componentId": "COMP-LIFECYCLE-ENGINE",
+        "name": "Lifecycle State Machine Engine",
+        "responsibility": "Enforces valid deterministic state transitions across gates G0 through G6.",
+        "boundaries": {
+          "allowedDependencies": ["COMP-CORE-SCHEMAS"],
+          "forbiddenDependencies": ["adapters/*"]
+        }
+      },
+      {
+        "componentId": "COMP-QUALITY-EVALUATOR",
+        "name": "Anti-Slop & Quality Evaluator",
+        "responsibility": "Evaluates mandatory engineering baselines, specialized quality profiles, and verification honesty.",
+        "boundaries": {
+          "allowedDependencies": ["COMP-CORE-SCHEMAS"],
+          "forbiddenDependencies": ["adapters/*"]
+        }
+      },
+      {
+        "componentId": "COMP-MEMORY-RECONCILER",
+        "name": "Git-Aware Memory Reconciler",
+        "responsibility": "Synchronizes durable knowledge, execution state, and backlog with actual Git repository status.",
+        "boundaries": {
+          "allowedDependencies": ["COMP-CORE-SCHEMAS"],
+          "forbiddenDependencies": []
+        }
+      },
+      {
+        "componentId": "COMP-PLATFORM-ADAPTERS",
+        "name": "Platform Translation Adapters",
+        "responsibility": "Translates canonical instructions and skills to Claude Code, Copilot, Codex, and other AI runtimes.",
+        "boundaries": {
+          "allowedDependencies": ["COMP-CORE-SCHEMAS", "COMP-LIFECYCLE-ENGINE"],
+          "forbiddenDependencies": []
+        }
+      }
+    ],
+    "technologyStack": [
+      {
+        "layer": "RUNTIME",
+        "technology": "Python",
+        "version": "3.10+",
+        "rationale": "Ubiquitous, zero-compilation, strong standard library support (json, unittest, pathlib, subprocess)."
+      },
+      {
+        "layer": "FRAMEWORK",
+        "technology": "Standard JSON Schema",
+        "version": "Draft-07 / Draft 2020-12",
+        "rationale": "Universally portable machine-readable contract standard across all programming languages and AI tools."
+      },
+      {
+        "layer": "TESTING",
+        "technology": "unittest",
+        "version": "Standard Library",
+        "rationale": "Requires zero pip installations, guaranteed to execute immediately on any developer workstation or CI environment."
+      }
+    ],
+    "interfaceContracts": [
+      {
+        "interfaceId": "IFACE-LIFECYCLE-01",
+        "protocol": "INTERNAL_API",
+        "endpointOrSymbol": "core.lifecycle.engine.LifecycleEngine.validate_transition",
+        "inputSchemaRef": "core/schemas/lifecycle.schema.json",
+        "outputSchemaRef": "boolean"
+      },
+      {
+        "interfaceId": "IFACE-QUALITY-01",
+        "protocol": "INTERNAL_API",
+        "endpointOrSymbol": "core.quality.evaluator.QualityEvaluator.evaluate_anti_slop",
+        "inputSchemaRef": "string",
+        "outputSchemaRef": "array of strings"
+      }
+    ],
+    "dataOwnership": [
+      {
+        "entity": "ContractArtifacts",
+        "ownerComponent": "COMP-CORE-SCHEMAS",
+        "storageType": "LOCAL_FILE",
+        "isPersistent": true
+      },
+      {
+        "entity": "ExecutionState",
+        "ownerComponent": "COMP-MEMORY-RECONCILER",
+        "storageType": "GIT",
+        "isPersistent": true
+      }
+    ],
+    "securityModel": {
+      "secretsHandling": "Zero secrets in memory or contracts. Secrets must only be sourced from environment variables or secure key vaults outside the Git tree.",
+      "inputValidationPolicy": "Strict JSON Schema validation on all inbound contracts; invalid schemas trigger fatal exit.",
+      "leastPrivilegePrinciples": [
+        "Subagents have read-only access to files outside their designated workstream directory.",
+        "Shell command execution is restricted to authorized test and validation commands."
+      ]
+    },
+    "adrReferences": [
+      {
+        "adrId": "ADR-0001",
+        "title": "Local-First, Schema-Driven, Contract-Centric Architecture",
+        "status": "ACCEPTED",
+        "path": "docs/decisions/0002-canonical-architecture-decisions.md"
+      }
+    ]
+  }
+}

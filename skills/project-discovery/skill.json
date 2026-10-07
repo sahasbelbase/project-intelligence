@@ -1,0 +1,97 @@
+{
+  "skillId": "project-discovery",
+  "name": "Project Discovery",
+  "purpose": "Inspect the development environment, baseline repository state, tools, and constraints to establish the project charter and G0 contract.",
+  "whenToUse": [
+    "Initializing a greenfield project without an established Project Intelligence configuration",
+    "Bootstrapping framework governance in an empty repository or workspace",
+    "Establishing the project charter, mission statement, stakeholders, and initial constraints before requirements definition"
+  ],
+  "prerequisites": [
+    "Local file system read access to workspace root",
+    "Command execution capability for environment inspection (Git CLI, language runtimes)",
+    "Access to core schemas in core/schemas/ for contract initialization"
+  ],
+  "inputs": [
+    {
+      "name": "workspaceRoot",
+      "type": "string",
+      "description": "Absolute path to repository or project workspace root directory"
+    },
+    {
+      "name": "userBrief",
+      "type": "string",
+      "description": "User intent, project description, goals, and initial constraints provided at kickoff"
+    },
+    {
+      "name": "targetPlatforms",
+      "type": "array",
+      "description": "List of AI coding platforms to support (e.g., Claude Code, Copilot, Codex, Antigravity)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Environment and Toolchain Inspection",
+      "action": "Query host OS, shell environment, installed language runtimes (python, node, go, rust), package managers, and container runtimes. Document toolchain availability."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Git Working Tree Inspection",
+      "action": "Check git repository status using 'git status --porcelain' and 'git log -n 5'. Verify if the directory is a git repo, clean branch baseline, and capture current HEAD commit hash."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Scope and Boundaries Formulation",
+      "action": "Analyze userBrief against toolchain capabilities. Explicitly define inScope features and outOfScope boundaries to prevent premature scope creep."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Constraints and Assumptions Cataloging",
+      "action": "Catalog technical, organizational, and security constraints (e.g., local-first privacy, zero external runtime dependencies, target deployment environments)."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Project Contract Generation",
+      "action": "Synthesize findings into contracts/project/contract.json adhering to core/schemas/project-contract.schema.json with initial status UNDER_REVIEW and lifecycleGate G0."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Memory Initialization",
+      "action": "Initialize memory/state.json with schemaVersion, lastReconciledCommit set to HEAD, durableKnowledge goals, and executionState pointing to G0."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/project/contract.json adhering to project-contract.schema.json",
+    "memory/state.json initialized with baseline goals and execution state G0",
+    "Environment discovery summary detailing runtime versions and git HEAD status"
+  ],
+  "applicableApprovalGates": [
+    "G0"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Missing git binary or repository not initialized",
+      "Conflicting or ambiguous user brief instructions",
+      "Write permissions failure when creating contracts directory"
+    ],
+    "recoveryStrategy": "If git is missing, fall back to directory inspection and prompt user to initialize git. For ambiguous scope, halt at G0 and request user clarification before contract signing. If permissions fail, verify directory ownership."
+  },
+  "verificationCriteria": [
+    "contracts/project/contract.json passes validation against core/schemas/project-contract.schema.json",
+    "memory/state.json passes validation against core/schemas/memory.schema.json",
+    "Working tree status is captured and verified clean or noted with uncommitted changes",
+    "In-scope and out-of-scope lists contain non-empty, actionable entries"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.goals",
+      "executionState.currentGate",
+      "executionState.activePhase",
+      "lastReconciledCommit"
+    ]
+  }
+}

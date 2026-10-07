@@ -1,0 +1,34 @@
+{
+  "fixtureType": "existing-project",
+  "description": "Representative established brownfield repository with pre-existing conventions, existing tests, and uncommitted developer modifications.",
+  "files": [
+    {
+      "path": "README.md",
+      "content": "# Legacy Enterprise Core\n\nExisting system with critical production traffic.\n## Existing Conventions\n- Always run `pytest -v tests/` before pushing.\n- Strict PEP8 conventions.\n"
+    },
+    {
+      "path": "existing_module.py",
+      "content": "def calculate_tax(amount: float) -> float:\n    \"\"\"Existing tax calculator with unit test coverage.\"\"\"\n    return amount * 0.15\n"
+    },
+    {
+      "path": "tests/test_tax.py",
+      "content": "import unittest\nfrom existing_module import calculate_tax\n\nclass TestTax(unittest.TestCase):\n    def test_tax(self):\n        self.assertAlmostEqual(calculate_tax(100.0), 15.0)\n\nif __name__ == '__main__':\n    unittest.main()\n"
+    }
+  ],
+  "gitState": {
+    "isClean": false,
+    "currentBranch": "feature/tax-update",
+    "uncommittedFiles": [
+      {
+        "path": "existing_module.py",
+        "status": "MODIFIED",
+        "reason": "Human engineer made in-progress edits that must be preserved."
+      }
+    ]
+  },
+  "preservationRulesEnforced": [
+    "Do not overwrite uncommitted human changes in existing_module.py",
+    "Preserve existing pytest command and existing test conventions",
+    "Do not silently delete existing README.md"
+  ]
+}

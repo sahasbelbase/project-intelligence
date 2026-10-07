@@ -1,0 +1,30 @@
+{
+  "name": "github-copilot",
+  "displayName": "GitHub Copilot Platform Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "github-copilot",
+  "standingInstructionsFile": ".github/copilot-instructions.md",
+  "pathInstructionsDirectory": ".github/instructions/",
+  "customAgentsDirectory": ".github/agents/",
+  "skillsDirectory": ".github/skills/",
+  "supportedCapabilities": {
+    "standingInstructions": true,
+    "pathSpecificInstructions": true,
+    "customAgents": true,
+    "skills": true,
+    "hooks": false,
+    "toolDenial": false,
+    "localFileAccess": true
+  },
+  "hookCadences": [],
+  "degradationLevel": "MEDIUM",
+  "adapterFiles": {
+    "manifest": "adapters/github-copilot/adapter.json",
+    "translationRules": "adapters/github-copilot/translation-rules.md",
+    "copilotInstructionsTemplate": "adapters/github-copilot/templates/copilot-instructions.md.template",
+    "customAgentsDirectory": "adapters/github-copilot/agents/",
+    "skillMappingManifest": "adapters/github-copilot/skill-mapping.json",
+    "skillMappingDoc": "adapters/github-copilot/skill-mapping.md",
+    "featureDegradationReport": "adapters/github-copilot/feature-degradation-report.md"
+  }
+}

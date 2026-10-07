@@ -1,0 +1,98 @@
+{
+  "skillId": "controlled-implementation",
+  "name": "Controlled Implementation",
+  "purpose": "Execute atomic implementation tasks within strictly assigned file boundaries, adhering to mandatory baseline quality and test-driven cycles to achieve G4.",
+  "whenToUse": [
+    "Writing production source code or unit test suites during Gate G4 execution",
+    "Implementing assigned tasks from the active implementation contract",
+    "Executing bug fixes, feature extensions, or refactoring within designated file boundaries",
+    "Enforcing strict anti-slop rules (no decorative emoji, no fake prod data, no unapproved dependencies)"
+  ],
+  "prerequisites": [
+    "Gate G3 approved (contracts/architecture/contract.json in APPROVED status)",
+    "Assigned task from contracts/implementation/contract.json with defined fileOwnership",
+    "Clean git working tree or documented uncommitted changes"
+  ],
+  "inputs": [
+    {
+      "name": "taskId",
+      "type": "string",
+      "description": "Identifier of the atomic task to implement (e.g., TASK-001)"
+    },
+    {
+      "name": "allowedPaths",
+      "type": "array",
+      "description": "Exclusive list of file paths and directories this implementation task is permitted to modify"
+    },
+    {
+      "name": "acceptanceCriteria",
+      "type": "array",
+      "description": "Testable conditions and behavior required for task completion"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Pre-Flight Boundary and Hygiene Check",
+      "action": "Verify git status is clean. Confirm all files to be edited reside strictly within allowedPaths. Reject any instruction requiring edits outside boundary."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Test-Driven Scaffold Construction",
+      "action": "Author unit or contract test specifications defining expected inputs, outputs, and edge cases before implementing core logic."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Clean Code Implementation",
+      "action": "Implement production logic adhering to Mandatory Baseline Quality (BL-001 through BL-007): zero decorative emoji, zero fake data in prod paths, full error handling, clean typings."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Local Compilation and Lint Verification",
+      "action": "Run local formatters, linters, and type-checkers on modified files. Ensure zero syntax errors, type mismatches, or lint violations."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Test Suite Execution and Evidence Capture",
+      "action": "Execute unit test runner. Capture stdout, stderr, and exit code. Verify all test assertions pass with 100% success on modified units."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Execution State Update",
+      "action": "Update memory/state.json marking taskId as completed in executionState.completedTasks and recording Git diff summary."
+    }
+  ],
+  "expectedOutputs": [
+    "Production source code and tests strictly confined to allowedPaths",
+    "Command execution evidence log demonstrating zero compiler/test errors",
+    "Updated memory/state.json reflecting completed task status"
+  ],
+  "applicableApprovalGates": [
+    "G4"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Task requires touching a file outside assigned allowedPaths",
+      "Unit tests fail after code changes",
+      "Linter fails due to style or unused import violations"
+    ],
+    "recoveryStrategy": "If out-of-boundary edit needed, halt task and request architecture contract update. For failing tests, revert breaking change and re-evaluate logic. Run automated formatter (e.g., ruff format, prettier) to resolve style errors."
+  },
+  "verificationCriteria": [
+    "git status shows zero modified files outside assigned allowedPaths",
+    "All unit and regression tests pass with exit code 0",
+    "Zero anti-slop violations (no decorative emoji, no hardcoded mocks in prod paths)",
+    "Implementation contract data tracks task status as VERIFIED"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/implementation/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeTasks",
+      "executionState.completedTasks",
+      "executionState.blockedTasks"
+    ]
+  }
+}

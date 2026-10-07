@@ -1,0 +1,37 @@
+{
+  "name": "claude-code",
+  "displayName": "Anthropic Claude Code Platform Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "claude-code",
+  "standingInstructionsFile": "CLAUDE.md",
+  "hooksConfigurationFile": ".claude/settings.json",
+  "skillsFormat": "SKILL.md",
+  "skillsDirectory": "skills/",
+  "supportedCapabilities": {
+    "standingInstructions": true,
+    "hooks": true,
+    "subagents": true,
+    "skills": true,
+    "toolDenial": true,
+    "contextIsolation": true,
+    "localFileAccess": true
+  },
+  "hookCadences": [
+    "SessionStart",
+    "PreToolUse",
+    "PostToolUse",
+    "Stop"
+  ],
+  "degradationLevel": "LOW",
+  "adapterFiles": {
+    "manifest": "adapters/claude-code/adapter.json",
+    "translationRules": "adapters/claude-code/translation-rules.md",
+    "claudeMdTemplate": "adapters/claude-code/templates/CLAUDE.md.template",
+    "settingsJsonTemplate": "adapters/claude-code/templates/settings.json.template",
+    "sessionStartHook": "adapters/claude-code/hooks/session-start.sh",
+    "preToolUseHook": "adapters/claude-code/hooks/pre-tool-use.sh",
+    "skillMappingManifest": "adapters/claude-code/skill-mapping.json",
+    "skillMappingDoc": "adapters/claude-code/skill-mapping.md",
+    "featureDegradationReport": "adapters/claude-code/feature-degradation-report.md"
+  }
+}

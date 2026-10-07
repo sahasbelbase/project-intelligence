@@ -1,0 +1,109 @@
+{
+  "schemaVersion": "1.0.0",
+  "contractId": "req-contract-001",
+  "contractType": "requirements",
+  "title": "Project Intelligence Requirements Specification",
+  "status": "APPROVED",
+  "lifecycleGate": "G1",
+  "createdAt": "2026-10-07T11:15:00Z",
+  "updatedAt": "2026-10-07T11:40:00Z",
+  "author": {
+    "role": "Discovery Agent",
+    "identifier": "antigravity-discovery"
+  },
+  "approval": {
+    "approvedBy": "Human Lead Architect",
+    "approvedAt": "2026-10-07T11:45:00Z",
+    "rationale": "All functional and non-functional requirements aligned with master prompt."
+  },
+  "traceability": {
+    "parentContractId": "proj-contract-001",
+    "upstreamRequirements": [],
+    "downstreamTasks": ["TASK-003", "TASK-004", "TASK-005"],
+    "verificationIds": ["VERIF-G1-01"]
+  },
+  "data": {
+    "functionalRequirements": [
+      {
+        "reqId": "REQ-001",
+        "title": "Deterministic Lifecycle State Machine",
+        "description": "Enforce sequential progression through gates G0 to G6 with explicit entry, exit, and approval checks.",
+        "priority": "MUST_HAVE",
+        "userStory": "As an orchestrator, I want deterministic gates so that agents cannot skip requirements or verification."
+      },
+      {
+        "reqId": "REQ-002",
+        "title": "Anti-Slop Quality Policy Enforcement",
+        "description": "Automatically detect and disallow decorative emojis, fake prod data, unimplemented stubs, and unexplained workarounds.",
+        "priority": "MUST_HAVE",
+        "userStory": "As a developer, I want anti-slop rules so that AI output meets rigorous engineering standards."
+      },
+      {
+        "reqId": "REQ-003",
+        "title": "Git-Aware Memory Reconciliation",
+        "description": "Reconcile project memory against actual git status and commits upon session startup to detect drift.",
+        "priority": "MUST_HAVE",
+        "userStory": "As an agent, I want git reconciliation so that I don't overwrite manual human edits."
+      },
+      {
+        "reqId": "REQ-004",
+        "title": "Canonical Contracts & JSON Schema Validation",
+        "description": "Define all project stages via versioned JSON Schemas with automated validation.",
+        "priority": "MUST_HAVE",
+        "userStory": "As an engineer, I want structured contracts so that handoffs between agents are unambiguous."
+      }
+    ],
+    "nonFunctionalRequirements": [
+      {
+        "nfrId": "NFR-001",
+        "category": "PORTABILITY",
+        "description": "Core framework must execute on standard Python 3.10+ without mandatory third-party pip dependencies.",
+        "metricThreshold": "100% zero-dependency execution for core validator"
+      },
+      {
+        "nfrId": "NFR-002",
+        "category": "SECURITY",
+        "description": "No plain-text credentials, tokens, or private source code leaked outside local repository.",
+        "metricThreshold": "0 secret findings in audit"
+      },
+      {
+        "nfrId": "NFR-003",
+        "category": "MAINTAINABILITY",
+        "description": "All skills, instructions, and agents must follow standardized schema structures.",
+        "metricThreshold": "100% schema conformance"
+      }
+    ],
+    "acceptanceCriteria": [
+      {
+        "acId": "AC-001",
+        "relatedReqId": "REQ-001",
+        "scenario": "Agent attempts to transition from G1 to G4 skipping G2 and G3",
+        "expectedOutcome": "LifecycleEngine blocks transition with LifecycleError."
+      },
+      {
+        "acId": "AC-002",
+        "relatedReqId": "REQ-002",
+        "scenario": "Agent outputs code containing decorative emoji and 'TODO: implement later'",
+        "expectedOutcome": "QualityEvaluator flags anti-slop violations and fails gate check."
+      },
+      {
+        "acId": "AC-003",
+        "relatedReqId": "REQ-003",
+        "scenario": "Session starts with uncommitted modified files in git working tree",
+        "expectedOutcome": "Memory reconciler detects uncommitted changes and halts or alerts before destructive action."
+      }
+    ],
+    "edgeCases": [
+      {
+        "caseId": "EDGE-001",
+        "condition": "Project is a backend-only CLI or library with no graphical UI",
+        "expectedBehavior": "Gate G2 (Design) can be formally exempted with documented justification."
+      },
+      {
+        "caseId": "EDGE-002",
+        "condition": "Independent reviewer rejects implementation at Gate G5",
+        "expectedBehavior": "State machine transitions backward from G5 to G4 with review defects logged."
+      }
+    ]
+  }
+}

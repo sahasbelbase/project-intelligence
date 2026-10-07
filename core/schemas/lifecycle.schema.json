@@ -1,0 +1,41 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/lifecycle.schema.json",
+  "title": "LifecycleSpecification",
+  "description": "Schema for the Lifecycle State Machine, gate definitions, and transition requirements.",
+  "type": "object",
+  "required": ["version", "gates", "transitions"],
+  "properties": {
+    "version": { "type": "string" },
+    "gates": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["gateId", "name", "description", "requiredContractType", "allowedExemption"],
+        "properties": {
+          "gateId": { "type": "string", "enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"] },
+          "name": { "type": "string" },
+          "description": { "type": "string" },
+          "requiredContractType": { "type": "string" },
+          "allowedExemption": { "type": "boolean" },
+          "entryCriteria": { "type": "array", "items": { "type": "string" } },
+          "exitCriteria": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    },
+    "transitions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["fromGate", "toGate", "condition", "requiresHumanApproval"],
+        "properties": {
+          "fromGate": { "type": "string" },
+          "toGate": { "type": "string" },
+          "condition": { "type": "string" },
+          "requiresHumanApproval": { "type": "boolean" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

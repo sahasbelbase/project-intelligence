@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "lastUpdated": "2026-10-07T12:00:00Z",
+  "bugs": [
+    {
+      "id": "BUG-001",
+      "description": "Unborn git branch with no initial commits caused CalledProcessError in naive git rev-parse HEAD calls.",
+      "severity": "MEDIUM",
+      "status": "RESOLVED",
+      "detectedAt": "2026-10-07T11:15:00Z",
+      "fixedAt": "2026-10-07T11:45:00Z"
+    }
+  ],
+  "technicalDebt": [
+    "Standardize JSON Schema Draft 2020-12 cross-referencing resolvers for offline air-gapped environments.",
+    "Add automated git pre-commit hook integration script to execute reconciler check on commit."
+  ],
+  "deferredItems": [
+    "Interactive terminal UI visualizer for 3-way memory reconciliation diffs.",
+    "Automatic branch-switching telemetry sync across multi-worktree repository setups."
+  ],
+  "decisionHistory": [
+    {
+      "timestamp": "2026-10-07T11:00:00Z",
+      "author": "Architecture Lead",
+      "summary": "Established 3-tier memory model: Durable Knowledge, Execution State, and Backlog & History.",
+      "decisionId": "ADR-0003"
+    },
+    {
+      "timestamp": "2026-10-07T11:30:00Z",
+      "author": "Memory Subagent (WS-07)",
+      "summary": "Adopted zero-external-dependency Python reconciliation engine with strict human edit preservation and secret scanning.",
+      "decisionId": "ADR-0001"
+    }
+  ]
+}

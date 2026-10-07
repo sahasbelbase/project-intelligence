@@ -1,0 +1,100 @@
+{
+  "skillId": "existing-project-analysis",
+  "name": "Existing Project Analysis",
+  "purpose": "Perform deep, non-destructive reconnaissance on an existing codebase to detect architecture, build systems, conventions, tech debt, and drift.",
+  "whenToUse": [
+    "Onboarding an established repository into Project Intelligence governance",
+    "Detecting architectural patterns, conventions, and existing dependencies prior to feature work",
+    "Auditing technical debt, uncommitted changes, or state drift in legacy codebases",
+    "Evaluating test suite maturity and build pipeline commands on existing projects"
+  ],
+  "prerequisites": [
+    "Existing codebase with filesystem read access",
+    "Installed Git CLI with repository history access",
+    "Read access to existing configuration and package manifests"
+  ],
+  "inputs": [
+    {
+      "name": "projectRoot",
+      "type": "string",
+      "description": "Path to the existing repository root"
+    },
+    {
+      "name": "deepScanDepth",
+      "type": "integer",
+      "description": "Maximum directory traversal depth for file tree mapping"
+    },
+    {
+      "name": "excludePatterns",
+      "type": "array",
+      "description": "Directory or file patterns to ignore during analysis (e.g., node_modules, .git, venv)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Directory Tree and Manifest Scanning",
+      "action": "Enumerate top-level directory structure and parse key build/package manifests (package.json, pyproject.toml, go.mod, Cargo.toml, pom.xml, CMakeLists.txt)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Coding Convention and Linter Detection",
+      "action": "Identify formatting, linting, and style configuration files (.eslintrc, ruff.toml, prettierrc, tsconfig.json). Extract existing coding conventions."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Build, Test, and CI Pipeline Analysis",
+      "action": "Locate test suites and CI workflows (.github/workflows, Jenkinsfile, Makefile, docker-compose.yml). Identify how tests are invoked and execution requirements."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Git History and Hotspot Mapping",
+      "action": "Inspect git log history to detect frequently modified files, recent author commits, unmerged branches, and existing architectural documentation (ADRs, docs/)."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Technical Debt and Anti-Pattern Audit",
+      "action": "Identify unresolved TODO/FIXME markers, deprecated library usages, missing test coverage areas, and obvious architectural smells."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Memory State Ingestion",
+      "action": "Populate memory/state.json with durableKnowledge (discovered conventions, architectural decisions, domain vocabulary) and backlogAndHistory (technical debt)."
+    }
+  ],
+  "expectedOutputs": [
+    "Comprehensive architecture and convention reconnaissance report",
+    "Updated memory/state.json with extracted codingConventions and technicalDebt entries",
+    "Baseline requirements and constraints documentation for contract formulation"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Repository too massive leading to timeout during full traversal",
+      "Multiple conflicting build tools or monorepo subprojects",
+      "Corrupted or missing git history"
+    ],
+    "recoveryStrategy": "Apply targeted subtree scanning focusing on src/ or core packages. If monorepo detected, analyze root manifest first, then partition analysis into distinct sub-packages. For shallow git clones, report limited history in findings."
+  },
+  "verificationCriteria": [
+    "All detected build and test commands are validated by checking corresponding config files",
+    "Existing conventions are documented in memory without overwriting user rules",
+    "No files outside memory/ or reports are modified during analysis (strictly non-destructive)",
+    "Identified technical debt items are tagged with severity and location"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.codingConventions",
+      "durableKnowledge.domainVocabulary",
+      "backlogAndHistory.technicalDebt"
+    ]
+  }
+}

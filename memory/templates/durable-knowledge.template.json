@@ -1,0 +1,46 @@
+{
+  "schemaVersion": "1.0.0",
+  "lastUpdated": "2026-10-07T12:00:00Z",
+  "goals": [
+    "Provide a portable, local-first AI project orchestration framework compatible with Claude Code, GitHub Copilot, Codex, and Antigravity.",
+    "Enforce deterministic lifecycle state transitions (G0 through G6) with verified evidence gates.",
+    "Eliminate AI context degradation, hallucinated progress, and uncontrolled scope expansion through durable git-aware memory.",
+    "Ensure zero external database dependencies by storing all durable state in version-controlled JSON and Markdown files."
+  ],
+  "architecturalDecisions": [
+    {
+      "decisionId": "ADR-0001",
+      "title": "Local-First, Schema-Driven, Contract-Centric Architecture",
+      "choice": "All project contracts, state, and decisions reside in git-tracked JSON and Markdown files without external DB dependencies.",
+      "consequences": "Requires strict JSON Schema Draft-07 validation and git-aware reconciliation; guarantees complete portability and auditability."
+    },
+    {
+      "decisionId": "ADR-0002",
+      "title": "Deterministic Lifecycle Gate Progression (G0-G6)",
+      "choice": "Strict finite state machine where progression requires evidence-backed approval contracts. Exemptions must be explicitly recorded.",
+      "consequences": "Prevents premature coding before requirements (G1) and architecture (G3) are locked; ensures verifiable quality gates."
+    },
+    {
+      "decisionId": "ADR-0003",
+      "title": "Three-Tier Git-Aware Memory and Non-Destructive Reconciliation",
+      "choice": "Partition project memory into Durable Knowledge, Execution State, and Backlog & History, reconciled via git status and log.",
+      "consequences": "Detects branch switches, rebases, and dirty working trees without overwriting uncommitted human developer edits."
+    }
+  ],
+  "codingConventions": [
+    "Python 3.10+ standard library implementation with strict type annotations; zero unapproved external pip dependencies for core engine.",
+    "All contract and memory payloads must strictly validate against core/schemas/ specifications.",
+    "Never commit, log, or persist private keys, API tokens, passwords, or credentials into repository files or memory state.",
+    "Preserve all existing human developer code conventions, formatting styles, and uncommitted edits during reconciliation."
+  ],
+  "domainVocabulary": {
+    "Gate": "A deterministic lifecycle checkpoint (G0 to G6) governing project progression from discovery to release.",
+    "Contract": "A schema-validated canonical JSON agreement defining requirements, architecture, or deliverables for a gate.",
+    "Envelope": "The standardized canonical JSON wrapper containing contract metadata, status, approvals, and traceability.",
+    "Reconciliation": "The deterministic synchronization process aligning execution memory with git commits and working-tree state.",
+    "Durable Knowledge": "Persistent project charter, architectural decisions, domain vocabulary, and coding standards.",
+    "Execution State": "Ephemeral project execution telemetry tracking active phase, current gate, task statuses, and git HEAD.",
+    "Backlog and History": "Structured repository recording defects, technical debt, deferred capabilities, and audit logs.",
+    "Drift": "A discrepancy between stored execution state (commit, branch, tree status) and actual git repository state."
+  }
+}

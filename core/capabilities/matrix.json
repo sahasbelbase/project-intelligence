@@ -1,0 +1,45 @@
+{
+  "version": "1.0.0",
+  "platforms": {
+    "claude-code": {
+      "standingInstructionsFile": "CLAUDE.md",
+      "supportsSkills": true,
+      "skillsFormat": "SKILL.md",
+      "supportsHooks": true,
+      "hookCadences": ["SessionStart", "PreToolUse", "PostToolUse", "Stop"],
+      "supportsSubagents": true,
+      "subagentIsolation": "separate_context",
+      "localFileAccess": true
+    },
+    "github-copilot": {
+      "standingInstructionsFile": ".github/copilot-instructions.md",
+      "supportsSkills": true,
+      "skillsFormat": ".github/skills/",
+      "supportsHooks": false,
+      "hookCadences": [],
+      "supportsSubagents": true,
+      "subagentIsolation": "ide_delegation",
+      "localFileAccess": true
+    },
+    "codex-agents-sdk": {
+      "standingInstructionsFile": "system_prompt",
+      "supportsSkills": true,
+      "skillsFormat": "SKILL.md",
+      "supportsHooks": true,
+      "hookCadences": ["on_tool_call", "on_turn_end"],
+      "supportsSubagents": true,
+      "subagentIsolation": "handoff_agent",
+      "localFileAccess": true
+    },
+    "antigravity": {
+      "standingInstructionsFile": "system_prompt_rules",
+      "supportsSkills": true,
+      "skillsFormat": "SKILL.md",
+      "supportsHooks": true,
+      "hookCadences": ["SessionStart", "PreToolUse", "PostToolUse"],
+      "supportsSubagents": true,
+      "subagentIsolation": "isolated_process_and_context",
+      "localFileAccess": true
+    }
+  }
+}

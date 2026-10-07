@@ -1,0 +1,32 @@
+{
+  "name": "other-platforms",
+  "displayName": "Generic POSIX CLI & IDE Platform Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "generic-posix-cli-ide",
+  "supportedEnvironments": [
+    "Cursor",
+    "Windsurf",
+    "Aider",
+    "Cline",
+    "Neovim LLM / Avante.nvim",
+    "JetBrains AI Assistant",
+    "Standard POSIX Bash / Zsh Shell",
+    "Windows PowerShell"
+  ],
+  "standingInstructionsFallback": ".project-intelligence/INSTRUCTIONS.md",
+  "supportedCapabilities": {
+    "standingInstructions": true,
+    "localFileAccess": true,
+    "hooks": false,
+    "subagents": false,
+    "skills": false,
+    "toolDenial": false
+  },
+  "degradationLevel": "HIGH",
+  "adapterFiles": {
+    "manifest": "adapters/other-platforms/adapter.json",
+    "genericSpec": "adapters/other-platforms/generic-posix-ide-spec.md",
+    "cliRuntimeGuide": "adapters/other-platforms/cli-runtime-guide.md",
+    "degradationReport": "adapters/other-platforms/degradation-report.md"
+  }
+}

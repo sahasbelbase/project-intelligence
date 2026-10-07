@@ -1,0 +1,47 @@
+{
+  "name": "mcp",
+  "displayName": "Model Context Protocol (MCP) Standard Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "model-context-protocol",
+  "transport": "stdio",
+  "supportedEnvironments": [
+    "Claude Desktop",
+    "Claude Code",
+    "Cursor",
+    "Cline / Roo Code",
+    "Windsurf",
+    "Zed Editor",
+    "Google Antigravity"
+  ],
+  "supportedCapabilities": {
+    "standingInstructions": false,
+    "hooks": false,
+    "subagents": false,
+    "skills": false,
+    "toolDenial": true,
+    "contextIsolation": true,
+    "localFileAccess": true,
+    "mcpTools": true
+  },
+  "toolsExposed": [
+    "project_status",
+    "inspect_project",
+    "get_next_action",
+    "validate_contract",
+    "evaluate_quality",
+    "get_project_memory",
+    "create_work_plan",
+    "advance_lifecycle_gate",
+    "reconcile_project_memory",
+    "run_project_checks"
+  ],
+  "degradationLevel": "NONE",
+  "adapterFiles": {
+    "manifest": "adapters/mcp/adapter.json",
+    "server": "adapters/mcp/server.py",
+    "tools": "adapters/mcp/tools.py",
+    "security": "adapters/mcp/security.py",
+    "validator": "adapters/mcp/validator.py",
+    "readme": "adapters/mcp/README.md"
+  }
+}

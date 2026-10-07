@@ -1,0 +1,70 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/requirements-contract.schema.json",
+  "title": "RequirementsContractData",
+  "description": "Payload schema for Requirements & Acceptance Criteria Contract (Gate G1).",
+  "type": "object",
+  "required": [
+    "functionalRequirements",
+    "nonFunctionalRequirements",
+    "acceptanceCriteria",
+    "edgeCases"
+  ],
+  "properties": {
+    "functionalRequirements": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["reqId", "title", "description", "priority"],
+        "properties": {
+          "reqId": { "type": "string", "pattern": "^REQ-[0-9]{3,}$" },
+          "title": { "type": "string" },
+          "description": { "type": "string" },
+          "priority": { "type": "string", "enum": ["MUST_HAVE", "SHOULD_HAVE", "COULD_HAVE", "WONT_HAVE"] },
+          "userStory": { "type": "string" }
+        }
+      }
+    },
+    "nonFunctionalRequirements": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["nfrId", "category", "description", "metricThreshold"],
+        "properties": {
+          "nfrId": { "type": "string", "pattern": "^NFR-[0-9]{3,}$" },
+          "category": { "type": "string", "enum": ["PERFORMANCE", "SECURITY", "PRIVACY", "ACCESSIBILITY", "PORTABILITY", "MAINTAINABILITY"] },
+          "description": { "type": "string" },
+          "metricThreshold": { "type": "string" }
+        }
+      }
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["acId", "relatedReqId", "scenario", "expectedOutcome"],
+        "properties": {
+          "acId": { "type": "string", "pattern": "^AC-[0-9]{3,}$" },
+          "relatedReqId": { "type": "string" },
+          "scenario": { "type": "string" },
+          "expectedOutcome": { "type": "string" }
+        }
+      }
+    },
+    "edgeCases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["caseId", "condition", "expectedBehavior"],
+        "properties": {
+          "caseId": { "type": "string" },
+          "condition": { "type": "string" },
+          "expectedBehavior": { "type": "string" }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

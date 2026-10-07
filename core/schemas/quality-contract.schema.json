@@ -1,0 +1,97 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/quality-contract.schema.json",
+  "title": "QualityContractData",
+  "description": "Payload schema for Quality Profile and Verification Standards Contract (Gate G5).",
+  "type": "object",
+  "required": [
+    "activeProfile",
+    "baselineRulesEnforced",
+    "verificationSuites",
+    "antiSlopPolicy",
+    "checksSummary"
+  ],
+  "properties": {
+    "activeProfile": {
+      "type": "string",
+      "enum": ["PROTOTYPE", "STANDARD", "PRODUCTION_READY", "SECURITY_SENSITIVE", "DESIGN_INTENSIVE"]
+    },
+    "baselineRulesEnforced": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1
+    },
+    "verificationSuites": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["suiteName", "command", "mandatory", "status"],
+        "properties": {
+          "suiteName": { "type": "string" },
+          "command": { "type": "string" },
+          "mandatory": { "type": "boolean" },
+          "status": { "type": "string", "enum": ["PASSED", "FAILED", "BLOCKED", "SKIPPED", "UNAVAILABLE"] },
+          "evidenceLocation": { "type": "string" }
+        }
+      }
+    },
+    "antiSlopPolicy": {
+      "type": "object",
+      "required": [
+        "disallowGratuitousEmoji",
+        "disallowFakeDataInProd",
+        "disallowUnimplementedPlaceholders",
+        "disallowUnexplainedWorkarounds",
+        "disallowUnapprovedDependencies"
+      ],
+      "properties": {
+        "disallowGratuitousEmoji": { "type": "boolean" },
+        "disallowFakeDataInProd": { "type": "boolean" },
+        "disallowUnimplementedPlaceholders": { "type": "boolean" },
+        "disallowUnexplainedWorkarounds": { "type": "boolean" },
+        "disallowUnapprovedDependencies": { "type": "boolean" },
+        "strictVerificationHonesty": { "type": "boolean" },
+        "secretLeakagePrevention": { "type": "boolean" }
+      }
+    },
+    "checksSummary": {
+      "type": "object",
+      "required": ["totalChecks", "passed", "failed", "blocked", "skipped", "unavailable"],
+      "properties": {
+        "totalChecks": { "type": "integer" },
+        "passed": { "type": "integer" },
+        "failed": { "type": "integer" },
+        "blocked": { "type": "integer" },
+        "skipped": { "type": "integer" },
+        "unavailable": { "type": "integer" }
+      }
+    },
+    "reviewAssessment": {
+      "type": "object",
+      "required": ["verdict", "reviewerRole", "findingsSummary"],
+      "properties": {
+        "verdict": { "type": "string", "enum": ["APPROVED", "REJECTED", "PENDING_AUDIT"] },
+        "reviewerRole": { "type": "string" },
+        "reviewerIdentifier": { "type": "string" },
+        "reviewedAt": { "type": "string" },
+        "findingsSummary": { "type": "string" }
+      }
+    },
+    "defects": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "severity", "description"],
+        "properties": {
+          "id": { "type": "string" },
+          "severity": { "type": "string", "enum": ["CRITICAL", "HIGH", "MEDIUM", "LOW"] },
+          "category": { "type": "string" },
+          "description": { "type": "string" },
+          "fileRef": { "type": "string" },
+          "status": { "type": "string", "enum": ["OPEN", "RESOLVED", "DEFERRED", "ACCEPTED_RISK"] }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

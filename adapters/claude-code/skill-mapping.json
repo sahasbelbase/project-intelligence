@@ -1,0 +1,79 @@
+{
+  "platform": "claude-code",
+  "skillFormat": "SKILL.md",
+  "skillsRoot": "skills/",
+  "mappings": [
+    {
+      "canonicalSkillId": "project-discovery",
+      "platformSkillPath": "skills/project-discovery/SKILL.md",
+      "invocationTrigger": "discovery, init project, inspect environment, gate G0",
+      "requiredParameters": ["repositoryRoot"]
+    },
+    {
+      "canonicalSkillId": "existing-project-analysis",
+      "platformSkillPath": "skills/existing-project-analysis/SKILL.md",
+      "invocationTrigger": "analyze codebase, extract conventions, brownfield inspection",
+      "requiredParameters": ["targetDirectory"]
+    },
+    {
+      "canonicalSkillId": "design-discovery",
+      "platformSkillPath": "skills/design-discovery/SKILL.md",
+      "invocationTrigger": "visual requirements, design tokens, gate G2",
+      "requiredParameters": ["requirementsContract"]
+    },
+    {
+      "canonicalSkillId": "design-system-engineering",
+      "platformSkillPath": "skills/design-system-engineering/SKILL.md",
+      "invocationTrigger": "design system, component states, accessibility audit, WCAG",
+      "requiredParameters": ["designTokens"]
+    },
+    {
+      "canonicalSkillId": "architecture-and-contracts",
+      "platformSkillPath": "skills/architecture-and-contracts/SKILL.md",
+      "invocationTrigger": "architect system, draft ADR, interface contracts, gate G3",
+      "requiredParameters": ["requirementsContract"]
+    },
+    {
+      "canonicalSkillId": "phase-planning",
+      "platformSkillPath": "skills/phase-planning/SKILL.md",
+      "invocationTrigger": "plan phases, task decomposition, file ownership, WBS",
+      "requiredParameters": ["architectureContract"]
+    },
+    {
+      "canonicalSkillId": "controlled-implementation",
+      "platformSkillPath": "skills/controlled-implementation/SKILL.md",
+      "invocationTrigger": "implement task, write code, bounded edit, gate G4",
+      "requiredParameters": ["taskId", "assignedPaths"]
+    },
+    {
+      "canonicalSkillId": "testing-and-verification",
+      "platformSkillPath": "skills/testing-and-verification/SKILL.md",
+      "invocationTrigger": "run tests, verify implementation, collect evidence, linter",
+      "requiredParameters": ["testCommands"]
+    },
+    {
+      "canonicalSkillId": "independent-review",
+      "platformSkillPath": "skills/independent-review/SKILL.md",
+      "invocationTrigger": "independent review, code audit, anti-slop check, gate G5",
+      "requiredParameters": ["gitDiff", "evidenceLog"]
+    },
+    {
+      "canonicalSkillId": "failure-recovery-and-improvement",
+      "platformSkillPath": "skills/failure-recovery-and-improvement/SKILL.md",
+      "invocationTrigger": "test failure, fix defect, task retry, recovery",
+      "requiredParameters": ["defectReport"]
+    },
+    {
+      "canonicalSkillId": "cross-platform-adaptation",
+      "platformSkillPath": "skills/cross-platform-adaptation/SKILL.md",
+      "invocationTrigger": "adapt platform, compile CLAUDE.md, compile copilot instructions",
+      "requiredParameters": ["targetPlatform"]
+    },
+    {
+      "canonicalSkillId": "documentation-and-handoff",
+      "platformSkillPath": "skills/documentation-and-handoff/SKILL.md",
+      "invocationTrigger": "generate release notes, sync memory, gate G6 handoff",
+      "requiredParameters": ["releaseVersion"]
+    }
+  ]
+}

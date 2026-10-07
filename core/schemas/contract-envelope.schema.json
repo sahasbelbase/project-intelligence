@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/contract-envelope.schema.json",
+  "title": "ContractEnvelope",
+  "description": "Standardized canonical envelope for all Project Intelligence contracts.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "contractId",
+    "contractType",
+    "title",
+    "status",
+    "lifecycleGate",
+    "createdAt",
+    "updatedAt",
+    "author",
+    "data"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "contractId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$"
+    },
+    "contractType": {
+      "type": "string",
+      "enum": [
+        "project",
+        "requirements",
+        "design",
+        "architecture",
+        "implementation",
+        "quality",
+        "release"
+      ]
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "DRAFT",
+        "UNDER_REVIEW",
+        "APPROVED",
+        "REJECTED",
+        "SUPERSEDED",
+        "DEPRECATED"
+      ]
+    },
+    "lifecycleGate": {
+      "type": "string",
+      "enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"]
+    },
+    "createdAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "updatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "author": {
+      "type": "object",
+      "required": ["role", "identifier"],
+      "properties": {
+        "role": { "type": "string" },
+        "identifier": { "type": "string" }
+      }
+    },
+    "approval": {
+      "type": "object",
+      "properties": {
+        "approvedBy": { "type": "string" },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "rationale": { "type": "string" },
+        "exemption": {
+          "type": "object",
+          "required": ["isExempt", "justification"],
+          "properties": {
+            "isExempt": { "type": "boolean" },
+            "justification": { "type": "string" }
+          }
+        }
+      }
+    },
+    "traceability": {
+      "type": "object",
+      "properties": {
+        "parentContractId": { "type": "string" },
+        "upstreamRequirements": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "downstreamTasks": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "verificationIds": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "data": {
+      "type": "object"
+    }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,107 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/memory.schema.json",
+  "title": "ProjectMemory",
+  "description": "Schema for durable project memory, execution state, and backlog repository.",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "lastReconciledCommit",
+    "durableKnowledge",
+    "executionState",
+    "backlogAndHistory"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "lastReconciledCommit": {
+      "type": "string"
+    },
+    "lastReconciledAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "durableKnowledge": {
+      "type": "object",
+      "required": ["goals", "architecturalDecisions", "codingConventions", "domainVocabulary"],
+      "properties": {
+        "goals": { "type": "array", "items": { "type": "string" } },
+        "architecturalDecisions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["decisionId", "title", "choice", "consequences"],
+            "properties": {
+              "decisionId": { "type": "string" },
+              "title": { "type": "string" },
+              "choice": { "type": "string" },
+              "consequences": { "type": "string" }
+            }
+          }
+        },
+        "codingConventions": { "type": "array", "items": { "type": "string" } },
+        "domainVocabulary": {
+          "type": "object",
+          "additionalProperties": { "type": "string" }
+        }
+      }
+    },
+    "executionState": {
+      "type": "object",
+      "required": ["currentGate", "activePhase", "activeTasks", "completedTasks", "blockedTasks"],
+      "properties": {
+        "currentGate": { "type": "string", "enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"] },
+        "activePhase": { "type": "integer" },
+        "activeTasks": { "type": "array", "items": { "type": "string" } },
+        "completedTasks": { "type": "array", "items": { "type": "string" } },
+        "blockedTasks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["taskId", "reason"],
+            "properties": {
+              "taskId": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        },
+        "activeWorkstreamLedger": { "type": "string" }
+      }
+    },
+    "backlogAndHistory": {
+      "type": "object",
+      "required": ["bugs", "technicalDebt", "deferredItems", "decisionHistory"],
+      "properties": {
+        "bugs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["id", "description", "severity"],
+            "properties": {
+              "id": { "type": "string" },
+              "description": { "type": "string" },
+              "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] }
+            }
+          }
+        },
+        "technicalDebt": { "type": "array", "items": { "type": "string" } },
+        "deferredItems": { "type": "array", "items": { "type": "string" } },
+        "decisionHistory": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["timestamp", "author", "summary"],
+            "properties": {
+              "timestamp": { "type": "string", "format": "date-time" },
+              "author": { "type": "string" },
+              "summary": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  },
+  "additionalProperties": false
+}

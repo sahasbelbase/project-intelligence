@@ -1,0 +1,63 @@
+{
+  "schemaVersion": "1.0.0",
+  "lastReconciledCommit": "0000000000000000000000000000000000000000",
+  "lastReconciledAt": "2026-10-07T11:58:17.651876+00:00",
+  "currentBranch": "master",
+  "currentGate": "G0",
+  "activePhase": 0,
+  "activeTasks": [
+    "WS-07: Implement git-aware memory schemas, templates, rules, and reconciler engine"
+  ],
+  "completedTasks": [
+    "WS-00: Platform Capabilities & Interoperability Research",
+    "WS-01: Core Schemas & Canonical Contracts"
+  ],
+  "blockedTasks": [],
+  "activeWorkstreamLedger": "docs/decisions/0001-work-ledger.md",
+  "uncommittedChanges": [
+    {
+      "file": "agents/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "contracts/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "docs/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "memory/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": true
+    },
+    {
+      "file": "skills/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    }
+  ],
+  "driftDetected": false,
+  "reconciliationStatus": "CLEAN"
+}

@@ -1,0 +1,19 @@
+{
+  "fixtureType": "new-project",
+  "description": "Representative greenfield repository baseline for testing G0 discovery and project contract initialization.",
+  "files": [
+    {
+      "path": "README.md",
+      "content": "# Greenfield Service\n\nA new microservice awaiting requirements and architectural discovery.\n"
+    },
+    {
+      "path": "pyproject.toml",
+      "content": "[project]\nname = \"greenfield-service\"\nversion = \"0.1.0\"\ndescription = \"New greenfield microservice\"\nreadme = \"README.md\"\nrequires-python = \">=3.10\"\n"
+    }
+  ],
+  "gitState": {
+    "isClean": true,
+    "currentBranch": "main",
+    "uncommittedFiles": []
+  }
+}

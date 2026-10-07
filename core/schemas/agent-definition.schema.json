@@ -1,0 +1,39 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/agent-definition.schema.json",
+  "title": "AgentDefinition",
+  "description": "Schema for canonical, portable AI agent definitions.",
+  "type": "object",
+  "required": [
+    "roleId",
+    "roleName",
+    "mission",
+    "responsibilities",
+    "toolPermissions",
+    "inputContracts",
+    "outputContracts",
+    "handoffTargets"
+  ],
+  "properties": {
+    "roleId": { "type": "string", "pattern": "^[a-z0-9-]+$" },
+    "roleName": { "type": "string" },
+    "mission": { "type": "string" },
+    "responsibilities": { "type": "array", "items": { "type": "string" }, "minItems": 1 },
+    "toolPermissions": {
+      "type": "object",
+      "required": ["readOnlyFileSystem", "commandExecution", "fileModification", "webSearchAllowed"],
+      "properties": {
+        "readOnlyFileSystem": { "type": "boolean" },
+        "commandExecution": { "type": "boolean" },
+        "fileModification": { "type": "boolean" },
+        "webSearchAllowed": { "type": "boolean" },
+        "allowedCommandPrefixes": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "inputContracts": { "type": "array", "items": { "type": "string" } },
+    "outputContracts": { "type": "array", "items": { "type": "string" } },
+    "handoffTargets": { "type": "array", "items": { "type": "string" } },
+    "systemPromptTemplate": { "type": "string" }
+  },
+  "additionalProperties": false
+}

@@ -1,0 +1,215 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/memory/execution-state.schema.json",
+  "title": "ExecutionStateSpecification",
+  "description": "Schema for project execution state tracking lifecycle gates, tasks, git alignment, and drift status, conforming to core/schemas/memory.schema.json.",
+  "type": "object",
+  "definitions": {
+    "blockedTaskItem": {
+      "type": "object",
+      "required": ["taskId", "reason"],
+      "properties": {
+        "taskId": {
+          "type": "string",
+          "description": "Unique identifier of the blocked task (e.g., TASK-003 or WS-07)."
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 3,
+          "description": "Explicit rationale or dependency blocker explaining why execution is halted."
+        },
+        "blockedAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp when the task transitioned to blocked state."
+        }
+      },
+      "additionalProperties": false
+    },
+    "uncommittedChangeItem": {
+      "type": "object",
+      "required": ["file", "statusCode"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Relative file path of the uncommitted modification."
+        },
+        "statusCode": {
+          "type": "string",
+          "description": "Git porcelain status code (e.g., ' M', 'M ', '??', 'A ')."
+        },
+        "isStaged": {
+          "type": "boolean",
+          "description": "Whether this change is staged in the git index."
+        },
+        "isMemoryFile": {
+          "type": "boolean",
+          "description": "Whether this change affects a memory state file."
+        }
+      },
+      "additionalProperties": false
+    },
+    "executionStateCore": {
+      "type": "object",
+      "required": ["currentGate", "activePhase", "activeTasks", "completedTasks", "blockedTasks"],
+      "properties": {
+        "currentGate": {
+          "type": "string",
+          "enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"],
+          "description": "Active lifecycle gate governing framework progress."
+        },
+        "activePhase": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Sequential lifecycle phase index (0: Discovery, 1: Requirements, etc.)."
+        },
+        "activeTasks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of currently active task identifiers or descriptions."
+        },
+        "completedTasks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of completed and verified task identifiers."
+        },
+        "blockedTasks": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/blockedTaskItem" },
+          "description": "List of blocked tasks with explicit blocking rationale."
+        },
+        "activeWorkstreamLedger": {
+          "type": "string",
+          "description": "Path to the authoritative active workstream ledger document."
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "oneOf": [
+    {
+      "title": "StandaloneExecutionStateFile",
+      "description": "Standalone execution-state.json file tracking execution state and git reconciliation telemetry.",
+      "type": "object",
+      "required": [
+        "schemaVersion",
+        "lastReconciledCommit",
+        "currentGate",
+        "activePhase",
+        "activeTasks",
+        "completedTasks",
+        "blockedTasks"
+      ],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$",
+          "description": "Semantic version of the memory schema (e.g., 1.0.0)."
+        },
+        "lastReconciledCommit": {
+          "type": "string",
+          "description": "Full or abbreviated git commit SHA reconciled at last verification."
+        },
+        "lastReconciledAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "ISO 8601 UTC timestamp of the last reconciliation run."
+        },
+        "currentBranch": {
+          "type": "string",
+          "description": "Active git branch name at last reconciliation."
+        },
+        "currentGate": {
+          "type": "string",
+          "enum": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"],
+          "description": "Active lifecycle gate."
+        },
+        "activePhase": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Active lifecycle phase."
+        },
+        "activeTasks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of active tasks."
+        },
+        "completedTasks": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "List of completed tasks."
+        },
+        "blockedTasks": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/blockedTaskItem" },
+          "description": "List of blocked tasks."
+        },
+        "activeWorkstreamLedger": {
+          "type": "string",
+          "description": "Path to workstream ledger."
+        },
+        "uncommittedChanges": {
+          "type": "array",
+          "items": {
+            "oneOf": [
+              { "$ref": "#/definitions/uncommittedChangeItem" },
+              { "type": "string" }
+            ]
+          },
+          "description": "Summary of working tree modifications detected during last check."
+        },
+        "driftDetected": {
+          "type": "boolean",
+          "description": "Flag indicating whether drift was observed between state and git."
+        },
+        "reconciliationStatus": {
+          "type": "string",
+          "enum": [
+            "CLEAN",
+            "COMMIT_DRIFT",
+            "BRANCH_SWITCH",
+            "HISTORY_REWRITE",
+            "UNCOMMITTED_CHANGES",
+            "SECRET_ALERT",
+            "UNINITIALIZED",
+            "DRIFT_DETECTED"
+          ],
+          "description": "Authoritative status code from the reconciliation engine."
+        }
+      },
+      "additionalProperties": false
+    },
+    {
+      "title": "WrappedExecutionStateFile",
+      "description": "Execution state document wrapped under the executionState key.",
+      "type": "object",
+      "required": ["schemaVersion", "lastReconciledCommit", "executionState"],
+      "properties": {
+        "schemaVersion": {
+          "type": "string",
+          "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+        },
+        "lastReconciledCommit": {
+          "type": "string"
+        },
+        "lastReconciledAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "currentBranch": {
+          "type": "string"
+        },
+        "driftDetected": {
+          "type": "boolean"
+        },
+        "reconciliationStatus": {
+          "type": "string"
+        },
+        "executionState": {
+          "$ref": "#/definitions/executionStateCore"
+        }
+      },
+      "additionalProperties": false
+    }
+  ]
+}

@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "lastReconciledCommit": "18ec279ff5be9cbf169140cc0de61dd811dd86f8",
-  "lastReconciledAt": "2026-10-07T14:09:36.686301+00:00",
+  "lastReconciledCommit": "d9af64cb5860100c691a522efc9241a77bbca0ff",
+  "lastReconciledAt": "2026-10-07T14:10:30.382118+00:00",
   "currentBranch": "main",
   "currentGate": "G0",
   "activePhase": 0,
@@ -14,7 +14,20 @@
   ],
   "blockedTasks": [],
   "activeWorkstreamLedger": "docs/decisions/0001-work-ledger.md",
-  "uncommittedChanges": [],
+  "uncommittedChanges": [
+    {
+      "file": "emory/execution-state.json",
+      "statusCode": "M ",
+      "isStaged": true,
+      "isMemoryFile": false
+    },
+    {
+      "file": "memory/state.json",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": true
+    }
+  ],
   "driftDetected": false,
   "reconciliationStatus": "CLEAN"
 }

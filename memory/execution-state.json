@@ -1,8 +1,8 @@
 {
   "schemaVersion": "1.0.0",
-  "lastReconciledCommit": "0000000000000000000000000000000000000000",
-  "lastReconciledAt": "2026-10-07T11:58:17.651876+00:00",
-  "currentBranch": "master",
+  "lastReconciledCommit": "18ec279ff5be9cbf169140cc0de61dd811dd86f8",
+  "lastReconciledAt": "2026-10-07T14:09:36.686301+00:00",
+  "currentBranch": "main",
   "currentGate": "G0",
   "activePhase": 0,
   "activeTasks": [
@@ -14,50 +14,7 @@
   ],
   "blockedTasks": [],
   "activeWorkstreamLedger": "docs/decisions/0001-work-ledger.md",
-  "uncommittedChanges": [
-    {
-      "file": "agents/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    },
-    {
-      "file": "contracts/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    },
-    {
-      "file": "core/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    },
-    {
-      "file": "docs/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    },
-    {
-      "file": "memory/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": true
-    },
-    {
-      "file": "skills/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    },
-    {
-      "file": "validation/",
-      "statusCode": "??",
-      "isStaged": false,
-      "isMemoryFile": false
-    }
-  ],
+  "uncommittedChanges": [],
   "driftDetected": false,
   "reconciliationStatus": "CLEAN"
 }

@@ -174,6 +174,10 @@ Every request goes through one planner, whichever tool you use. It asks the coun
 | Antigravity | Ask in chat; the orchestrator skill runs the planner | `npx -y github:sahasbelbase/project-intelligence init --client antigravity` |
 | Any terminal | `npx -y github:sahasbelbase/project-intelligence ask "<request>"` (add `--json` for JSON) | Nothing; npx fetches it |
 
+Every plan reports a confidence level and the evidence behind it. Routing scores 80% on requests it was never tuned on (`validation/fixtures/routing/holdout.json`), so when confidence is low the agent confirms the route or re-plans with `--council`, `--persona` or `--include`.
+
+In Claude Code, councils run one `council-member` subagent per persona: Round 1 prompts come from `project-intelligence council sheet <council> "<request>"`, all agents start at once and each sees only its own prompt, so the first round is genuinely blind. Records say whether a session used separate agents or one agent.
+
 For council work, the agent fetches each persona's instructions with `project-intelligence council prompt <council> <persona> <round> "<request>"`, writes the rounds, and saves them with `project-intelligence council record <session.json>`, which validates the session before writing the project's `memory/council-briefs/`.
 
 Maintainers: run `npm run build:plugin` after changing the orchestrator instructions or the version; it regenerates `.claude-plugin/` and `plugin-skills/ask/`.

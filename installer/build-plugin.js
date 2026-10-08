@@ -6,6 +6,7 @@
  *   .claude-plugin/plugin.json       plugin manifest (version from package.json)
  *   .claude-plugin/marketplace.json  makes this repository a plugin marketplace
  *   plugin-skills/ask/SKILL.md       /project-intelligence:ask <request>
+ *   plugin-agents/council-member.md  one persona per subagent, for blind council rounds
  *
  * The repository root is the plugin root. Skills load from skills/ and vendor/skills/,
  * and the MCP server runs from adapters/mcp/server.py. Run `npm run build:plugin`
@@ -14,6 +15,7 @@
 const fs = require('fs');
 const path = require('path');
 const { routingSection } = require('./adapters/antigravity');
+const { COUNCIL_MEMBER_MD } = require('./council-member-agent');
 
 const root = path.resolve(__dirname, '..');
 const pkg = JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8'));
@@ -58,8 +60,8 @@ const manifest = {
   keywords: ['orchestrator', 'council', 'skills', 'lifecycle', 'code-quality', 'seo', 'mcp'],
   skills: ['./vendor/skills/', './plugin-skills/'],
   // The repository's agents/ folder holds persona definitions for the referee, not
-  // Claude Code subagents, so the default agents/ scan is turned off.
-  agents: [],
+  // Claude Code subagents, so only the council-member subagent is loaded.
+  agents: ['./plugin-agents/council-member.md'],
   mcpServers: {
     'project-intelligence': {
       command: 'python3',
@@ -94,8 +96,9 @@ if (require.main === module) {
     write('.claude-plugin/plugin.json', JSON.stringify(manifest, null, 2) + '\n'),
     write('.claude-plugin/marketplace.json', JSON.stringify(marketplace, null, 2) + '\n'),
     write('plugin-skills/ask/SKILL.md', askCommand),
+    write('plugin-agents/council-member.md', COUNCIL_MEMBER_MD),
   ];
   console.log(`Wrote ${written.join(', ')}`);
 }
 
-module.exports = { manifest, marketplace, askCommand, PLUGIN_NAME, MARKETPLACE_NAME };
+module.exports = { manifest, marketplace, askCommand, COUNCIL_MEMBER_MD, PLUGIN_NAME, MARKETPLACE_NAME };

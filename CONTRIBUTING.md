@@ -79,3 +79,12 @@ Every pull request undergoes an independent review process equivalent to Gate G5
 2. **Quality Evaluation**: `core/quality/evaluator.py` executes against the changes.
 3. **Independent Audit**: An independent reviewer or maintainer audits the changes against requirements, checks for regressions, and verifies documentation completeness.
 4. **Approval**: Once verified, the release contract (`contracts/release/contract.json`) is updated, and the PR is approved for merge.
+
+## Fixing a routing mistake
+
+1. Reproduce it: `node bin/cli.js ask --json "<the request>"` and read `confidence` and `evidence`.
+2. Add the request to `validation/fixtures/routing/cases.json` with the route it should get. Never edit `holdout.json`; it measures accuracy on requests the router was not tuned on.
+3. Adjust keywords in `core/council/councils.json` only if the fix is general, not a single-word patch for one request.
+4. Run `python3 -m unittest validation/universal-tests/test_routing_eval.py`. Failures name the request, the expected and actual route, and the keywords that fired.
+5. If the held-out score drops, the change overfits; revert it.
+

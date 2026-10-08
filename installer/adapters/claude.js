@@ -8,6 +8,7 @@
 const fs = require('fs');
 const path = require('path');
 const { cliInvocation, mcpServerEntry } = require('../invocation');
+const { COUNCIL_MEMBER_MD } = require('../council-member-agent');
 const { injectMarkerBlock } = require('../manifest');
 const { ORCHESTRATOR_SKILL_MD, REQUIREMENTS_SKILL_MD, buildOrchestratorSkillMd, routingSection } = require('./antigravity');
 
@@ -74,6 +75,7 @@ function installClaude(targetDir, options, context) {
   ensureDir('.claude/hooks');
 
   // Install slash command /orchestrator
+  writeFile('.claude/agents/council-member.md', COUNCIL_MEMBER_MD);
   writeFile('.claude/commands/orchestrator.md', buildClaudeOrchestratorCommand(cliInvocation(packageRoot)));
 
   // Copy canonical skills from packageRoot/skills

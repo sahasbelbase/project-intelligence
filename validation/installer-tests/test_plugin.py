@@ -40,7 +40,7 @@ class TestPluginFiles(unittest.TestCase):
         if shutil.which("node") is None:
             raise unittest.SkipTest("node is not installed")
         out = subprocess.run(
-            ["node", "-e", "const b=require('./installer/build-plugin.js');console.log(JSON.stringify({m:b.manifest,k:b.marketplace,a:b.askCommand}))"],
+            ["node", "-e", "const b=require('./installer/build-plugin.js');console.log(JSON.stringify({m:b.manifest,k:b.marketplace,a:b.askCommand,c:b.COUNCIL_MEMBER_MD}))"],
             cwd=ROOT, capture_output=True, text=True, check=True).stdout
         cls.built = json.loads(out)
 
@@ -49,6 +49,16 @@ class TestPluginFiles(unittest.TestCase):
         self.assertEqual(on_disk, self.built["m"], "Run `npm run build:plugin`")
         self.assertEqual(json.loads((ROOT / ".claude-plugin" / "marketplace.json").read_text()), self.built["k"])
         self.assertEqual((ROOT / "plugin-skills" / "ask" / "SKILL.md").read_text(), self.built["a"])
+        self.assertEqual((ROOT / "plugin-agents" / "council-member.md").read_text(), self.built["c"])
+
+    def test_council_member_agent_is_read_only(self):
+        fm = _frontmatter(self.built["c"])
+        self.assertEqual(fm["name"], "council-member")
+        tools = [t.strip() for t in fm["tools"].split(",")]
+        self.assertNotIn("Edit", tools)
+        self.assertNotIn("Write", tools)
+        self.assertNotIn("Bash", tools)
+        self.assertEqual(self.built["m"]["agents"], ["./plugin-agents/council-member.md"])
 
     def test_manifest_matches_package(self):
         pkg = json.loads((ROOT / "package.json").read_text())

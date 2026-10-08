@@ -1,0 +1,25 @@
+{
+  "$comment": "Held-out requests written after the router was tuned on cases.json. Do not tune keywords against these; add new cases to cases.json instead and keep this set as a check on generalization.",
+  "cases": [
+    {"task": "Which council handles pricing decisions?", "tier": 0},
+    {"task": "What happens at gate G5?", "tier": 0},
+    {"task": "Our signup button has no visible focus ring", "tier": 1, "specialist": "accessibility-specialist"},
+    {"task": "Add JSON-LD structured data so Google shows our project correctly", "tier": 1, "specialist": "seo-specialist"},
+    {"task": "Speed up the slow product search query", "tier": 1, "specialist": "performance-scalability-engineer"},
+    {"task": "Add a unit test for the date parser", "tier": 1, "specialist": "test-quality-engineer"},
+    {"task": "Store the session token in an httpOnly cookie instead of localStorage", "tier": 1, "specialist": "security-engineer"},
+    {"task": "Add a Dockerfile and deploy to staging", "tier": 1, "specialist": "devops-engineer"},
+    {"task": "Spacing between cards is inconsistent across pages", "tier": 1, "specialist": "design-systems-architect"},
+    {"task": "The sidebar menu is hard to find on small screens", "tier": 1, "specialist": "information-architect"},
+    {"task": "Reduce churn among trial users", "tier": 1, "specialist": "growth-adoption-specialist"},
+    {"task": "Write user stories for bulk import", "tier": 1, "specialist": "business-analyst"},
+    {"task": "Redesign the whole checkout experience", "tier": 2, "council": "design"},
+    {"task": "Decide whether to move from SQLite to Postgres", "tier": 2, "council": "development"},
+    {"task": "Should we open source the core library?", "tier": 2, "council": "product"},
+    {"task": "Rethink our roadmap strategy for next year", "tier": 2, "council": "product"},
+    {"task": "Overhaul the API architecture for third-party integrations", "tier": 2, "council": "development"},
+    {"task": "Build a new analytics module with dashboards, an API and paid plans", "tier": 3},
+    {"task": "Launch a mobile app product with onboarding, pricing and push notifications", "tier": 3},
+    {"task": "Add a new feature for team comments with mentions, permissions and email digests", "tier": 3}
+  ]
+}

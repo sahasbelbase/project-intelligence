@@ -291,9 +291,11 @@ const install = {
 // ---------------------------------------------------------------- orchestrator demo
 // Plans come from running the real dispatcher; council turns come from recorded
 // sessions; specialist replies describe changes that were actually made.
-function plan(task) {
+function plan(task, council, include = []) {
   try {
-    const out = execFileSync(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', task, '--json'],
+    const args = ['-m', 'core.orchestrator.dispatch', task, '--json', ...(council ? ['--council', council] : []),
+      ...include.flatMap((p) => ['--include', p])];
+    const out = execFileSync(process.env.PYTHON || 'python3', args,
       { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PI_CLI: 'project-intelligence' } });
     return JSON.parse(out);
   } catch (err) {
@@ -346,7 +348,10 @@ const demo = [
   {
     id: 'design', label: 'Design council',
     turns: [
-      { task: demoSession('dec-website-revamp-slate').task, sessionId: 'dec-website-revamp-slate' },
+      {
+        task: demoSession('dec-website-revamp-slate').task, sessionId: 'dec-website-revamp-slate',
+        council: 'design', include: ['information-architect', 'accessibility-specialist', 'color-harmony-specialist'],
+      },
       {
         task: 'Make the site work in dark mode too',
         reply: {
@@ -362,7 +367,17 @@ const demo = [
   },
   {
     id: 'dev', label: 'Development council',
-    turns: [{ task: demoSession('dec-orchestrator-council-integration').task, sessionId: 'dec-orchestrator-council-integration' }],
+    turns: [{
+      task: demoSession('dec-orchestrator-council-integration').task, sessionId: 'dec-orchestrator-council-integration',
+      council: 'development', include: ['api-integration-specialist', 'developer-experience-specialist', 'security-engineer'],
+    }],
+  },
+  {
+    id: 'independent', label: 'Independent agents',
+    turns: [{
+      task: demoSession('dec-routing-keywords-vs-model').task, sessionId: 'dec-routing-keywords-vs-model',
+      council: 'development', include: ['test-quality-engineer', 'developer-experience-specialist'],
+    }],
   },
   {
     id: 'feature', label: 'New feature',
@@ -371,7 +386,7 @@ const demo = [
 ].map((sc) => ({
   ...sc,
   turns: sc.turns.map((t) => {
-    const p = plan(t.task);
+    const p = plan(t.task, t.council, t.include);
     const reply = t.reply && t.reply.kind === 'specialist' ? { ...t.reply, title: p.specialist.title } : t.reply;
     return { ...t, reply, plan: p };
   }),

@@ -96,6 +96,8 @@ class TestPortableInstaller(unittest.TestCase):
             cli = json.dumps(str(self.bin_cli))
             command = (tmp_path / ".claude" / "commands" / "orchestrator.md").read_text(encoding="utf-8")
             self.assertIn("$ARGUMENTS", command)
+            self.assertIn("council sheet", command)
+            self.assertTrue((tmp_path / ".claude" / "agents" / "council-member.md").exists())
             self.assertIn(f"node {cli} ask", command)
             for skill in (tmp_path / ".claude" / "skills" / "orchestrator" / "SKILL.md", tmp_path / ".agents" / "skills" / "orchestrator" / "SKILL.md"):
                 text = skill.read_text(encoding="utf-8")

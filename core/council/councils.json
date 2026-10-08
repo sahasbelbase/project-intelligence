@@ -64,7 +64,6 @@
         "design-systems-architect": [
           "token",
           "component",
-          "theme",
           "design system",
           "consistency",
           "variant",
@@ -81,11 +80,12 @@
         ],
         "typography-specialist": [
           "font",
-          "type",
           "typography",
-          "text",
           "readability",
-          "heading"
+          "heading",
+          "type scale",
+          "line height",
+          "typeface"
         ],
         "color-harmony-specialist": [
           "color",
@@ -102,18 +102,20 @@
           "transition",
           "hover",
           "interaction",
-          "feedback"
+          "stutter",
+          "jank",
+          "sluggish",
+          "easing"
         ],
         "information-architect": [
           "navigation",
           "nav",
           "menu",
-          "structure",
           "information architecture",
-          "label",
           "find",
           "layout",
-          "page"
+          "page structure",
+          "sitemap structure"
         ],
         "accessibility-specialist": [
           "accessibility",
@@ -122,12 +124,14 @@
           "keyboard",
           "screen reader",
           "focus",
-          "contrast"
+          "contrast",
+          "alt text",
+          "aria",
+          "focus trap"
         ],
         "ux-researcher": [
-          "user",
           "usability",
-          "research",
+          "user research",
           "friction",
           "confusing"
         ],
@@ -136,23 +140,23 @@
           "chart",
           "graph",
           "metric",
-          "data",
+          "data visualization",
+          "at a glance",
           "status"
         ],
         "frontend-design-engineer": [
           "css",
-          "implement",
-          "build",
-          "performance",
           "frontend",
-          "html"
+          "html",
+          "render"
         ],
         "responsive-design-specialist": [
           "mobile",
           "responsive",
           "tablet",
           "phone",
-          "breakpoint"
+          "breakpoint",
+          "overflow"
         ]
       },
       "skills": {
@@ -236,20 +240,20 @@
       "agentPersonas": [],
       "routingKeywords": {
         "system-design-specialist": [
-          "system",
-          "end-to-end",
-          "flow",
-          "integration",
-          "cross",
-          "architecture"
+          "system design",
+          "end-to-end flow",
+          "architecture",
+          "service boundaries",
+          "real-time",
+          "collaboration",
+          "sync",
+          "distributed"
         ],
         "senior-application-developer": [
           "implement",
-          "code",
-          "feature",
-          "bug",
           "refactor",
-          "build"
+          "bug",
+          "code"
         ],
         "database-architect": [
           "database",
@@ -257,26 +261,36 @@
           "migration",
           "sql",
           "query",
-          "storage",
+          "index",
+          "column",
+          "table schema",
           "data model"
         ],
         "api-integration-specialist": [
           "api",
           "endpoint",
-          "contract",
-          "integration",
+          "rest",
+          "graphql",
           "webhook",
+          "integration",
+          "versioning",
+          "contract",
           "mcp"
         ],
         "security-engineer": [
           "security",
           "auth",
+          "authentication",
           "permission",
           "secret",
-          "token",
           "credential",
           "injection",
-          "sandbox"
+          "vulnerability",
+          "leak",
+          "leaked",
+          "sandbox",
+          "xss",
+          "csrf"
         ],
         "performance-scalability-engineer": [
           "performance",
@@ -284,23 +298,27 @@
           "latency",
           "scale",
           "cache",
-          "load"
+          "under load",
+          "profile",
+          "throughput"
         ],
         "test-quality-engineer": [
           "test",
           "regression",
-          "verify",
-          "quality",
-          "acceptance"
+          "acceptance test",
+          "coverage",
+          "unit test",
+          "flaky"
         ],
         "devops-engineer": [
           "deploy",
           "release",
-          "ci",
           "pipeline",
-          "install",
+          "ci",
+          "rollback",
           "config",
-          "package"
+          "package",
+          "docker"
         ],
         "reliability-engineer": [
           "failure",
@@ -308,15 +326,20 @@
           "monitor",
           "logging",
           "retry",
-          "incident"
+          "retries",
+          "incident",
+          "alert",
+          "timeout"
         ],
         "developer-experience-specialist": [
           "cli",
+          "error message",
+          "onboarding docs",
           "docs",
-          "onboarding",
-          "installer",
           "contributor",
-          "developer experience"
+          "developer experience",
+          "readme",
+          "installer"
         ]
       },
       "skills": {
@@ -403,15 +426,14 @@
           "requirement",
           "acceptance criteria",
           "user story",
-          "workflow",
-          "process"
+          "user stories",
+          "business rule",
+          "workflow"
         ],
         "customer-advocate": [
-          "user",
-          "customer",
-          "feedback",
-          "pain",
-          "complaint"
+          "customer feedback",
+          "complaint",
+          "pain point"
         ],
         "strategy-analyst": [
           "strategy",
@@ -423,45 +445,45 @@
         "market-researcher": [
           "market",
           "competitor",
+          "competitors",
           "competition",
-          "alternative",
-          "positioning"
+          "positioning",
+          "compare our"
         ],
         "business-model-analyst": [
           "pricing",
           "cost",
+          "costs",
           "revenue",
           "business model",
           "budget",
-          "roi"
+          "roi",
+          "per user"
         ],
         "customer-experience-specialist": [
           "journey",
           "onboarding",
           "support",
-          "experience",
-          "first-time"
+          "first-time",
+          "give up"
         ],
         "ideation-specialist": [
-          "idea",
           "brainstorm",
           "options",
-          "new feature",
-          "explore"
+          "explore ideas"
         ],
         "product-operations-specialist": [
-          "launch",
-          "metric",
           "analytics",
           "rollout",
-          "instrument"
+          "instrument",
+          "instrumentation"
         ],
         "growth-adoption-specialist": [
           "adoption",
           "growth",
           "retention",
           "activation",
-          "discover"
+          "churn"
         ],
         "seo-specialist": [
           "seo",
@@ -471,12 +493,17 @@
           "discoverability",
           "reach",
           "launch post",
+          "show hn",
+          "product hunt",
+          "reddit",
           "social preview",
+          "open graph",
           "meta tag",
           "sitemap",
-          "marketing",
+          "landing page",
           "promote",
-          "visibility"
+          "visibility",
+          "marketing"
         ]
       },
       "skills": {

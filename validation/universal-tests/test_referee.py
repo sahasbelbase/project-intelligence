@@ -298,3 +298,36 @@ server.listen(0, '127.0.0.1', async () => {
         res = subprocess.run(["node", "-e", script], capture_output=True, text=True, cwd=ROOT, timeout=60)
         self.assertEqual(res.returncode, 0, res.stderr)
         self.assertEqual(json.loads(res.stdout.strip().splitlines()[-1]), {"ok": 200, "tier": 2, "bad": 400})
+
+
+class TestSeparateAgentSessions(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls):
+        cls.ref = Referee(ROOT)
+
+    def test_sheet_gives_each_persona_only_its_own_prompt(self):
+        sheet = self.ref.sheet("design", "Redesign the settings page", include=["accessibility-specialist"],
+                               context="The app has 40k monthly users.")
+        self.assertIn("accessibility-specialist", sheet["convened"])
+        for item in sheet["round1"]:
+            with self.subTest(persona=item["personaId"]):
+                self.assertIn(self.ref.persona(item["personaId"])["mission"], item["prompt"])
+                self.assertIn("40k monthly users", item["prompt"])
+                others = [p for p in sheet["convened"] if p != item["personaId"]]
+                self.assertFalse(any(self.ref.persona(o)["mission"] in item["prompt"] for o in others))
+
+    def test_blinding_recorded_and_validated(self):
+        session = self.ref.convene("design", "Redesign the navigation and colors")
+        r1, ch, rv, syn = _session_inputs(session)
+        rec = self.ref.assemble(session, r1, ch, rv, syn, blinding="separate-agents", context="Background.")
+        self.assertEqual(rec["blinding"], "separate-agents")
+        self.assertEqual(rec["context"], "Background.")
+        self.assertEqual(self.ref.validate_record(rec), [])
+        rec["blinding"] = "telepathy"
+        self.assertTrue(any("blinding" in e for e in self.ref.validate_record(rec)))
+
+    def test_handoff_text_names_scope_and_dissent(self):
+        record = json.loads((ROOT / "memory" / "council-briefs" / "dec-website-revamp-slate.json").read_text())
+        text = Referee.handoff_text(record)
+        self.assertIn("design council decided 'Build'", text)
+        self.assertIn("Open dissent", text)

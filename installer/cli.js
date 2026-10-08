@@ -39,6 +39,7 @@ function parseArgs(args) {
     version: false,
     json: false,
     rest: [],
+    task: '',
   };
 
   for (let i = 0; i < args.length; i++) {
@@ -47,8 +48,14 @@ function parseArgs(args) {
       parsed.command = arg;
     } else if (arg === '--json') {
       parsed.json = true;
-    } else if ((parsed.command === 'ask' || parsed.command === 'council' || parsed.command === 'mcp') && !arg.startsWith('--')) {
+    } else if (parsed.command === 'council' || parsed.command === 'mcp') {
+      parsed.rest.push(arg); // passed through to the Python tool, flags included
+    } else if (parsed.command === 'ask' && (arg === '--council' || arg === '--persona' || arg === '--include')) {
+      parsed.rest.push(arg, args[++i] || '');
+    } else if (parsed.command === 'ask' && arg === '--full-roster') {
       parsed.rest.push(arg);
+    } else if (parsed.command === 'ask' && !arg.startsWith('--')) {
+      parsed.task = (parsed.task ? parsed.task + ' ' : '') + arg;
     } else if (arg === '--client') {
       parsed.client = args[++i] || 'all';
     } else if (arg.startsWith('--client=')) {
@@ -365,12 +372,12 @@ function runPython(args) {
 }
 
 function handleAsk(options, targetDir) {
-  const task = options.rest.join(' ').trim();
+  const task = (options.task || '').trim();
   if (!task) {
     console.error('Usage: project-intelligence ask "<what you want done>" [--json]');
     return 2;
   }
-  const args = ['-m', 'core.orchestrator.dispatch', task, '--workspace', targetDir];
+  const args = ['-m', 'core.orchestrator.dispatch', task, '--workspace', targetDir, ...options.rest];
   if (options.json) args.push('--json');
   return runPython(args);
 }

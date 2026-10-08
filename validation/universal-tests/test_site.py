@@ -122,7 +122,13 @@ class TestSiteData(unittest.TestCase):
         for sc in self.data["demo"]:
             for turn in sc["turns"]:
                 with self.subTest(task=turn["task"]):
-                    live = dispatch(turn["task"])
+                    live = dispatch(turn["task"], council=turn.get("council"), include=turn.get("include"))
+                    if turn.get("sessionId"):
+                        record = json.loads((ROOT / "memory" / "council-briefs" / f"{turn['sessionId']}.json").read_text())
+                        planned = [m["personaId"] for m in live["sessions"][0]["convened"]] if live.get("sessions") else []
+                        if record["councilId"] == (live["councils"] or [None])[0]:
+                            self.assertEqual(sorted(planned), sorted(m["personaId"] for m in record["convened"]),
+                                             "the demo plan must convene the same personas as the recorded session")
                     self.assertEqual(turn["plan"]["tier"], live["tier"])
                     self.assertEqual(turn["plan"]["councils"], live["councils"])
                     if turn.get("sessionId"):

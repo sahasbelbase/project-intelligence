@@ -175,7 +175,7 @@
           ${sessions.map((s) => html`<li><a class="session-link" href="#/councils/${s.brief.decisionId}">
             <span class="topic">${s.task}</span>
             <span class="tag ${s.brief.recommendation === 'Build' ? 'tag-pass' : 'tag-warn'}">${s.brief.recommendation}</span>
-            <span class="meta">${s.councilTitle} · ${shortDate(s.createdAt)} · ${count(s.convened.length, 'persona')} · ${s.brief.dissent.length ? count(s.brief.dissent.length, 'dissent') : 'no dissent'}${s.mode === 'simulated' ? ' · simulated' : ''}</span>
+            <span class="meta">${s.councilTitle} · ${shortDate(s.createdAt)} · ${count(s.convened.length, 'persona')} · ${blindingLabel(s)} · ${s.brief.dissent.length ? count(s.brief.dissent.length, 'dissent') : 'no dissent'}${s.mode === 'simulated' ? ' · simulated' : ''}</span>
           </a></li>`)}
         </ul>` : html`<p class="empty">No decisions recorded yet. Run a council from your agent and save it with the referee to see it here.</p>`}
       </section>
@@ -213,6 +213,9 @@
     return JSON.stringify(i);
   }
   function lowerFirst(t) { return /^[A-Z][a-z]/.test(t) ? t[0].toLowerCase() + t.slice(1) : t; }
+  // How the session was run: each persona as its own agent (Round 1 truly blind),
+  // or one agent writing every persona.
+  const blindingLabel = (s) => (s.blinding === 'separate-agents' ? 'independent agents' : 'one agent wrote every persona');
   const personaName = (id) => (personaIndex[id] ? personaIndex[id].title : id);
 
   function sessionPage(id) {
@@ -227,7 +230,7 @@
     return html`
       <section class="hero" aria-labelledby="session-title" style="padding-bottom:32px">
         <p style="margin-bottom:20px"><a class="btn btn-ghost" href="#/councils">${ICON.back} All councils</a></p>
-        <span class="kicker">${s.councilTitle} · ${shortDate(s.createdAt)}${s.mode === 'simulated' ? ' · simulated' : ''}</span>
+        <span class="kicker">${s.councilTitle} · ${shortDate(s.createdAt)} · ${blindingLabel(s)}${s.mode === 'simulated' ? ' · simulated' : ''}</span>
         <h1 id="session-title" class="session-title">${s.task}</h1>
       </section>
       <section class="section" style="padding-top:0">
@@ -262,7 +265,10 @@
       </section>
       <section class="section" aria-labelledby="rounds-title" style="padding-top:0">
         <h2 id="rounds-title">How the council got there</h2>
-        <p class="section-intro">${s.convened.map((m) => `${m.title}${m.role !== 'specialist' ? ` (${m.role})` : ''}`).join(', ')}.</p>
+        <p class="section-intro">${s.convened.map((m) => `${m.title}${m.role !== 'specialist' ? ` (${m.role})` : ''}`).join(', ')}. ${s.blinding === 'separate-agents'
+          ? 'Each persona ran as its own agent, so the first round was written without seeing the others.'
+          : 'One agent wrote every persona, so the first round was not strictly blind.'}</p>
+        ${s.context ? html`<details class="round"><summary>Background every persona saw</summary><div class="round-body"><p class="soft" style="white-space:pre-wrap">${s.context}</p></div></details>` : ''}
         <details class="round"><summary>Round 1 · Independent assessments</summary><div class="round-body">
           ${r.independent.map((e) => html`<div class="entry"><div class="who">${personaName(e.personaId)} <span class="tag tag-neutral">${e.recommendation}</span></div>
             <p>${e.stance}</p>${list(e.keyArguments)}</div>`)}
@@ -457,6 +463,7 @@
     fix: 'Tier 1. One specialist, one change, one new test.',
     design: 'Tier 2. The design council, then a follow-up improvement.',
     dev: 'Tier 2. The development council on this integration.',
+    independent: 'Tier 2. Each persona ran as its own agent; round 1 was truly blind.',
     feature: 'Tier 3. Three councils in sequence. Plan only.',
     custom: 'Your request, planned live by the local server.',
   };
@@ -471,7 +478,7 @@
       frames.push({ type: 'plan', turn: t });
       const ses = t.sessionId && sessionIndex[t.sessionId];
       if (ses) {
-        frames.push({ type: 'divider', text: `Round 1 · Independent views (${ses.councilTitle.toLowerCase()})` });
+        frames.push({ type: 'divider', text: `Round 1 · Independent views (${ses.councilTitle.toLowerCase()}${ses.blinding === 'separate-agents' ? ', one agent per persona' : ''})` });
         ses.rounds.independent.forEach((e) => frames.push({ type: 'r1', e, ses }));
         frames.push({ type: 'divider', text: 'Round 2 · Challenges' });
         ses.rounds.challenges.forEach((c) => frames.push({ type: 'r2', c, ses }));
@@ -493,15 +500,16 @@
 
   function userLine(t, client) {
     const task = t.task;
+    const flag = (t.council ? ` --council ${t.council}` : '') + (t.include || []).map((p) => ` --include ${p}`).join('');
     if (client === 'claude') {
       return html`<div class="term-line"><span class="glyph">&gt;</span>/project-intelligence:ask ${task}</div>
-        <div class="term-line muted"><span class="glyph">•</span>Bash(project-intelligence ask "${task}")</div>`;
+        <div class="term-line muted"><span class="glyph">•</span>Bash(project-intelligence ask "${task}"${flag})</div>`;
     }
     if (client === 'copilot') {
       return html`<div class="term-line"><span class="glyph">&gt;</span>${task}</div>
-        <div class="term-line muted"><span class="glyph">•</span>plan_task (MCP: project-intelligence)</div>`;
+        <div class="term-line muted"><span class="glyph">•</span>plan_task (MCP: project-intelligence)${t.council ? `, council: ${t.council}` : ''}${(t.include || []).length ? `, include: ${t.include.join(', ')}` : ''}</div>`;
     }
-    return html`<div class="term-line"><span class="glyph">$</span>${DATA.install.run.replace(' -y', '')} ask "${task}"</div>`;
+    return html`<div class="term-line"><span class="glyph">$</span>${DATA.install.run.replace(' -y', '')} ask "${task}"${flag}</div>`;
   }
 
   function renderFrame(f, client) {
@@ -555,14 +563,14 @@
       <div class="window">
         <div class="window-bar"><span class="dots" aria-hidden="true"><span></span><span></span><span></span></span>${client.bar}</div>
         <div class="window-body" id="demo-log" role="log" aria-live="polite" aria-label="Conversation">
-          ${frames.slice(0, step).map((f) => renderFrame(f, client.id))}
+          ${frames.slice(0, step).map((f) => html`<div class="frame">${renderFrame(f, client.id)}</div>`)}
         </div>
         <div class="window-controls">
           <button class="btn btn-primary" type="button" data-demo-action="next" ${step >= frames.length ? raw('disabled') : ''}>Next step</button>
-          <button class="btn btn-secondary" type="button" data-demo-action="play" ${step >= frames.length ? raw('disabled') : ''}>${demoState.playing ? 'Pause' : 'Play'}</button>
+          <button class="btn btn-secondary" type="button" data-demo-action="play" aria-pressed="${!!demoState.playing}" ${step >= frames.length ? raw('disabled') : ''}>${demoState.playing ? 'Pause' : 'Play'}</button>
           <button class="btn btn-secondary" type="button" data-demo-action="all" ${step >= frames.length ? raw('disabled') : ''}>Show all</button>
           <button class="btn btn-secondary" type="button" data-demo-action="restart">Restart</button>
-          <span class="progress">${step} / ${frames.length}</span>
+          <span class="progress" id="demo-progress">${step} / ${frames.length}</span>
         </div>
       </div>
       <form class="try" id="demo-form">
@@ -652,29 +660,93 @@
     if (log && scrollToEnd) log.scrollTop = log.scrollHeight;
   }
 
+  // Playback timing: about 2.2s per message, longer pauses where a new round starts
+  // or the decision lands, so the conversation can be read as it plays.
+  const STEP_MS = 2200;
+  const PAUSE_AFTER = { divider: 3400, decision: 3200, dissent: 3000, plan: 3000 };
+  const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+
   function stopDemo() {
-    clearInterval(demoState.playing);
+    clearTimeout(demoState.playing);
     demoState.playing = null;
+  }
+
+  // Update the buttons and counter without touching the conversation log.
+  function syncDemoControls() {
+    const total = demoFrames(currentScenario()).length;
+    const done = demoState.step >= total;
+    const q = (a) => document.querySelector(`[data-demo-action="${a}"]`);
+    ['next', 'all'].forEach((a) => { if (q(a)) q(a).disabled = done; });
+    const play = q('play');
+    if (play) {
+      play.disabled = done;
+      play.textContent = demoState.playing ? 'Pause' : 'Play';
+      play.setAttribute('aria-pressed', String(!!demoState.playing));
+    }
+    const progress = document.getElementById('demo-progress');
+    if (progress) progress.textContent = `${Math.min(demoState.step, total)} / ${total}`;
+  }
+
+  // Append the next frame to the log instead of re-rendering the window.
+  function appendNextFrame() {
+    const frames = demoFrames(currentScenario());
+    const log = document.getElementById('demo-log');
+    if (!log || demoState.step >= frames.length) return null;
+    const frame = frames[demoState.step];
+    const nearBottom = log.scrollHeight - log.scrollTop - log.clientHeight < 160;
+    const el = document.createElement('div');
+    el.className = reducedMotion() ? 'frame' : 'frame frame-enter';
+    el.innerHTML = fmt(renderFrame(frame, demoState.client));
+    log.appendChild(el);
+    demoState.step += 1;
+    if (nearBottom || demoState.playing) {
+      log.scrollTo({ top: log.scrollHeight, behavior: reducedMotion() ? 'auto' : 'smooth' });
+    }
+    syncDemoControls();
+    return frame;
+  }
+
+  function scheduleNext(delay) {
+    demoState.playing = setTimeout(() => {
+      const frame = appendNextFrame();
+      if (!frame || demoState.step >= demoFrames(currentScenario()).length) {
+        stopDemo();
+        syncDemoControls();
+        return;
+      }
+      scheduleNext(PAUSE_AFTER[frame.type] || STEP_MS);
+    }, delay);
   }
 
   function demoAction(action) {
     const total = demoFrames(currentScenario()).length;
-    if (action === 'next') demoState.step = Math.min(total, demoState.step + 1);
-    else if (action === 'all') { stopDemo(); demoState.step = total; }
-    else if (action === 'restart') { stopDemo(); demoState.step = 2; }
-    else if (action === 'play') {
-      if (demoState.playing) stopDemo();
-      else if (matchMedia('(prefers-reduced-motion: reduce)').matches) demoState.step = total;
-      else {
-        demoState.playing = setInterval(() => {
-          const n = demoFrames(currentScenario()).length;
-          demoState.step = Math.min(n, demoState.step + 1);
-          if (demoState.step >= n) stopDemo();
-          refreshDemo();
-        }, 1100);
+    if (action === 'next') {
+      stopDemo();
+      appendNextFrame();
+    } else if (action === 'all') {
+      stopDemo();
+      demoState.step = total;
+      refreshDemo();
+    } else if (action === 'restart') {
+      stopDemo();
+      demoState.step = 2;
+      refreshDemo(false);
+    } else if (action === 'play') {
+      if (demoState.playing) {
+        stopDemo();
+        syncDemoControls();
+      } else if (reducedMotion()) {
+        demoState.step = total;
+        refreshDemo();
+      } else {
+        // Show the first new message right away, then keep the reading pace.
+        const frame = appendNextFrame();
+        if (frame && demoState.step < total) {
+          scheduleNext(PAUSE_AFTER[frame.type] || STEP_MS);
+          syncDemoControls();
+        }
       }
     }
-    refreshDemo();
   }
 
   function selectScenario(id) {

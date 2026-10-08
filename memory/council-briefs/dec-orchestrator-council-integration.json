@@ -1,7 +1,8 @@
 {
   "record": "council-session",
-  "schemaVersion": "1.0.0",
+  "schemaVersion": "1.1.0",
   "mode": "deliberated",
+  "blinding": "single-agent",
   "sessionId": "development-connect-the-council-referee-to-t",
   "councilId": "development",
   "councilTitle": "Development council",

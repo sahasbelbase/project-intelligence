@@ -1,0 +1,541 @@
+{
+  "record": "council-session",
+  "schemaVersion": "1.1.0",
+  "mode": "deliberated",
+  "blinding": "separate-agents",
+  "sessionId": "development-decide-how-the-orchestrator-shou",
+  "councilId": "development",
+  "councilTitle": "Development council",
+  "task": "Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification",
+  "createdAt": "2026-10-08T15:29:14Z",
+  "convened": [
+    {
+      "personaId": "software-architect",
+      "title": "Software Architect",
+      "role": "chair",
+      "skills": [
+        "architecture-and-contracts",
+        "existing-project-analysis"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "maintainability-reviewer",
+      "title": "Maintainability and Tech-Debt Reviewer",
+      "role": "critic",
+      "skills": [
+        "thermo-nuclear-review",
+        "independent-review"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "test-quality-engineer",
+      "title": "Test and Quality Engineer",
+      "role": "specialist",
+      "skills": [
+        "testing-and-verification",
+        "test-case-generation"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "developer-experience-specialist",
+      "title": "Developer Experience Specialist",
+      "role": "specialist",
+      "skills": [
+        "documentation-and-handoff"
+      ],
+      "matchedKeywords": []
+    }
+  ],
+  "context": "Facts about the current router (core/council/referee.py, measured 2026-10-08):\n- Routing uses keyword lists per persona in core/council/councils.json. Each keyword is weighted by 1 / (number of personas that list it), multi-word phrases get 1.5x. Tier rules: questions go to tier 0; broad verbs (redesign, decide, migrate, should we...) go to a council; new-capability scope words plus strong matches in two councils go to tier 3; otherwise the best-scoring persona handles it.\n- Tuning set (validation/fixtures/routing/cases.json, 50 requests): 50/50 correct after tuning; 28/50 (56%) before the change.\n- Held-out set (holdout.json, 20 requests written after tuning, never tuned against): 16/20 (80%). Misses: \"Speed up the slow product search query\" went to the database architect instead of performance; \"Store the session token in an httpOnly cookie\" went to the design systems architect (because of the word \"token\"); \"Decide whether to move from SQLite to Postgres\" matched no keywords; a tier 3 feature request was treated as tier 1.\n- Every plan now reports confidence (low when the top match rests on one keyword, nothing matched, or the runner-up is close) and its evidence. Both held-out specialist misses were flagged low. Agents can override with --council or --persona.\n- Planning runs in the CLI (node), the MCP server (python) and the website build; it must stay deterministic, local and dependency-free (Python standard library only), and needs no API key.\n- The alternative under discussion: let the calling agent (the model already running Claude Code or Copilot) classify the request, with keyword routing as a fallback, or add an embedding/LLM classifier inside the framework.",
+  "rounds": {
+    "independent": [
+      {
+        "personaId": "software-architect",
+        "recommendation": "Pilot",
+        "stance": "Keep deterministic weighted-keyword routing as the framework's core router. Do not add an embedded LLM or embedding classifier. Add one optional, additive path: the calling agent may pass --council/--persona (already supported) as an override after reading the plan's confidence and evidence. Pilot that agent-assist path for a bounded period and measure it before changing the core.",
+        "keyArguments": [
+          "Smallest change: the override flags and low-confidence 'Check:' prompt already exist (VERIFIED_FACT: core/orchestrator/dispatch.py lines 81 and 143-145 handle confidence and --council/--persona). The calling model is already in the loop, so no new classifier is needed inside the framework.",
+          "Boundary: an in-framework LLM or embedding classifier would break the constraint of deterministic, local, stdlib-only and no API key, across three runtimes (CLI node, MCP python, website build). That constraint is stated in the shared context, so I am treating it as a given requirement. I did not check it against the code.",
+          "Evidence is limited, so the case for a rewrite is weak. The held-out set is 16/20 (80%), n=20, from the shared context. Both specialist misses were flagged low confidence, so the fallback to agent judgment already triggers where it is needed. The tier-3-as-tier-1 miss is the one gap the confidence flag may not cover. I did not verify that.",
+          "The 28/50 to 50/50 gain on the tuning set is partly overfit by construction. The 80% held-out figure is the honest estimate, and its confidence interval is wide (ESTIMATE).",
+          "Regret in a year: a model dependency in the router makes results non-reproducible, hard to test (validation/universal-tests/test_routing_eval.py gates on fixed cases) and API-key gated."
+        ],
+        "risks": [
+          "Agents may ignore low-confidence flags, so misroutes persist silently.",
+          "Keyword lists grow and drift as personas are added, and overlap weights shift.",
+          "The held-out set of 20 is too small to distinguish 80% from 90%.",
+          "The tier 3 under-escalation miss may not be flagged low."
+        ],
+        "assumptions": [
+          "ASSUMPTION: the calling agent classifies better than the keyword scorer on ambiguous requests.",
+          "ASSUMPTION: the determinism and no-key requirement is non-negotiable for the CLI, MCP and website build.",
+          "ASSUMPTION: misroutes are cheap to recover from because the override flags exist."
+        ],
+        "evidence": [
+          "VERIFIED_FACT: core/orchestrator/dispatch.py has a confidence field and a low-confidence message that points to --council and --persona.",
+          "VERIFIED_FACT: validation/fixtures/routing/ contains cases.json and holdout.json.",
+          "VERIFIED_FACT (shared context, not re-measured): tuning set 50/50, holdout 16/20, both specialist misses flagged low.",
+          "UNKNOWN: how often agents follow the low-confidence check, and the tier-3 miss detection rate.",
+          "Rollback path: the agent-assist step is additive and advisory, so disabling it leaves the keyword router unchanged. To pilot it, add a held-out case log and expand the holdout to 50 or more, then revisit if held-out accuracy stays below about 85% or agents override more than 25% of the time (ESTIMATE thresholds)."
+        ]
+      },
+      {
+        "personaId": "maintainability-reviewer",
+        "recommendation": "Pilot",
+        "stance": "Keep the weighted keyword router as the deterministic, dependency-free default and fallback. Do not add an in-framework LLM or embedding classifier. Pilot an optional caller-supplied classification (the agent passes --council or --persona, which already exist), and measure it against the held-out set before promoting it. Do not widen the keyword tuning to chase the 4 held-out misses.",
+        "keyArguments": [
+          "VERIFIED_FACT (core/council/referee.py, 672 lines; classify at line 211, evidence at line 192): the router is a small set of methods over councils.json data, and each plan reports confidence and evidence. A new contributor can read it in ten minutes and fix a miss by editing a keyword list.",
+          "VERIFIED_FACT (task background): planning must run identically in node, python and the website build, and must stay deterministic, local, stdlib-only and keyless. An embedding or LLM classifier inside the framework breaks all of those. It would add a dependency, a network or model path, and nondeterministic tests in three runtimes. That is debt we would pay next month.",
+          "VERIFIED_FACT (task background): the calling agent can already override routing with --council or --persona, and both held-out specialist misses were flagged low confidence. The model-in-the-loop path therefore exists at zero abstraction cost. The only missing piece is a documented rule: when confidence is low, the caller decides.",
+          "ESTIMATE: tuning on the 50 cases went from 56% to 100%, but the held-out set scored 80% (16/20), so tuning gains mostly overfit. Each extra keyword increases the risk of collisions like 'token'. Further tuning has diminishing returns, so I would stop at the current state.",
+          "The abstraction test: a pluggable classifier interface has one real implementation today. Adding an interface for a hypothetical second one is premature."
+        ],
+        "risks": [
+          "The keyword lists keep growing and collide with each other (the 'token' to design-systems miss is an example). Mitigation: keep the routing eval as a CI regression gate.",
+          "The 'caller decides when low' rule is only convention. If agents ignore the confidence flag, the 20% miss rate reaches users silently.",
+          "A tier 3 request was treated as tier 1. That is a tier-rule miss, not a keyword miss, and the confidence flag may not cover it."
+        ],
+        "assumptions": [
+          "ASSUMPTION: the calling agent classifies better than the keywords on the ambiguous cases, and does so at no extra cost.",
+          "ASSUMPTION: 20 held-out cases is too small to distinguish 80% from 90% with any confidence.",
+          "ASSUMPTION: the maintainers value offline, reproducible planning over the last 10 to 15% of routing accuracy."
+        ],
+        "evidence": [
+          "VERIFIED_FACT: the command output and the background gave me the held-out figures (16/20) and the tuning figures (50/50 after, 28/50 before).",
+          "VERIFIED_FACT: file listing shows core/council/referee.py (672 lines), core/orchestrator/dispatch.py (187 lines), and validation/fixtures/routing/{cases.json,holdout.json}.",
+          "VERIFIED_FACT: grep of referee.py shows classify(), evidence(), persona_scores(), council_scores() and a _weight() helper, which supports the claim that the router is small and data-driven.",
+          "UNKNOWN: I did not open holdout.json or run the eval. I did not measure how often agents actually honor --council or --persona overrides."
+        ]
+      },
+      {
+        "personaId": "test-quality-engineer",
+        "recommendation": "Pilot",
+        "stance": "Keep deterministic weighted keyword routing as the framework's tested core. Treat agent-side model classification as an optional input that passes through the existing --council/--persona override path, and measure it against the same fixtures before it is promoted. Do not add an in-framework LLM or embedding classifier.",
+        "keyArguments": [
+          "Only the deterministic router can be regression-tested. validation/universal-tests/test_routing_eval.py asserts tuning accuracy >=0.95 and holdout >=0.75 (VERIFIED_FACT, file read). A model classifier would make those gates non-reproducible and flaky.",
+          "The 50/50 tuning score is not evidence of quality. Before tuning it was 28/50 (56%), and the 80% holdout (16/20) on 20 cases is the honest figure (VERIFIED_FACT, task background). ESTIMATE: with n=20 the interval is wide, roughly 58-92%.",
+          "The calibration test is the strongest asset. test_wrong_specialists_on_holdout_are_flagged requires every wrong specialist routing on the holdout to carry confidence=low (VERIFIED_FACT, test file). That makes misroutes visible instead of silent.",
+          "Gap: the holdout is small and its 4 misses, including 'token' matching the design systems architect, are the kind of failure that tuning moves around rather than fixes. Add a rolling holdout and per-class cases, especially tier 3 and zero-match requests.",
+          "Any model path needs a comparison harness: run the same cases.json and holdout.json through agent-supplied overrides, and require it to beat 80% before it replaces anything. No such run exists yet (UNKNOWN)."
+        ],
+        "risks": [
+          "Overfitting: further keyword tuning inflates fixture scores without improving real routing.",
+          "A model classifier brings nondeterminism, an API key or latency dependency, and unreproducible CI.",
+          "Low-confidence flags could be ignored by agents, so a wrong route is still acted on.",
+          "A tier 3 request treated as tier 1 under-scopes work, and confidence flags may not catch it."
+        ],
+        "assumptions": [
+          "ASSUMPTION: The held-out cases are representative of real requests.",
+          "ASSUMPTION: Agents will honor low-confidence flags and use overrides.",
+          "ASSUMPTION: An agent-side classifier is cheap to try because the override flags already exist."
+        ],
+        "evidence": [
+          "VERIFIED_FACT: validation/universal-tests/test_routing_eval.py defines test_tuning_set (>=0.95), test_holdout_set (>=0.75), test_wrong_specialists_on_holdout_are_flagged and test_overrides_win.",
+          "VERIFIED_FACT: validation/fixtures/routing/ contains cases.json and holdout.json.",
+          "VERIFIED_FACT: council briefing context gives 28/50 before tuning, 50/50 after, and 16/20 on holdout.",
+          "UNKNOWN: I did not execute the test suite in this session, so I make no pass claim."
+        ]
+      },
+      {
+        "personaId": "developer-experience-specialist",
+        "recommendation": "Pilot",
+        "stance": "Keep deterministic weighted keyword routing as the framework's built-in router. Pilot an optional agent-side override path, where the calling model classifies and passes --council or --persona, by documenting it. Do not add an LLM or embedding classifier inside the framework.",
+        "keyArguments": [
+          "VERIFIED_FACT (task context, referee.py measurements): routing is 50/50 on the tuning set and 16/20 (80%) on the held-out set. Both held-out specialist misses were flagged low confidence. The router is usable and its failures are visible, not silent.",
+          "VERIFIED_FACT (task context): planning runs in the CLI (node), the MCP server (python) and the website build, with no API key and the Python standard library only. A model classifier inside the framework breaks the five-minute install: a new contributor would need keys, network access and a provider choice.",
+          "VERIFIED_FACT (task context): agents can already override with --council or --persona, so model-based classification by the calling agent already exists as a path. What is missing is documentation, not code. ASSUMPTION: plugin-skills/ask/SKILL.md should tell the agent to trust high confidence plans and re-classify itself on low confidence. I have not yet checked the current SKILL.md wording.",
+          "ESTIMATE: 80% on a 20-request set is a noisy figure. The true accuracy could plausibly differ by 15 points either way. The 3 of 4 misses that look like keyword gaps (performance, session token, SQLite to Postgres) can be fixed by adding keywords, but each fix risks overfitting. Grow the held-out set before changing the architecture.",
+          "Error-message ergonomics: a low-confidence plan should print the evidence and a copy-pasteable fix, such as 'Low confidence: only matched \"token\". Re-run with --persona <id>'. UNKNOWN: whether the CLI prints this today."
+        ],
+        "risks": [
+          "Documentation drift: the README, SKILL.md and the website copy may claim routing behavior that differs from the measured numbers. They must quote 80% held-out, not 100% tuned.",
+          "Agent override is advisory. An agent that ignores low-confidence flags will still misroute, and the framework cannot enforce otherwise.",
+          "Tuning against the held-out set will turn it into a second tuning set. A fresh held-out set is needed after each round.",
+          "Having two routing paths (keyword and agent override) confuses contributors if precedence is not documented."
+        ],
+        "assumptions": [
+          "Most users reach the router through an agent (Claude Code, Copilot) that can classify cheaply and reliably.",
+          "Contributors value a deterministic, debuggable router over a higher-accuracy opaque one.",
+          "Low confidence is currently the main signal the agent acts on."
+        ],
+        "evidence": [
+          "Task context: referee.py measurements dated 2026-10-08 (50/50 tuning, 28/50 before the change, 16/20 held-out, the 4 listed misses, confidence flags and evidence on every plan).",
+          "Task context: the deterministic, local, dependency-free constraint across the CLI, MCP and website build.",
+          "I did not read the code directly. The SKILL.md and CLI behavior claims above are ASSUMPTION or UNKNOWN until checked."
+        ]
+      }
+    ],
+    "challenges": [
+      {
+        "challengerId": "software-architect",
+        "targetId": "test-quality-engineer",
+        "challengeType": "BLIND_SPOT",
+        "severity": "HIGH",
+        "critique": "The group treats 'misroutes are visible' as settled, but the calibration gate covers only one failure class. VERIFIED_FACT: in validation/universal-tests/test_routing_eval.py (line 57-59) the low-confidence assertion applies only when case tier == 1 and the plan is tier 1 and wrong. A tier mismatch, such as the held-out tier 3 request planned as tier 1, is never checked for a low flag. The CLI 'Check:' line (dispatch.py lines 143-145) only shows when confidence is low and tier > 0. That is the most expensive miss, because it under-scopes the work, and nothing guarantees it is flagged. Round 1 listed it as a risk but no one made it a gate.",
+        "counterProposal": "Before any pilot, extend the eval so every wrong tier or wrong specialist on the holdout must carry confidence=low. If the tier 3 under-escalation is not flagged, fix that in the router (for example, low confidence when new-capability words appear but the two-council match fails) before measuring agent assist."
+      },
+      {
+        "challengerId": "software-architect",
+        "targetId": "developer-experience-specialist",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "MEDIUM",
+        "critique": "All four personas assume the calling agent will read the confidence flag and override well, and call this a documentation task. UNKNOWN: nobody has measured whether agents follow the flag. The 'Check:' hint lives in render_text (dispatch.py line 143); an MCP caller reading the JSON result may never see it. The pilot also has no success criterion beyond 'beat 80%'. The 25% override threshold I proposed is an ESTIMATE without a baseline.",
+        "counterProposal": "Define the pilot as a fixed harness: replay cases.json and holdout.json with a scripted agent that honors only the low flag, report the accuracy gain and override rate, and ship the SKILL.md rule only if the gain is at least 5 points. Also make sure the JSON plan carries a machine-readable 'recheck' field, not only the text hint."
+      },
+      {
+        "challengerId": "maintainability-reviewer",
+        "targetId": "test-quality-engineer",
+        "challengeType": "SCOPE_CREEP",
+        "severity": "MEDIUM",
+        "critique": "All four recommend Pilot, but a pilot of something that already exists is mostly process. VERIFIED_FACT (round1 submissions, dispatch.py lines cited by software-architect): --council, --persona and the low-confidence prompt are already shipped. The test engineer's package adds a rolling holdout, per-class cases and a comparison harness that runs agent overrides through the fixtures. ESTIMATE: that is a new harness and a new maintained dataset. An agent-supplied override is not reproducible, so it cannot be a CI gate, and the harness would have to be run by hand, which means it will rot. The simplest option is the right one: keep the router, change no code, and call the decision Build/keep.",
+        "counterProposal": "Do not build an agent-override comparison harness. Keep the existing deterministic gates (tuning >=0.95, holdout >=0.75, wrong specialists flagged low). Add the 4 known holdout misses as named regression cases only if cheap, and grow the holdout opportunistically when a real misroute is reported. Revisit only on a real trigger, such as a reported misroute rate you can point to."
+      },
+      {
+        "challengerId": "maintainability-reviewer",
+        "targetId": "developer-experience-specialist",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "MEDIUM",
+        "critique": "The plan rests on the assumption that agents will read the low-confidence flag and re-classify, and that a documentation tweak to SKILL.md is enough. All four submissions list this as an assumption or UNKNOWN, and nobody checked it. Meanwhile the one miss class the flag may not catch, tier 3 treated as tier 1, is a tier-rule problem that a keyword fix or an agent override of --persona does not repair. Putting 'two routing paths' into documentation adds a precedence rule contributors must learn. That is a maintenance cost presented as free.",
+        "counterProposal": "Before writing new guidance, run the existing router on the tier-3 holdout case and check whether it is flagged low. If not, fix that one rule (make tier-3 under-escalation lower confidence), which is a small code change. Then add a single sentence to SKILL.md: on low confidence, pass --council or --persona. Do not document a second routing path."
+      },
+      {
+        "challengerId": "test-quality-engineer",
+        "targetId": "software-architect",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "HIGH",
+        "critique": "The group treats confidence=low as a safety net, but it is only proven for specialist misses. VERIFIED_FACT: test_routing_eval.py asserts the low flag only for wrong specialists on the holdout (test_wrong_specialists_on_holdout_are_flagged). The tier 3 request routed as tier 1 is not covered by that assertion, and the architect admits the flag may not catch it (UNKNOWN). That is the costliest miss, because it under-scopes work silently. The pilot rests on 'misroutes are visibly flagged', which is untested for tier errors. VERIFIED_FACT: I ran the routing eval, which reports 50/50 on cases.json and 16/20 on holdout.json.",
+        "counterProposal": "Before any pilot, add a test that every tier misroute on tuning and holdout also carries low confidence, or force low confidence when the tier-3 scope words appear without a matching tier-3 result. Make this a CI gate."
+      },
+      {
+        "challengerId": "test-quality-engineer",
+        "targetId": "maintainability-reviewer",
+        "challengeType": "BLIND_SPOT",
+        "severity": "MEDIUM",
+        "critique": "All three Pilot recommendations rely on an agent-override path that has no measurement. Nothing in the harness runs agent-supplied classification, so 'pilot, then promote' has no success criterion beyond the architect's ESTIMATE thresholds (85 percent, 25 percent override rate) with no mechanism to collect them. The 20-case holdout cannot tell 80 percent from 90 percent. Piloting without a way to measure is just a change in default behavior, and the maintainability reviewer's 'caller decides when low' is a convention with no check that it happens.",
+        "counterProposal": "Define the pilot as a recorded run: expand the holdout to at least 50 cases, have an agent classify the same cases with the plan evidence visible, and report agent accuracy against keyword accuracy per tier. Log override rate. Promote only if agent-assisted routing beats keyword-only on that set."
+      },
+      {
+        "challengerId": "developer-experience-specialist",
+        "targetId": "software-architect",
+        "challengeType": "BLIND_SPOT",
+        "severity": "HIGH",
+        "critique": "The group treats the agent-assist override as a pilot to build, but the 'caller decides when low' step is documented in only one place. VERIFIED_FACT: plugin-skills/ask/SKILL.md line 12 tells the agent to re-plan with --council or --persona on low confidence, and core/orchestrator/dispatch.py lines 142-144 print a 'Check:' hint. VERIFIED_FACT: the grep for '--persona' in instructions/, installer/adapters/ and README.md matched only installer/adapters/antigravity.js. So the Claude plugin path is covered, but the Copilot and other adapter paths may never tell the agent the override exists. Also, the hint is printed only when tier > 0, so a tier-0 question that is misrouted gets no hint (VERIFIED_FACT: dispatch.py line 142). The tier-3-as-tier-1 miss is also unflagged. A pilot would be measuring an agent that was never told what to do.",
+        "counterProposal": "Before any pilot, put the same one-line low-confidence rule into every adapter's instructions (or the shared universal instructions), and print the Check hint for tier 0 and for suspected under-escalation. Then pilot. I have not verified the other adapters beyond that grep, so treat the adapter gap as UNKNOWN until someone reads them."
+      },
+      {
+        "challengerId": "developer-experience-specialist",
+        "targetId": "maintainability-reviewer",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "MEDIUM",
+        "critique": "The claim that a contributor can fix a miss by editing a keyword list and the proposal to stop tuning ignore that tuning is exactly how contributors will meet the router. ASSUMPTION: without a documented loop (add case, run test_routing_eval.py, check holdout is untouched), the 'token' style collision recurs and the holdout set quietly becomes a tuning set. I have not read the contributor docs for such a loop, so whether one exists is UNKNOWN. 'Stop at the current state' is also a decision without a trigger for revisiting.",
+        "counterProposal": "Document a short contributor recipe: reproduce the miss with ask, add it to cases.json (never holdout.json), run the routing eval, and read the confidence evidence. Make the eval's failure message name the case, the expected and actual persona, and the keywords that fired. Set an explicit revisit trigger, for example a larger holdout of 50 or more cases."
+      }
+    ],
+    "revisions": [
+      {
+        "personaId": "software-architect",
+        "revisedRecommendation": "Pilot",
+        "whatChanged": [
+          "The pilot now has two preconditions. First, make every tier misroute carry confidence=low and enforce that in CI. Second, put the low-confidence rule into every adapter's instructions.",
+          "I checked the tier-3 miss with the ask command. VERIFIED_FACT: 'Add a new feature for team comments with mentions, permissions and email digests' came back as tier 1 with confidence low (single keyword 'permission', security-engineer). So that one case is flagged. That is one example only. The test at test_routing_eval.py lines 57-59 still asserts the flag only for wrong specialists, so tier errors are not gated.",
+          "Dispatch.py line 143 prints the Check hint only when tier > 0, so a tier-0 misroute gets no hint. That is a gap in my 'smallest change' claim that the mechanism already exists."
+        ],
+        "whatRemainedUnchanged": [
+          "Keep deterministic weighted keyword routing as the core router. Do not add an in-framework LLM or embedding classifier, because the keyless, stdlib-only, deterministic constraint across node, python and the website build stays.",
+          "Agent-assist stays advisory through --council/--persona, so rollback is simply not using it.",
+          "The 80% held-out figure on 20 cases is the honest estimate, and further keyword tuning risks overfitting."
+        ],
+        "responses": [
+          {
+            "challengerId": "test-quality-engineer",
+            "response": "ACCEPTED",
+            "reason": "My claim that misroutes are visibly flagged was only verified for specialist misses. The ask run shows one tier-3 case flagged low, but it is a single example, not a gate. Extend the eval so every wrong tier or specialist on tuning and holdout must be low confidence, and fix the router if any is not. I will not force low on all tier-3 scope words without data, because that would lower the usefulness of the flag."
+          },
+          {
+            "challengerId": "developer-experience-specialist",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Accepted: a pilot cannot measure agent behavior if non-Claude adapters never state the rule, and the tier > 0 condition leaves tier-0 misroutes unhinted. Add the one-line rule to the shared universal instructions and adapters before piloting. Not accepted as framed: the adapter gap is UNKNOWN from a grep alone, and I would not widen the scope beyond one shared sentence and a tier-0 hint decision, which should be made on holdout evidence."
+          }
+        ]
+      },
+      {
+        "personaId": "maintainability-reviewer",
+        "revisedRecommendation": "Pilot",
+        "whatChanged": [
+          "VERIFIED_FACT (ran node bin/cli.js ask --json on the team-comments request): the tier-3-style request is routed to tier 1 (Specialist, security-engineer on the single keyword 'permission') and is flagged confidence=low. The flag does catch this miss, so my Round 1 worry that it might not was unfounded for this case. The remaining defect is that the low-confidence text only says 'confirm the choice' and does not hint that the scope may be larger, which is a small wording fix at most.",
+          "I now accept that the pilot needs a success criterion, defined as a one-time recorded comparison run (agent with plan evidence visible vs keyword-only on an expanded holdout), not a permanent harness. I am dropping the open-ended 'measure it' wording from Round 1.",
+          "I accept an explicit revisit trigger in place of 'stop at the current state'."
+        ],
+        "whatRemainedUnchanged": [
+          "Keep the weighted keyword router as the deterministic, stdlib-only default and fallback. No LLM or embedding classifier inside the framework.",
+          "No new abstraction, no pluggable classifier interface, no standing agent-override harness in CI. The existing gates (tuning >=0.95, holdout >=0.75, wrong specialists flagged low) stay as they are.",
+          "Do not keep tuning keywords to chase the 4 held-out misses."
+        ],
+        "responses": [
+          {
+            "challengerId": "test-quality-engineer",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Fair that a pilot with no measurement is only a default change. I accept a bounded, one-off recorded run: expand the holdout toward 50 cases, have an agent classify them with the evidence visible, and compare per tier against keyword-only accuracy. I reject making that a maintained harness or promotion machinery, because agent output is not reproducible and the script would rot. Promote only if the one-off result is clearly better. Otherwise the pilot ends and the router stays as it is."
+          },
+          {
+            "challengerId": "developer-experience-specialist",
+            "response": "ACCEPTED",
+            "reason": "Tuning is how contributors will meet the router, so 'stop tuning' was too blunt. A short recipe is cheap and prevents the holdout from turning into a second tuning set: reproduce the miss with ask, add it to cases.json only, never holdout.json, run test_routing_eval.py, read the evidence. I also accept an explicit revisit trigger, which is a held-out set of 50 or more cases scoring below the 85% line. I did not check whether such a recipe already exists in the contributor docs (UNKNOWN), so the first step is to look before writing. A clearer eval failure message is worth doing only if it is a few lines."
+          }
+        ]
+      },
+      {
+        "personaId": "test-quality-engineer",
+        "revisedRecommendation": "Test further",
+        "whatChanged": [
+          "I checked the tier-3 miss. VERIFIED_FACT: I ran `node bin/cli.js ask --json` on 'Add a new feature for team comments with mentions, permissions and email digests'. It came back tier 1 with confidence low, one keyword (permission) and a Check line. So that probe is flagged, but the gate does not prove it. VERIFIED_FACT: test_routing_eval.py asserts the low flag only for wrong specialists, so a wrong tier is not guaranteed to carry it. I did not confirm that the holdout's own tier-3 case is flagged.",
+          "I now ask for a narrow gate before any pilot: every wrong tier or wrong specialist on tuning and holdout must carry confidence=low. This is cheap, deterministic and fits CI.",
+          "I drop the agent-override comparison harness as a standing deliverable. The maintainability reviewer is right that agent output is not reproducible and a hand-run harness will rot. At most, do a one-off recorded run."
+        ],
+        "whatRemainedUnchanged": [
+          "Keep the deterministic weighted keyword router. Do not add an in-framework LLM or embedding classifier.",
+          "The 80 percent holdout (16/20, n=20) is the honest accuracy figure and the interval is wide (ESTIMATE).",
+          "The existing gates stay: tuning >=0.95, holdout >=0.75, wrong specialists flagged low.",
+          "Grow the holdout opportunistically from real reported misroutes, and add the 4 known misses as named regression cases."
+        ],
+        "responses": [
+          {
+            "challengerId": "software-architect",
+            "response": "ACCEPTED",
+            "reason": "The assertion covers specialist misses only. I ran the tier-3-style request and it was flagged low, which is encouraging, but it is a probe, not a gate. I will extend the eval so tier errors must also be low-confidence and fix the router if any are not."
+          },
+          {
+            "challengerId": "maintainability-reviewer",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Accepted: no permanent agent-override harness or maintained dataset, since agent output cannot gate CI. Rejected: calling it Build/keep with no code change. The tier-flag gap is real and unproven, so a small test extension is needed first. That is a few lines, not a new harness."
+          }
+        ]
+      },
+      {
+        "personaId": "developer-experience-specialist",
+        "revisedRecommendation": "Pilot",
+        "whatChanged": [
+          "VERIFIED_FACT (ran 'node bin/cli.js ask --json' on the team comments request): the tier-3-style feature request was routed to tier 1 with confidence 'low' and a 'Check:' line in the summary. The tier-3 miss is therefore flagged in the JSON confidence field, which weakens the worry that it is invisible. Caveat: this is one request, not the holdout case itself.",
+          "I now agree the pilot needs a measurable harness: replay cases.json and holdout.json with a scripted agent that honors only the low flag, and report accuracy gain and override rate. Ship the SKILL.md rule on that result, not on assumption.",
+          "I withdraw 'document the override in every adapter' as a first step. Order is: harness first, then one sentence of guidance, with no second routing path documented."
+        ],
+        "whatRemainedUnchanged": [
+          "Keep the deterministic, stdlib-only, keyless keyword router as the core. No in-framework LLM or embedding classifier.",
+          "The Claude plugin path already carries the rule (VERIFIED_FACT: plugin-skills/ask/SKILL.md line 12), so little documentation work remains there.",
+          "UNKNOWN still: whether agents actually follow the low flag, and whether other adapters mention the override.",
+          "Failure messages from the routing eval should name the case, expected and actual persona, and keywords that fired."
+        ],
+        "responses": [
+          {
+            "challengerId": "software-architect",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Accepted: a scripted-agent harness with a gain threshold is a better pilot definition than mine, and the 25% override threshold has no baseline. Not verified: I did not check whether the JSON plan carries a machine-readable recheck field. The JSON has confidence and evidence (VERIFIED_FACT from the command output), so a caller can act on confidence='low' already; a separate recheck field may be unnecessary. The 5-point gate is an ESTIMATE and should be set once the harness shows the noise level."
+          },
+          {
+            "challengerId": "maintainability-reviewer",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Accepted: check the tier-3 case before writing guidance. I ran the equivalent request and it was flagged low, so no rule change is needed for that case; the holdout case itself should still be run to confirm. Accepted: avoid documenting a second routing path and keep it to one sentence. Rejected in part: the override is not a new path, since --council and --persona already exist and SKILL.md already states the rule, so I am only proposing to check that other adapters say the same."
+          }
+        ]
+      }
+    ]
+  },
+  "brief": {
+    "decisionId": "dec-routing-keywords-vs-model",
+    "topic": "Keep weighted keyword routing with confidence flags, or move the orchestrator to model-based classification",
+    "recommendation": "Pilot",
+    "strongestArgumentsFor": [
+      "Keep the keyword router as the core. It is deterministic, local, stdlib-only and keyless across the CLI (node), the MCP server (python) and the website build; all four personas agreed an in-framework LLM or embedding classifier breaks that (rounds 1 and 3).",
+      "The agent-assist path already exists: --council and --persona overrides, a confidence field with evidence, and a 'Check:' hint for low confidence (core/orchestrator/dispatch.py lines 81 and 143-145; plugin-skills/ask/SKILL.md line 12 per the DX specialist).",
+      "Failures are mostly visible. Both held-out specialist misses were flagged low (task context), and a probe of the tier-3-style request returned tier 1 with confidence low (run by several personas in round 3).",
+      "Only the deterministic router can be gated in CI: validation/universal-tests/test_routing_eval.py asserts tuning >=0.95, holdout >=0.75 and low flags on wrong specialists (test-quality-engineer, round 1)."
+    ],
+    "strongestArgumentsAgainst": [
+      "The honest accuracy is 16/20 (80%) on a held-out set of 20, with a wide interval. Tuning from 28/50 to 50/50 is partly overfit (rounds 1 and 3).",
+      "Agents may ignore the low flag, so a roughly 20% miss rate could reach users silently. No one has measured how often agents follow it (UNKNOWN).",
+      "The calibration gate covers wrong specialists only. A wrong tier is not asserted to be low confidence (test_routing_eval.py lines 57-59), and the Check hint prints only when tier > 0, so a tier-0 misroute gets no hint (dispatch.py line 143).",
+      "Keyword lists collide as they grow, as the 'token' to design-systems miss shows, and further tuning risks turning the held-out set into a second tuning set."
+    ],
+    "evidence": [
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The tuning set scores 50/50 after tuning (28/50 before) and the held-out set scores 16/20, with four named misses.",
+        "source": "task context, referee.py measurements dated 2026-10-08; routing eval run reported by test-quality-engineer in round 3"
+      },
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "dispatch.py reports confidence and prints a Check hint pointing to --council and --persona only when confidence is low and tier > 0.",
+        "source": "core/orchestrator/dispatch.py lines 81 and 143-145"
+      },
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The eval asserts the low flag only for wrong specialists on the holdout, so wrong tiers are not gated.",
+        "source": "validation/universal-tests/test_routing_eval.py lines 57-59"
+      },
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The request 'Add a new feature for team comments with mentions, permissions and email digests' was routed to tier 1 (security-engineer, keyword 'permission') with confidence low.",
+        "source": "node bin/cli.js ask --json, run in round 3"
+      },
+      {
+        "category": "ESTIMATE",
+        "statement": "With n=20 the holdout accuracy interval is roughly 58 to 92 percent.",
+        "source": "test-quality-engineer, round 1"
+      },
+      {
+        "category": "UNKNOWN",
+        "statement": "Whether agents follow the low-confidence flag, and whether adapters other than the Claude plugin tell them the override exists.",
+        "source": "rounds 2 and 3"
+      }
+    ],
+    "assumptions": [
+      "The calling agent classifies ambiguous requests better than the keyword scorer.",
+      "The determinism, keyless and stdlib-only constraint is non-negotiable for all three runtimes.",
+      "The held-out cases are representative of real requests.",
+      "Misroutes are cheap to recover from because the override flags exist."
+    ],
+    "unknowns": [
+      "How often agents honor the low flag and use overrides.",
+      "Whether the holdout's own tier-3 case is flagged low (only a similar probe was run).",
+      "Whether other adapters (Copilot, others) state the override rule.",
+      "The true routing accuracy on real requests beyond 20 held-out cases."
+    ],
+    "tradeOffs": [
+      {
+        "aspect": "Router type",
+        "chosen": "Deterministic, local keyword routing with confidence flags",
+        "sacrificed": "The extra accuracy a model classifier might give on ambiguous requests",
+        "rationale": "Reproducible, testable in CI, keyless and dependency-free in three runtimes."
+      },
+      {
+        "aspect": "Pilot scope",
+        "chosen": "A one-off recorded comparison of agent-assisted routing against keyword-only",
+        "sacrificed": "A standing agent-override harness in CI",
+        "rationale": "Agent output is not reproducible, so a maintained harness would rot (maintainability-reviewer and test-quality-engineer, round 3)."
+      },
+      {
+        "aspect": "Tuning",
+        "chosen": "Stop broad keyword tuning; add misses to cases.json only",
+        "sacrificed": "Quick gains on the four known held-out misses",
+        "rationale": "Avoids overfitting and keeps holdout.json untuned."
+      }
+    ],
+    "risks": [
+      {
+        "riskId": "R1",
+        "description": "A wrong tier (such as a tier 3 request planned as tier 1) is not guaranteed to be flagged low, so under-scoped work goes unnoticed.",
+        "severity": "HIGH",
+        "probability": "MEDIUM"
+      },
+      {
+        "riskId": "R2",
+        "description": "Agents ignore the low-confidence flag and act on a wrong route.",
+        "severity": "MEDIUM",
+        "probability": "MEDIUM"
+      },
+      {
+        "riskId": "R3",
+        "description": "Keyword lists drift and collide as personas are added.",
+        "severity": "MEDIUM",
+        "probability": "MEDIUM"
+      },
+      {
+        "riskId": "R4",
+        "description": "The holdout becomes a second tuning set, hiding real accuracy.",
+        "severity": "MEDIUM",
+        "probability": "MEDIUM"
+      },
+      {
+        "riskId": "R5",
+        "description": "Tier-0 misroutes get no Check hint because it prints only when tier > 0.",
+        "severity": "LOW",
+        "probability": "MEDIUM"
+      }
+    ],
+    "mitigations": [
+      "Extend test_routing_eval.py so every wrong tier or wrong specialist on tuning and holdout must carry confidence=low, and fix the router if any case fails.",
+      "Run the holdout's own tier-3 case and record whether it is flagged low.",
+      "Add misses to cases.json only, never holdout.json, with a short contributor recipe (reproduce with ask, add case, run eval, read evidence); check first whether one exists.",
+      "Check that other adapters carry the one-sentence low-confidence rule before the pilot, and decide on the tier-0 hint using holdout evidence.",
+      "Make routing eval failure messages name the case, the expected and actual persona, and the keywords that fired."
+    ],
+    "mvpScope": [
+      "Extend the routing eval with the tier-error low-confidence assertion (a few lines).",
+      "Add the four known held-out misses as named regression cases in cases.json.",
+      "Run a one-off recorded pilot: expand the holdout toward 50 cases, have an agent classify with the plan evidence visible (or a scripted agent that honors only the low flag), and compare per tier with keyword-only accuracy.",
+      "Verify and, if missing, add one shared sentence of low-confidence guidance to the adapters."
+    ],
+    "excludedScope": [
+      "No LLM or embedding classifier inside the framework.",
+      "No pluggable classifier interface or second routing path.",
+      "No standing agent-override harness or maintained agent dataset in CI.",
+      "No broad keyword tuning to chase the four held-out misses.",
+      "No new machine-readable 'recheck' field unless the pilot shows the confidence field is insufficient."
+    ],
+    "validationExperiments": [
+      {
+        "hypothesis": "Wrong tier routes on tuning and holdout are already flagged low confidence.",
+        "experiment": "Extend the routing eval to assert confidence=low on every wrong tier or specialist and run it.",
+        "passMetric": "All wrong tier and specialist cases carry confidence=low; otherwise the router is fixed until they do."
+      },
+      {
+        "hypothesis": "An agent that sees the plan evidence and acts on low flags routes better than keyword-only.",
+        "experiment": "One-off recorded run on a holdout expanded toward 50 cases, comparing agent-assisted and keyword-only accuracy per tier.",
+        "passMetric": "A clear gain; the 5-point figure is an ESTIMATE to be set after seeing the noise level. Otherwise end the pilot and leave the router as is."
+      }
+    ],
+    "owners": [
+      "Router maintainer (referee.py and dispatch.py) for the eval extension and any router fix",
+      "Test owner for validation/universal-tests/test_routing_eval.py and the fixtures",
+      "Adapter and plugin maintainer for the one-sentence guidance in plugin-skills/ask/SKILL.md and adapters"
+    ],
+    "successMetrics": [
+      {
+        "metric": "Wrong tier and specialist routes carrying confidence=low",
+        "target": "100% on tuning and holdout",
+        "timeframe": "before the pilot run"
+      },
+      {
+        "metric": "Held-out accuracy on an expanded set of 50 or more cases",
+        "target": "at least 85%, or the revisit trigger fires",
+        "timeframe": "after the holdout is expanded"
+      },
+      {
+        "metric": "Agent-assisted gain over keyword-only in the one-off run",
+        "target": "clear gain, with the threshold set after the noise level is known"
+      }
+    ],
+    "dependencies": [
+      "core/council/referee.py and core/council/councils.json",
+      "core/orchestrator/dispatch.py",
+      "validation/fixtures/routing/cases.json and holdout.json",
+      "validation/universal-tests/test_routing_eval.py",
+      "plugin-skills/ask/SKILL.md and installer/adapters/*",
+      "instructions/universal/ shared instructions"
+    ],
+    "conditionsToChange": [
+      "Revisit if a held-out set of 50 or more cases scores below 85%.",
+      "Revisit if the pilot shows agents override more than about 25% of routes without improving accuracy (ESTIMATE threshold).",
+      "Reconsider a model classifier only if the keyless, deterministic constraint is lifted for the runtimes.",
+      "Reconsider if any wrong tier route cannot be made low confidence with a small router change."
+    ],
+    "dissent": [
+      {
+        "personaId": "test-quality-engineer",
+        "objection": "Final recommendation is Test further rather than Pilot: do not pilot agent assist until a narrow gate exists.",
+        "rationale": "The low-confidence assertion covers wrong specialists only, so a wrong tier is not proven to be flagged. The probe returned low, but it is a probe, not a gate (round 3).",
+        "suggestedAlternative": "First extend the eval so every wrong tier or specialist carries confidence=low, grow the holdout opportunistically from real misroutes, and add the four known misses as regression cases; at most do a one-off recorded agent run."
+      }
+    ],
+    "confidenceLevel": "MEDIUM",
+    "participatingPersonas": [
+      "software-architect",
+      "maintainability-reviewer",
+      "test-quality-engineer",
+      "developer-experience-specialist"
+    ]
+  }
+}

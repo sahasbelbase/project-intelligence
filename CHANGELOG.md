@@ -5,6 +5,22 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.3.0] - 2026-10-08
+
+Summary: Councils run one agent per persona, routing is measured and says when it is unsure, and the demo plays at reading pace.
+
+### Added
+- **Independent council agents**: A read-only `council-member` subagent (in the plugin and written to `.claude/agents/` by `init`). The orchestrator starts one per persona for Round 1, each with only its own prompt, so the first round is genuinely blind, then continues the same agents for challenges and revisions. Records state `"blinding": "separate-agents"` or `"single-agent"`; the website shows which. Earlier records are marked `single-agent`.
+- **Council CLI**: `council sheet` (every convened persona's Round 1 prompt as JSON), `council prompt --context` (shared background such as a hand-off), `council handoff <decisionId>` (pass one council's decision to the next in tier 3).
+- **First independent session**: `dec-routing-keywords-vs-model`, run by four separate agents. Recommendation Pilot, with the test and quality engineer's Test further kept as dissent.
+- **Routing evaluation**: 50 labelled requests (`validation/fixtures/routing/cases.json`) and 20 held-out requests never tuned against (`holdout.json`). Accuracy went from 28/50 to 50/50 on the tuning set; held-out accuracy is 16/20 (80%).
+- **Routing confidence and overrides**: Every plan reports `confidence` and `evidence`; low-confidence plans tell the agent to confirm or re-plan with `--council`, `--persona` or `--include`.
+
+### Changed
+- **Routing**: Keywords are weighted by how many personas share them, specialists are chosen across all councils, and escalation to a council or to tier 3 needs clear signals. Questions ending in "?" are answered directly.
+- **Gates (from the council decision)**: Every wrong tier or specialist on either routing set must be flagged low confidence; failures name the request, the expected and actual route and the keywords that fired. Four known held-out misses are recorded as regression cases. The shared routing instructions and CONTRIBUTING.md explain the low-confidence rule and how to fix a routing mistake without tuning the held-out set.
+- **Demo playback**: Play appends each message instead of re-rendering the window, fades it in, scrolls smoothly from the current position, and paces at about 2.2 seconds per step with longer pauses at round dividers and decisions. A new "Independent agents" example shows the override in the command.
+
 ## [1.2.0] - 2026-10-08
 
 Summary: Install in one step: a Claude Code plugin, an npx command for every other tool, and a no-path MCP setup for Copilot CLI.

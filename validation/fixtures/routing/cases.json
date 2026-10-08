@@ -1,0 +1,290 @@
+{
+  "$comment": "Expected routing for realistic requests. tier: 0 answer, 1 specialist, 2 council, 3 cross-council. 'specialist' is checked for tier 1, 'council' for tier 2, and 'include' lists personas a tier 2 council must convene. Labels are judgments a reviewer agreed with; change them only with a reason in the commit message. Cases marked knownMiss are routed wrongly on purpose of record (from the held-out set, see dec-routing-keywords-vs-model): they are excluded from the accuracy score but must stay flagged low confidence. Do not tune keywords to fix them.",
+  "cases": [
+    {
+      "task": "What does gate G3 check?",
+      "tier": 0
+    },
+    {
+      "task": "How do councils decide?",
+      "tier": 0
+    },
+    {
+      "task": "Explain the anti-slop rules",
+      "tier": 0
+    },
+    {
+      "task": "Which skills handle testing?",
+      "tier": 0
+    },
+    {
+      "task": "What is the difference between tier 1 and tier 2?",
+      "tier": 0
+    },
+    {
+      "task": "Fix the contrast on the primary button",
+      "tier": 1,
+      "specialist": "accessibility-specialist"
+    },
+    {
+      "task": "Fix the text contrast on the primary button",
+      "tier": 1,
+      "specialist": "accessibility-specialist"
+    },
+    {
+      "task": "The settings dialog traps keyboard focus, fix it",
+      "tier": 1,
+      "specialist": "accessibility-specialist"
+    },
+    {
+      "task": "Add alt text and labels to the signup form for screen readers",
+      "tier": 1,
+      "specialist": "accessibility-specialist"
+    },
+    {
+      "task": "Improve the SEO of my landing page",
+      "tier": 1,
+      "specialist": "seo-specialist"
+    },
+    {
+      "task": "Add Open Graph tags and a sitemap to the docs site",
+      "tier": 1,
+      "specialist": "seo-specialist"
+    },
+    {
+      "task": "Write launch posts for Show HN and Reddit",
+      "tier": 1,
+      "specialist": "seo-specialist"
+    },
+    {
+      "task": "Our hover animation stutters on Safari",
+      "tier": 1,
+      "specialist": "interaction-designer"
+    },
+    {
+      "task": "Make the modal open animation feel less sluggish",
+      "tier": 1,
+      "specialist": "interaction-designer"
+    },
+    {
+      "task": "Pick a font pairing for the blog",
+      "tier": 1,
+      "specialist": "typography-specialist"
+    },
+    {
+      "task": "The headings are hard to read on mobile, fix the type scale",
+      "tier": 1,
+      "specialist": "typography-specialist"
+    },
+    {
+      "task": "Choose a palette for dark mode",
+      "tier": 1,
+      "specialist": "color-harmony-specialist"
+    },
+    {
+      "task": "The dashboard chart is confusing, show status at a glance",
+      "tier": 1,
+      "specialist": "data-visualization-specialist"
+    },
+    {
+      "task": "The table overflows on phones",
+      "tier": 1,
+      "specialist": "responsive-design-specialist"
+    },
+    {
+      "task": "Add an index to speed up the orders query",
+      "tier": 1,
+      "specialist": "database-architect"
+    },
+    {
+      "task": "Write a migration that adds a status column",
+      "tier": 1,
+      "specialist": "database-architect"
+    },
+    {
+      "task": "Check the login endpoint for injection and permission bugs",
+      "tier": 1,
+      "specialist": "security-engineer"
+    },
+    {
+      "task": "Rotate the leaked API token and move secrets out of the repo",
+      "tier": 1,
+      "specialist": "security-engineer"
+    },
+    {
+      "task": "The search API is slow under load, profile it",
+      "tier": 1,
+      "specialist": "performance-scalability-engineer"
+    },
+    {
+      "task": "Write regression tests for the checkout flow",
+      "tier": 1,
+      "specialist": "test-quality-engineer"
+    },
+    {
+      "task": "Set up a release pipeline with a rollback step",
+      "tier": 1,
+      "specialist": "devops-engineer"
+    },
+    {
+      "task": "Add retries and logging around the payment webhook",
+      "tier": 1,
+      "specialist": "reliability-engineer"
+    },
+    {
+      "task": "Version the public REST API without breaking clients",
+      "tier": 1,
+      "specialist": "api-integration-specialist"
+    },
+    {
+      "task": "Make the CLI error messages and onboarding docs clearer",
+      "tier": 1,
+      "specialist": "developer-experience-specialist"
+    },
+    {
+      "task": "Estimate what this feature costs to run per user",
+      "tier": 1,
+      "specialist": "business-model-analyst"
+    },
+    {
+      "task": "Who are our competitors and how are they positioned?",
+      "tier": 0
+    },
+    {
+      "task": "Compare our pricing with competitors",
+      "tier": 1,
+      "specialist": "market-researcher"
+    },
+    {
+      "task": "Write acceptance criteria and user stories for export",
+      "tier": 1,
+      "specialist": "business-analyst"
+    },
+    {
+      "task": "Map the onboarding journey and find where new users give up",
+      "tier": 1,
+      "specialist": "customer-experience-specialist"
+    },
+    {
+      "task": "Why do users stop after the first week? Improve retention",
+      "tier": 1,
+      "specialist": "growth-adoption-specialist"
+    },
+    {
+      "task": "Redesign the agents page navigation and colors",
+      "tier": 2,
+      "council": "design",
+      "include": [
+        "color-harmony-specialist",
+        "information-architect"
+      ]
+    },
+    {
+      "task": "Overhaul the dashboard layout so it feels less crowded",
+      "tier": 2,
+      "council": "design",
+      "include": [
+        "restraint-specialist"
+      ]
+    },
+    {
+      "task": "Redesign the settings page",
+      "tier": 2,
+      "council": "design"
+    },
+    {
+      "task": "Rethink the design system tokens and components",
+      "tier": 2,
+      "council": "design",
+      "include": [
+        "design-systems-architect"
+      ]
+    },
+    {
+      "task": "Migrate the memory store to a new database schema",
+      "tier": 2,
+      "council": "development",
+      "include": [
+        "database-architect"
+      ]
+    },
+    {
+      "task": "Decide between a monolith and separate services for the backend",
+      "tier": 2,
+      "council": "development"
+    },
+    {
+      "task": "Rewrite the authentication system with token rotation",
+      "tier": 2,
+      "council": "development",
+      "include": [
+        "security-engineer"
+      ]
+    },
+    {
+      "task": "Should we build a mobile app or improve the web app first?",
+      "tier": 2,
+      "council": "product"
+    },
+    {
+      "task": "Decide our pricing strategy for teams",
+      "tier": 2,
+      "council": "product",
+      "include": [
+        "business-model-analyst"
+      ]
+    },
+    {
+      "task": "Plan the launch strategy and reach for version 2",
+      "tier": 2,
+      "council": "product",
+      "include": [
+        "seo-specialist"
+      ]
+    },
+    {
+      "task": "Convene the design council on the onboarding flow",
+      "tier": 2,
+      "council": "design"
+    },
+    {
+      "task": "Add a new feature: team workspaces with permissions, pricing and a new dashboard",
+      "tier": 3
+    },
+    {
+      "task": "Build a billing module from scratch with a pricing page, an API and an admin dashboard",
+      "tier": 3
+    },
+    {
+      "task": "Launch a public API product with docs, pricing and a developer portal",
+      "tier": 3
+    },
+    {
+      "task": "Add end-to-end real-time collaboration to the editor, including pricing and UI",
+      "tier": 3
+    },
+    {
+      "task": "Speed up the slow product search query",
+      "tier": 1,
+      "specialist": "performance-scalability-engineer",
+      "knownMiss": true
+    },
+    {
+      "task": "Store the session token in an httpOnly cookie instead of localStorage",
+      "tier": 1,
+      "specialist": "security-engineer",
+      "knownMiss": true
+    },
+    {
+      "task": "Decide whether to move from SQLite to Postgres",
+      "tier": 2,
+      "council": "development",
+      "knownMiss": true
+    },
+    {
+      "task": "Add a new feature for team comments with mentions, permissions and email digests",
+      "tier": 3,
+      "knownMiss": true
+    }
+  ]
+}

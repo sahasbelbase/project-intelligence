@@ -487,6 +487,8 @@ details.round .round-body { padding: 0 22px 22px; display: flex; flex-direction:
 .window-bar .dots { display: flex; gap: 6px; }
 .window-bar .dots span { width: 10px; height: 10px; border-radius: 50%; background: color-mix(in srgb, #fff 20%, transparent); }
 .window-body { display: flex; flex-direction: column; gap: 14px; padding: 20px; height: 620px; overflow-y: auto; font: 13.5px/1.6 var(--font-mono); scroll-behavior: smooth; }
+.frame-enter { animation: frame-in 480ms cubic-bezier(.2, .7, .2, 1) both; }
+@keyframes frame-in { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
 .term-line { overflow-wrap: anywhere; }
 .term-line .glyph { color: var(--code-accent-2); margin-right: 8px; }
 .term-line.muted { color: var(--code-muted); }
@@ -613,4 +615,6 @@ dialog.sheet::backdrop { background: var(--color-backdrop); }
 }
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
+  .frame-enter { animation: none; }
+  .window-body { scroll-behavior: auto; }
 }

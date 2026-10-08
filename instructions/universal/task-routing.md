@@ -94,3 +94,8 @@ Executing a sequential workflow without terminating in automated test verificati
 
 ### TR-004: Self-Review Conflict of Interest
 Assigning the Implementation Engineer to perform the independent adversarial review of their own deliverables. Review tasks must strictly route to the Independent Review persona.
+
+## Low-confidence plans
+
+Every plan reports `confidence` and the `evidence` behind it. When confidence is `low`, read the evidence and either confirm the route or re-plan with `--council <design|development|product>` or `--persona <id>`, and say why. Measured accuracy is 80% on requests the router has not seen, so this check matters (decision `dec-routing-keywords-vs-model`).
+

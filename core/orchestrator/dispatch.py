@@ -24,7 +24,7 @@ from typing import Any, Dict, List, Optional
 if __package__ in (None, ""):
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from core.council.referee import Referee  # noqa: E402
+from core.council.referee import Referee, RefereeError  # noqa: E402
 from core.orchestrator.router import route_request  # noqa: E402
 
 FRAMEWORK_ROOT = Path(__file__).resolve().parents[2]
@@ -59,13 +59,15 @@ def _quote(task: str) -> str:
     return '"' + task.replace('"', '\\"') + '"'
 
 
-def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = False) -> Dict[str, Any]:
+def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = False,
+             council: Optional[str] = None, persona: Optional[str] = None,
+             include: Optional[List[str]] = None) -> Dict[str, Any]:
     """Plan a request. Returns a JSON-serializable dict."""
     task = (task or "").strip()
     if not task:
         raise ValueError("Describe the task, for example: Redesign the settings page")
     ref = Referee(FRAMEWORK_ROOT)
-    plan = ref.plan(task, full_roster=full_roster)
+    plan = ref.plan(task, full_roster=full_roster, council=council, persona=persona, include=include)
     # The gate belongs to the user's project: the given workspace, else the current folder.
     workspace = Path(workspace) if workspace else Path.cwd()
     tier = plan["tier"]
@@ -77,6 +79,8 @@ def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = Fa
         "reason": plan["reason"],
         "currentGate": _current_gate(workspace),
         "councils": plan["councils"],
+        "confidence": plan.get("confidence", "high"),
+        "evidence": plan.get("evidence", []),
         "steps": [],
         "next": [],
     }
@@ -137,6 +141,9 @@ def render_text(result: Dict[str, Any]) -> str:
     ]
     if result.get("currentGate"):
         lines.append(f"Gate:  {result['currentGate']}")
+    if result.get("confidence") == "low" and result["tier"] > 0:
+        why = ", ".join(f"{e['personaId']} ({'/'.join(e['keywords'])})" for e in result.get("evidence", [])) or "no keywords matched"
+        lines.append(f"Check: low confidence ({why}). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.")
     lines.append("")
     for n, step in enumerate(result["steps"], 1):
         lines.append(f"{n}. {step['text']}")
@@ -160,10 +167,14 @@ def _main(argv: Optional[List[str]] = None) -> int:
     parser.add_argument("--json", action="store_true", help="Print the plan as JSON")
     parser.add_argument("--workspace", help="Project folder whose lifecycle state to read (default: the current folder)")
     parser.add_argument("--full-roster", action="store_true", help="Convene every persona on the council (major redesigns only)")
+    parser.add_argument("--council", choices=["design", "development", "product"], help="Use this council (overrides routing)")
+    parser.add_argument("--persona", help="Hand the task to this persona id (overrides routing)")
+    parser.add_argument("--include", action="append", default=[], help="Also convene this persona id (repeatable)")
     args = parser.parse_args(argv)
     try:
-        result = dispatch(" ".join(args.task), Path(args.workspace) if args.workspace else None, args.full_roster)
-    except ValueError as err:
+        result = dispatch(" ".join(args.task), Path(args.workspace) if args.workspace else None, args.full_roster,
+                          council=args.council, persona=args.persona, include=args.include)
+    except (ValueError, RefereeError) as err:
         print(str(err), file=sys.stderr)
         return 2
     if args.json:

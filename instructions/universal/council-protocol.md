@@ -29,7 +29,8 @@ Councils are defined in `core/council/councils.json`, with persona definitions i
 - **Convene size**: the chair, the critic and up to three specialists chosen by relevance (at most five). The full roster is opt-in for major redesigns only.
 - **Prompts**: build each persona's instruction with `python3 -m core.council.referee prompt <council> <persona> <round> "<task>"`.
 - **Records**: the referee validates every round and the brief, adds any unrecorded dissent, and saves the session to `memory/council-briefs/<decisionId>.json`. The website displays these records read-only. Check them with `python3 -m core.council.referee check`.
-- **Hand-offs**: in tier 3, each council passes a compact hand-off (recommendation, scope, assumptions, risks, open dissent) to the next, not its full transcript.
+- **Hand-offs**: in tier 3, each council passes a compact hand-off (recommendation, scope, assumptions, risks, open dissent) to the next, not its full transcript: `council handoff <decisionId>` produces it, and `--context` passes it into the next council's prompts.
+- **Separate agents**: where the client can start subagents (Claude Code's `council-member` agent), each persona runs as its own agent. Round 1 prompts come from `council sheet`, all agents start at once, and each sees only its own prompt, so Round 1 is genuinely blind. Later rounds continue the same agents. Records state `"blinding": "separate-agents"`; sessions written by one agent state `"single-agent"`, and the website shows which.
 
 ## 4. The 4-Round Deliberation Protocol
 

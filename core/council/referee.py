@@ -37,7 +37,7 @@ RESPONSES = ["ACCEPTED", "PARTIALLY_ACCEPTED", "REJECTED"]
 BLINDING = ["separate-agents", "single-agent"]
 
 _QUESTION = re.compile(r"^\s*(what|how|why|where|when|which|who|does|do|is|are|can|explain|describe|define|tell me|list)\b", re.I)
-_ACTION = re.compile(r"\b(add|build|create|design|redesign|implement|change|fix|improve|refactor|migrate|launch|ship|replace|remove|overhaul|decide|plan|write|set up|make|choose|pick|check|estimate|compare|map|rotate|rewrite|convene|profile|version)\b", re.I)
+_ACTION = re.compile(r"\b(add|build|create|design|redesign|implement|change|fix|improve|refactor|migrate|launch|ship|replace|remove|overhaul|decide|plan|write|set up|make|choose|pick|check|estimate|compare|map|rotate|rewrite|convene|profile|version|review|audit|do a)\b", re.I)
 # Signals that a change is broad enough for a council rather than one specialist.
 _BROAD = re.compile(r"\b(redesign|overhaul|rethink|architecture|architect|strategy|council|trade-?off|decide|decision|whole|entire|migrate|irreversible|breaking change|rewrite|should we)\b", re.I)
 # Signals that a request spans product, design and engineering (tier 3), together with

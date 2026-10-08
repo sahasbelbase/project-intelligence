@@ -157,3 +157,17 @@ Activate this skill whenever:
   - `backlogAndHistory.bugs`
   - `backlogAndHistory.technicalDebt`
   - `durableKnowledge.architecturalDecisions`
+
+## 11. Review Findings Standard
+
+Applies to every finding this skill reports.
+
+- **Read beyond the diff.** Read the callers and callees of each changed function. When a signature, return value or behaviour changes, find every caller.
+- **Judge against the real load.** Find the expected load in the repository (one person running a script, or many users and processes) and say which one you assumed.
+- **Concrete case or no finding.** Each finding names the input or situation that produces the wrong result. Re-read the lines to confirm the caller exists or the value can really be empty.
+- **Order:** correct, safe, holds under load, tested where risky, fast, lean.
+- **Format:** number findings across three groups (must fix, should fix, nice to have). Each has a location (`file:line`), what the code does, the problem, the smallest fix, and the cost of skipping it.
+- **Finish with a verdict:** `Ship`, or which findings to fix first, plus `Not checked:` for anything that mattered but could not be verified.
+- **No style taste and no vague "consider".** A shortcut whose limit is documented in a comment is a decision, not a finding, unless the expected load already crosses it.
+
+Adapted from `ponytail-review` by dietrichgebert/ponytail (MIT), vendored in `vendor/skills/ponytail-review/`.

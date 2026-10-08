@@ -171,6 +171,21 @@
       "specialist": "growth-adoption-specialist"
     },
     {
+      "task": "Review this pull request before I merge",
+      "tier": 1,
+      "specialist": "code-reviewer"
+    },
+    {
+      "task": "Is this diff over-engineered? Do a code review",
+      "tier": 1,
+      "specialist": "code-reviewer"
+    },
+    {
+      "task": "Write a PRD for offline mode",
+      "tier": 1,
+      "specialist": "business-analyst"
+    },
+    {
       "task": "Redesign the agents page navigation and colors",
       "tier": 2,
       "council": "design",

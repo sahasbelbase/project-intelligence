@@ -11,9 +11,15 @@
       "commit": "587ea305b948ad34f0c2d5c2ea4211d428f66ed8",
       "license": "MIT",
       "copyright": "Copyright (c) 2026 Julien Thibeaut",
-      "files": ["SKILL.md", "LICENSE"],
+      "files": [
+        "SKILL.md",
+        "LICENSE"
+      ],
       "summary": "Audit and fix accessible names, keyboard access, focus and dialogs, semantics, form errors, announcements and contrast. Reports violations with a minimal code fix.",
-      "usedBy": ["accessibility-specialist", "frontend-design-engineer"]
+      "usedBy": [
+        "accessibility-specialist",
+        "frontend-design-engineer"
+      ]
     },
     {
       "id": "fixing-motion-performance",
@@ -24,9 +30,15 @@
       "commit": "587ea305b948ad34f0c2d5c2ea4211d428f66ed8",
       "license": "MIT",
       "copyright": "Copyright (c) 2026 Julien Thibeaut",
-      "files": ["SKILL.md", "LICENSE"],
+      "files": [
+        "SKILL.md",
+        "LICENSE"
+      ],
       "summary": "Audit animation cost: compositor-only properties, layout thrashing, scroll-linked motion, blur and layer promotion.",
-      "usedBy": ["interaction-designer", "frontend-design-engineer"]
+      "usedBy": [
+        "interaction-designer",
+        "frontend-design-engineer"
+      ]
     },
     {
       "id": "emil-design-eng",
@@ -37,9 +49,15 @@
       "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
       "license": "MIT",
       "copyright": "Copyright (c) 2026 Emil Kowalski",
-      "files": ["SKILL.md", "LICENSE"],
+      "files": [
+        "SKILL.md",
+        "LICENSE"
+      ],
       "summary": "Animation decision framework (whether, why, easing, duration), component polish rules, transform and clip-path techniques, and a review format.",
-      "usedBy": ["interaction-designer", "visual-design-director"]
+      "usedBy": [
+        "interaction-designer",
+        "visual-design-director"
+      ]
     },
     {
       "id": "review-animations",
@@ -50,9 +68,134 @@
       "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
       "license": "MIT",
       "copyright": "Copyright (c) 2026 Emil Kowalski",
-      "files": ["SKILL.md", "STANDARDS.md", "LICENSE"],
+      "files": [
+        "SKILL.md",
+        "STANDARDS.md",
+        "LICENSE"
+      ],
       "summary": "Strict review of motion code against a written standard. Flags by default; approval has to be earned.",
-      "usedBy": ["interaction-designer", "critical-design-reviewer"]
+      "usedBy": [
+        "interaction-designer",
+        "critical-design-reviewer"
+      ]
+    },
+    {
+      "id": "ponytail",
+      "name": "Ponytail (smallest complete change)",
+      "upstreamPath": "skills/ponytail/",
+      "summary": "Write the least new code that fully solves the task: reuse what exists, prefer the standard library, finish every caller and test the change breaks, and never cut validation, security or accessibility.",
+      "usedBy": [
+        "senior-application-developer",
+        "code-reviewer"
+      ],
+      "source": "dietrichgebert/ponytail",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "ponytail-review",
+      "name": "Ponytail Review",
+      "upstreamPath": "skills/ponytail-review/",
+      "summary": "Review a change for correctness, safety, load, tests, speed and lean code. Every finding needs a concrete failing case and comes with the smallest fix.",
+      "usedBy": [
+        "code-reviewer",
+        "maintainability-reviewer"
+      ],
+      "source": "dietrichgebert/ponytail",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "ponytail-audit",
+      "name": "Ponytail Audit",
+      "upstreamPath": "skills/ponytail-audit/",
+      "summary": "Audit a whole repository the same way: bugs, security, scale, missing tests, slow paths and what to delete, merge or split, ranked and explained.",
+      "usedBy": [
+        "code-reviewer",
+        "maintainability-reviewer"
+      ],
+      "source": "dietrichgebert/ponytail",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "grilling",
+      "name": "Grilling (Matt Pocock)",
+      "upstreamPath": "skills/productivity/grilling/",
+      "summary": "Interview the user in rounds over a design tree, each question with a recommended answer, until every decision is settled and nothing is silently assumed.",
+      "usedBy": [
+        "business-analyst",
+        "product-manager"
+      ],
+      "source": "mattpocock/skills",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "domain-modeling",
+      "name": "Domain Modeling (Matt Pocock)",
+      "upstreamPath": "skills/engineering/domain-modeling/",
+      "summary": "Keep a shared glossary and architecture decision records so the words in conversations, specs and code mean the same thing.",
+      "usedBy": [
+        "software-architect",
+        "business-analyst"
+      ],
+      "source": "mattpocock/skills",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "ADR-FORMAT.md",
+        "GLOSSARY-FORMAT.md",
+        "LICENSE",
+        "SKILL.md"
+      ]
+    },
+    {
+      "id": "tdd",
+      "name": "Test-Driven Development (Matt Pocock)",
+      "upstreamPath": "skills/engineering/tdd/",
+      "summary": "Red, green, refactor at the highest useful seam; test behaviour, not implementation, and mock only at system boundaries.",
+      "usedBy": [
+        "senior-application-developer",
+        "test-quality-engineer"
+      ],
+      "source": "mattpocock/skills",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "LICENSE",
+        "SKILL.md",
+        "mocking.md",
+        "tests.md"
+      ]
     }
   ],
   "referenced": [
@@ -63,7 +206,10 @@
       "install": "npx skills add vercel-labs/agent-skills --skill web-design-guidelines",
       "reasonNotVendored": "No license file detected in the upstream repository, so it is not redistributed.",
       "summary": "Review UI code for accessibility, keyboard support, forms, animation and performance, reported as file:line findings.",
-      "usedBy": ["frontend-design-engineer", "accessibility-specialist"]
+      "usedBy": [
+        "frontend-design-engineer",
+        "accessibility-specialist"
+      ]
     },
     {
       "id": "frontend-design",
@@ -72,7 +218,9 @@
       "install": "npx skills add https://github.com/anthropics/skills --skill frontend-design",
       "reasonNotVendored": "No repository-level license detected; installed from upstream instead.",
       "summary": "A design-thinking step before code: purpose, audience, a deliberate tone, and a list of generic defaults to avoid.",
-      "usedBy": ["visual-design-director"]
+      "usedBy": [
+        "visual-design-director"
+      ]
     },
     {
       "id": "impeccable",
@@ -81,7 +229,10 @@
       "install": "npx skills add pbakaus/impeccable",
       "reasonNotVendored": "Apache-2.0, but the skill depends on many reference files and per-tool variants; installing upstream keeps it intact and current.",
       "summary": "A command sequence for design work: audit, arrange, typeset, polish.",
-      "usedBy": ["visual-design-director", "typography-specialist"]
+      "usedBy": [
+        "visual-design-director",
+        "typography-specialist"
+      ]
     },
     {
       "id": "baseline-ui-upstream",
@@ -90,7 +241,9 @@
       "install": "npx skills add ibelick/ui-skills --skill baseline-ui",
       "reasonNotVendored": "The framework ships its own skills/baseline-ui adapted to plain CSS tokens; the upstream version assumes Tailwind and motion/react.",
       "summary": "Opinionated constraints against generic AI UI: no gradients or glows, one accent per view, compositor-only animation.",
-      "usedBy": ["design-systems-architect"]
+      "usedBy": [
+        "design-systems-architect"
+      ]
     },
     {
       "id": "antfu-skills",
@@ -99,7 +252,44 @@
       "install": "pnpx skills add antfu/skills --skill='*'",
       "reasonNotVendored": "Framework-specific (Vue, Nuxt, Vite, Vitest, UnoCSS). Install only in projects that use that stack.",
       "summary": "Conventions for antfu, antfu-create-pr, nitro, nuxt, pinia, pnpm, unocss, vite, vitepress, vitest and vue.",
-      "usedBy": ["senior-application-developer"]
+      "usedBy": [
+        "senior-application-developer"
+      ]
+    },
+    {
+      "id": "to-spec",
+      "name": "To Spec (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill to-spec",
+      "reasonNotVendored": "Publishes to an issue tracker configured by /setup-matt-pocock-skills, which is not part of this framework. The idea-to-prd skill writes the same kind of spec to a local file instead.",
+      "summary": "Turn a settled conversation into a spec: problem, solution, numbered user stories, implementation and testing decisions, out of scope.",
+      "usedBy": [
+        "business-analyst",
+        "product-manager"
+      ]
+    },
+    {
+      "id": "to-tickets",
+      "name": "To Tickets (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill to-tickets",
+      "reasonNotVendored": "Depends on the same tracker setup. idea-to-prd covers vertical, tracer-bullet tickets written to local files.",
+      "summary": "Break a spec into vertical, demoable tickets with blocking edges, including expand-and-contract for wide refactors.",
+      "usedBy": [
+        "business-analyst",
+        "software-architect"
+      ]
+    },
+    {
+      "id": "code-review",
+      "name": "Code Review (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill code-review",
+      "reasonNotVendored": "Expects the tracker setup to find the originating spec. The code-reviewer agent uses ponytail-review and independent-review, which need no setup.",
+      "summary": "Two-axis review in parallel sub-agents: repository standards (with a code-smell baseline) and fidelity to the originating spec.",
+      "usedBy": [
+        "code-reviewer"
+      ]
     }
   ]
 }

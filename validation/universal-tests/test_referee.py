@@ -75,7 +75,7 @@ class TestPersonaRegistry(unittest.TestCase):
 
     def test_roster_sizes(self):
         sizes = {cid: len(c["roster"]) for cid, c in self.ref.config["councils"].items()}
-        self.assertEqual(sizes, {"design": 13, "development": 12, "product": 12})
+        self.assertEqual(sizes, {"design": 13, "development": 13, "product": 12})
 
     def test_product_council_reuses_existing_agents(self):
         for pid in self.ref.config["councils"]["product"]["agentPersonas"]:

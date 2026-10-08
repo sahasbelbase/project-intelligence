@@ -194,7 +194,16 @@ python3 -m core.council.referee check
 ```
 
 ### Third-party skills (`vendor/skills/`)
-Four design skills are copied verbatim from their authors with their MIT licenses and installed alongside the framework skills: `fixing-accessibility` and `fixing-motion-performance` (ibelick/ui-skills), `emil-design-eng` and `review-animations` (emilkowalski/skills). `vendor/skills/registry.json` records the source commit for each, and lists recommended skills that are installed from upstream instead.
+Ten skills are copied verbatim from their authors with their MIT licenses and installed alongside the framework skills:
+
+| Skills | Source | Used for |
+|---|---|---|
+| `fixing-accessibility`, `fixing-motion-performance` | [ibelick/ui-skills](https://github.com/ibelick/ui-skills) | Accessibility and animation performance |
+| `emil-design-eng`, `review-animations` | [emilkowalski/skills](https://github.com/emilkowalski/skills) | Motion and component polish |
+| `ponytail`, `ponytail-review`, `ponytail-audit` | [dietrichgebert/ponytail](https://github.com/dietrichgebert/ponytail) | Writing the smallest complete change, code review, repository audit |
+| `grilling`, `domain-modeling`, `tdd` | [mattpocock/skills](https://github.com/mattpocock/skills) | Questioning an idea to shared understanding, glossary and decision records, test-driven development |
+
+`vendor/skills/registry.json` records the source commit for each, and lists recommended skills installed from upstream instead (including mattpocock's `to-spec`, `to-tickets` and `code-review`, which need his issue-tracker setup). The framework's own `idea-to-prd` skill and `code-reviewer` agent build on these: an idea becomes a PRD with the real CLI commands and vertical tickets in local files, and reviews require a concrete failing case for every finding.
 
 ---
 

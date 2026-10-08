@@ -234,10 +234,13 @@
         "test-quality-engineer",
         "devops-engineer",
         "reliability-engineer",
+        "code-reviewer",
         "maintainability-reviewer",
         "developer-experience-specialist"
       ],
-      "agentPersonas": [],
+      "agentPersonas": [
+        "code-reviewer"
+      ],
       "routingKeywords": {
         "system-design-specialist": [
           "system design",
@@ -340,12 +343,24 @@
           "developer experience",
           "readme",
           "installer"
+        ],
+        "code-reviewer": [
+          "code review",
+          "review this",
+          "pull request",
+          "diff",
+          "review the",
+          "over-engineered",
+          "bloat",
+          "audit the code",
+          "commit"
         ]
       },
       "skills": {
         "software-architect": [
           "architecture-and-contracts",
-          "existing-project-analysis"
+          "existing-project-analysis",
+          "vendor:domain-modeling"
         ],
         "system-design-specialist": [
           "architecture-and-contracts",
@@ -353,6 +368,8 @@
         ],
         "senior-application-developer": [
           "controlled-implementation",
+          "vendor:ponytail",
+          "vendor:tdd",
           "ext:antfu-skills"
         ],
         "database-architect": [
@@ -370,7 +387,8 @@
         ],
         "test-quality-engineer": [
           "testing-and-verification",
-          "test-case-generation"
+          "test-case-generation",
+          "vendor:tdd"
         ],
         "devops-engineer": [
           "cross-platform-adaptation",
@@ -381,10 +399,17 @@
         ],
         "maintainability-reviewer": [
           "thermo-nuclear-review",
-          "independent-review"
+          "independent-review",
+          "vendor:ponytail-audit"
         ],
         "developer-experience-specialist": [
           "documentation-and-handoff"
+        ],
+        "code-reviewer": [
+          "independent-review",
+          "vendor:ponytail-review",
+          "vendor:ponytail-audit",
+          "ext:code-review"
         ]
       }
     },
@@ -428,7 +453,10 @@
           "user story",
           "user stories",
           "business rule",
-          "workflow"
+          "workflow",
+          "prd",
+          "spec",
+          "requirements document"
         ],
         "customer-advocate": [
           "customer feedback",
@@ -508,12 +536,18 @@
       },
       "skills": {
         "product-manager": [
+          "idea-to-prd",
           "feature-prioritization",
-          "requirements-analysis"
+          "requirements-analysis",
+          "vendor:grilling"
         ],
         "business-analyst": [
+          "idea-to-prd",
           "requirements-analysis",
-          "test-case-generation"
+          "test-case-generation",
+          "vendor:grilling",
+          "ext:to-spec",
+          "ext:to-tickets"
         ],
         "customer-advocate": [
           "project-discovery"

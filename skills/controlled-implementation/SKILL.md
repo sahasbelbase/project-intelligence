@@ -151,3 +151,23 @@ Activate this skill when:
   - `executionState.activeTasks`
   - `executionState.completedTasks`
   - `executionState.blockedTasks`
+
+## 11. Smallest Complete Change
+
+Before writing code, list every place the change must reach: callers, tests, fixtures, configuration and exports. Then take the first option that fully works:
+
+1. Does it need to exist? Skip options and flexibility nobody asked for, and say so in one line.
+2. Does the codebase already have it? Use it the way the surrounding code does.
+3. Does the standard library or platform do it? Use that. Never add a dependency for a few lines.
+4. Otherwise, write the minimum code that works, in the structure the codebase already has.
+
+Rules:
+- Be lean about the solution, never about the change: finish every caller, test and fixture it breaks.
+- For a bug, find every caller of the function first, then fix the root cause once in shared code.
+- New non-trivial logic (a branch, a parser, money, security, a new script) leaves one small test.
+- Never cut validation at trust boundaries, error handling that prevents data loss, security or accessibility.
+- End the hand-off with one line on what was skipped or not checked.
+
+For a new behaviour, work test-first at the highest useful seam: one failing test, the code to pass it, then refactor (see the vendored `tdd` skill).
+
+Adapted from `ponytail` by dietrichgebert/ponytail (MIT) and `tdd` by mattpocock/skills (MIT), both vendored in `vendor/skills/`.

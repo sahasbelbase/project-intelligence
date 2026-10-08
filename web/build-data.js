@@ -63,6 +63,15 @@ const SKILL_GROUPS = [
     ],
   },
   {
+    title: 'From idea to plan',
+    sub: 'Get the idea, the words and the code to agree before anyone builds.',
+    skills: [
+      ['idea-to-prd', 'Questions the idea, agrees the vocabulary, writes the PRD with the real CLI commands and slices it into tickets.'],
+      ['grilling', 'Interviews you in rounds, each question with a recommended answer, until nothing is assumed.'],
+      ['domain-modeling', 'Keeps a glossary and decision records so specs and code use the same words.'],
+    ],
+  },
+  {
     title: 'The main flow',
     sub: 'From requirements to release, one gate at a time.',
     skills: [
@@ -96,6 +105,16 @@ const SKILL_GROUPS = [
       ['fixing-motion-performance', 'Finds animation that causes layout or paint work and fixes it.'],
       ['emil-design-eng', 'Decides whether and how something should animate, and polishes components.'],
       ['review-animations', 'Strict review of motion code against a written standard.'],
+    ],
+  },
+  {
+    title: 'Coding craft',
+    sub: 'Write less code, test the risky parts and review like the person on call.',
+    skills: [
+      ['ponytail', 'Finds the smallest change that fully solves the task, and finishes every caller it breaks.'],
+      ['tdd', 'Red, green, refactor at the highest useful seam; test behaviour, not internals.'],
+      ['ponytail-review', 'Reviews a change: every finding has a concrete failing case and the smallest fix.'],
+      ['ponytail-audit', 'Audits a whole repository for bugs, risk, missing tests and code to delete.'],
     ],
   },
   {

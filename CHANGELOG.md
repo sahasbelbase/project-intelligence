@@ -5,6 +5,21 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.0] - 2026-10-08
+
+Summary: A code reviewer, an idea-to-PRD flow, and six more third-party skills for writing, testing and reviewing code.
+
+### Added
+- **Third-party skills**: `ponytail`, `ponytail-review` and `ponytail-audit` from dietrichgebert/ponytail, and `grilling`, `domain-modeling` and `tdd` from mattpocock/skills, copied verbatim with their MIT licenses at pinned commits. mattpocock's `to-spec`, `to-tickets` and `code-review` are listed as install-separately because they depend on his issue-tracker setup.
+- **`idea-to-prd` skill**: Questions an idea in rounds until every decision is settled, agrees the vocabulary in a glossary and decision records, writes a PRD that lists the exact CLI commands users will run, and slices it into vertical tickets, all in local files.
+- **`code-reviewer` agent** on the development council (now 13 personas): reads the connected code, reports numbered findings with a concrete failing case and the smallest fix, and ends with a verdict.
+
+### Changed
+- **`independent-review`**: New review findings standard (concrete case per finding, must/should/nice groups, verdict, what was not checked), adapted from ponytail-review.
+- **`controlled-implementation`**: New "smallest complete change" section and test-first guidance, adapted from ponytail and tdd.
+- **Council skills**: The developer, test, maintainability, architect, business analyst and product manager personas now carry the new skills; "PRD" and "spec" route to the business analyst, and code-review requests to the code reviewer.
+- **Website**: New "From idea to plan" and "Coding craft" skill groups.
+
 ## [1.3.0] - 2026-10-08
 
 Summary: Councils run one agent per persona, routing is measured and says when it is unsure, and the demo plays at reading pace.

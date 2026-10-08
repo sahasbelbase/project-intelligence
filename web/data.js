@@ -2,16 +2,16 @@
 window.PROJECT_DATA = {
   "meta": {
     "name": "Project Intelligence",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "license": "Apache-2.0",
-    "commit": "6808d25",
-    "generatedAt": "2026-10-08T15:31:48.072Z"
+    "commit": "f073eb1",
+    "generatedAt": "2026-10-08T15:43:37.380Z"
   },
   "counts": {
-    "skills": 24,
-    "vendoredSkills": 4,
-    "agents": 18,
-    "personas": 41,
+    "skills": 25,
+    "vendoredSkills": 10,
+    "agents": 19,
+    "personas": 42,
     "councils": 3,
     "mcpTools": 11
   },
@@ -649,6 +649,66 @@ window.PROJECT_DATA = {
         "The Out-of-Scope Exclusions list is non-empty and provides explicit rationale for each deferred item"
       ],
       "path": "skills/feature-prioritization/SKILL.md",
+      "source": "framework"
+    },
+    {
+      "id": "idea-to-prd",
+      "name": "Idea to PRD",
+      "purpose": "Turn a rough idea into a product requirements document (PRD) that matches how the code and the CLI actually work: question the idea until every decision is settled, agree the vocabulary, write the PRD with the exact commands users will run, and slice it into vertical tickets.",
+      "whenToUse": [
+        "Someone has an idea or feature request but the scope, users or behaviour are still fuzzy",
+        "Before G1 (requirements) for anything bigger than a single specialist task",
+        "When the words people use for a feature differ from the names in the code",
+        "When a plan must become tickets an agent can build one at a time"
+      ],
+      "procedure": [
+        {
+          "title": "Ground it in the code first",
+          "action": "Read the README, the contracts and any GLOSSARY.md or docs/adr/ before asking anything. Run `project-intelligence ask \"<idea>\"` to see which tier and council the idea touches. Look up facts yourself; only decisions go to the person."
+        },
+        {
+          "title": "Question the idea in rounds",
+          "action": "Map the decisions as a tree. Each round, ask every question whose prerequisites are already settled, numbered, each with your recommended answer, worded so that \"yes\" accepts it. Recompute after each answer. Stop when nothing is left silently assumed and the person confirms. (The vendored grilling skill describes this in full.)"
+        },
+        {
+          "title": "Agree the vocabulary",
+          "action": "Write each term the conversation settles into GLOSSARY.md and each hard-to-reverse choice into a decision record, so the PRD, tickets, code names and CLI flags use the same words. (See the vendored domain-modeling skill.)"
+        },
+        {
+          "title": "Write the PRD",
+          "action": "Save it to docs/specs/<slug>.md using the template below. Describe behaviour from the user's side, list the exact CLI commands, flags and output users will see, and keep file paths and code snippets out because they go stale."
+        },
+        {
+          "title": "Choose the test seams",
+          "action": "Name the highest point where the feature can be tested through its public behaviour, preferring seams that already exist. Fewer seams are better; confirm them with the person."
+        },
+        {
+          "title": "Slice into vertical tickets",
+          "action": "Break the PRD into thin end-to-end slices, each demoable on its own and small enough for one fresh agent session, with the tickets that block it. Put any preparatory refactor first. For one mechanical change across the whole codebase, use expand, migrate in batches, then contract. Save one file per ticket under docs/specs/<slug>/tickets/NN-<slug>.md."
+        },
+        {
+          "title": "Route and record",
+          "action": "Run `project-intelligence ask` on the PRD title: council-sized work goes to the product council before G1 is signed. Record the PRD and tickets in contracts/requirements/ or link them from it."
+        }
+      ],
+      "outputs": [
+        "docs/specs/<slug>.md: the PRD",
+        "docs/specs/<slug>/tickets/NN-<slug>.md: one file per vertical ticket with its blockers and acceptance criteria",
+        "GLOSSARY.md entries and docs/adr/ records for settled terms and decisions",
+        "A route from `project-intelligence ask` and, for council-sized work, a council brief"
+      ],
+      "gates": [
+        "G0",
+        "G1"
+      ],
+      "verification": [
+        "Every user story has at least one Given/When/Then acceptance criterion and appears in at least one ticket",
+        "Every CLI command in the PRD exists or is listed as new in Implementation decisions",
+        "Every domain term in the PRD is in GLOSSARY.md",
+        "No file paths or code snippets in the PRD, apart from a prototype-derived shape marked as such",
+        "The person confirmed shared understanding before the PRD was written"
+      ],
+      "path": "skills/idea-to-prd/SKILL.md",
       "source": "framework"
     },
     {
@@ -1399,6 +1459,130 @@ window.PROJECT_DATA = {
         "critical-design-reviewer"
       ],
       "path": "vendor/skills/review-animations/SKILL.md"
+    },
+    {
+      "id": "ponytail",
+      "name": "Ponytail (smallest complete change)",
+      "upstreamPath": "skills/ponytail/",
+      "summary": "Write the least new code that fully solves the task: reuse what exists, prefer the standard library, finish every caller and test the change breaks, and never cut validation, security or accessibility.",
+      "usedBy": [
+        "senior-application-developer",
+        "code-reviewer"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ],
+      "path": "vendor/skills/ponytail/SKILL.md"
+    },
+    {
+      "id": "ponytail-review",
+      "name": "Ponytail Review",
+      "upstreamPath": "skills/ponytail-review/",
+      "summary": "Review a change for correctness, safety, load, tests, speed and lean code. Every finding needs a concrete failing case and comes with the smallest fix.",
+      "usedBy": [
+        "code-reviewer",
+        "maintainability-reviewer"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ],
+      "path": "vendor/skills/ponytail-review/SKILL.md"
+    },
+    {
+      "id": "ponytail-audit",
+      "name": "Ponytail Audit",
+      "upstreamPath": "skills/ponytail-audit/",
+      "summary": "Audit a whole repository the same way: bugs, security, scale, missing tests, slow paths and what to delete, merge or split, ranked and explained.",
+      "usedBy": [
+        "code-reviewer",
+        "maintainability-reviewer"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/dietrichgebert/ponytail",
+      "commit": "b088b2df6e08d4306c6a3c3d575fe38c2d2d2989",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 DietrichGebert",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ],
+      "path": "vendor/skills/ponytail-audit/SKILL.md"
+    },
+    {
+      "id": "grilling",
+      "name": "Grilling (Matt Pocock)",
+      "upstreamPath": "skills/productivity/grilling/",
+      "summary": "Interview the user in rounds over a design tree, each question with a recommended answer, until every decision is settled and nothing is silently assumed.",
+      "usedBy": [
+        "business-analyst",
+        "product-manager"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "LICENSE",
+        "SKILL.md"
+      ],
+      "path": "vendor/skills/grilling/SKILL.md"
+    },
+    {
+      "id": "domain-modeling",
+      "name": "Domain Modeling (Matt Pocock)",
+      "upstreamPath": "skills/engineering/domain-modeling/",
+      "summary": "Keep a shared glossary and architecture decision records so the words in conversations, specs and code mean the same thing.",
+      "usedBy": [
+        "software-architect",
+        "business-analyst"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "ADR-FORMAT.md",
+        "GLOSSARY-FORMAT.md",
+        "LICENSE",
+        "SKILL.md"
+      ],
+      "path": "vendor/skills/domain-modeling/SKILL.md"
+    },
+    {
+      "id": "tdd",
+      "name": "Test-Driven Development (Matt Pocock)",
+      "upstreamPath": "skills/engineering/tdd/",
+      "summary": "Red, green, refactor at the highest useful seam; test behaviour, not implementation, and mock only at system boundaries.",
+      "usedBy": [
+        "senior-application-developer",
+        "test-quality-engineer"
+      ],
+      "source": "vendored",
+      "repository": "https://github.com/mattpocock/skills",
+      "commit": "b0618bc436ad893b3c5e84e55fba86586d34a404",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Matt Pocock",
+      "files": [
+        "LICENSE",
+        "SKILL.md",
+        "mocking.md",
+        "tests.md"
+      ],
+      "path": "vendor/skills/tdd/SKILL.md"
     }
   ],
   "referencedSkills": [
@@ -1458,6 +1642,41 @@ window.PROJECT_DATA = {
       "usedBy": [
         "senior-application-developer"
       ]
+    },
+    {
+      "id": "to-spec",
+      "name": "To Spec (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill to-spec",
+      "reasonNotVendored": "Publishes to an issue tracker configured by /setup-matt-pocock-skills, which is not part of this framework. The idea-to-prd skill writes the same kind of spec to a local file instead.",
+      "summary": "Turn a settled conversation into a spec: problem, solution, numbered user stories, implementation and testing decisions, out of scope.",
+      "usedBy": [
+        "business-analyst",
+        "product-manager"
+      ]
+    },
+    {
+      "id": "to-tickets",
+      "name": "To Tickets (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill to-tickets",
+      "reasonNotVendored": "Depends on the same tracker setup. idea-to-prd covers vertical, tracer-bullet tickets written to local files.",
+      "summary": "Break a spec into vertical, demoable tickets with blocking edges, including expand-and-contract for wide refactors.",
+      "usedBy": [
+        "business-analyst",
+        "software-architect"
+      ]
+    },
+    {
+      "id": "code-review",
+      "name": "Code Review (Matt Pocock)",
+      "repository": "https://github.com/mattpocock/skills",
+      "install": "npx skills add mattpocock/skills --skill code-review",
+      "reasonNotVendored": "Expects the tracker setup to find the originating spec. The code-reviewer agent uses ponytail-review and independent-review, which need no setup.",
+      "summary": "Two-axis review in parallel sub-agents: repository standards (with a code-smell baseline) and fidelity to the originating spec.",
+      "usedBy": [
+        "code-reviewer"
+      ]
     }
   ],
   "skillGroups": [
@@ -1490,6 +1709,28 @@ window.PROJECT_DATA = {
     },
     {
       "n": "02",
+      "title": "From idea to plan",
+      "sub": "Get the idea, the words and the code to agree before anyone builds.",
+      "skills": [
+        {
+          "id": "idea-to-prd",
+          "desc": "Questions the idea, agrees the vocabulary, writes the PRD with the real CLI commands and slices it into tickets.",
+          "vendored": false
+        },
+        {
+          "id": "grilling",
+          "desc": "Interviews you in rounds, each question with a recommended answer, until nothing is assumed.",
+          "vendored": true
+        },
+        {
+          "id": "domain-modeling",
+          "desc": "Keeps a glossary and decision records so specs and code use the same words.",
+          "vendored": true
+        }
+      ]
+    },
+    {
+      "n": "03",
       "title": "The main flow",
       "sub": "From requirements to release, one gate at a time.",
       "skills": [
@@ -1531,7 +1772,7 @@ window.PROJECT_DATA = {
       ]
     },
     {
-      "n": "03",
+      "n": "04",
       "title": "Councils and decisions",
       "sub": "For choices that deserve more than one point of view.",
       "skills": [
@@ -1558,7 +1799,7 @@ window.PROJECT_DATA = {
       ]
     },
     {
-      "n": "04",
+      "n": "05",
       "title": "Design craft",
       "sub": "Tokens, layout, motion and accessibility for anything people see.",
       "skills": [
@@ -1600,7 +1841,34 @@ window.PROJECT_DATA = {
       ]
     },
     {
-      "n": "05",
+      "n": "06",
+      "title": "Coding craft",
+      "sub": "Write less code, test the risky parts and review like the person on call.",
+      "skills": [
+        {
+          "id": "ponytail",
+          "desc": "Finds the smallest change that fully solves the task, and finishes every caller it breaks.",
+          "vendored": true
+        },
+        {
+          "id": "tdd",
+          "desc": "Red, green, refactor at the highest useful seam; test behaviour, not internals.",
+          "vendored": true
+        },
+        {
+          "id": "ponytail-review",
+          "desc": "Reviews a change: every finding has a concrete failing case and the smallest fix.",
+          "vendored": true
+        },
+        {
+          "id": "ponytail-audit",
+          "desc": "Audits a whole repository for bugs, risk, missing tests and code to delete.",
+          "vendored": true
+        }
+      ]
+    },
+    {
+      "n": "07",
       "title": "Quality and recovery",
       "sub": "Review, tests and getting back on track.",
       "skills": [
@@ -1627,7 +1895,7 @@ window.PROJECT_DATA = {
       ]
     },
     {
-      "n": "06",
+      "n": "08",
       "title": "Reach and growth",
       "sub": "Help the right people find what you built.",
       "skills": [
@@ -1716,6 +1984,30 @@ window.PROJECT_DATA = {
       ],
       "skills": [],
       "path": "agents/business/business-analyst/agent.json"
+    },
+    {
+      "id": "code-reviewer",
+      "name": "Code Reviewer",
+      "group": "quality",
+      "mission": "Review a change the way the person who will be paged when it breaks would: is it correct, safe, fit for the expected load, tested where it is risky, fast enough, and no bigger than it needs to be.",
+      "responsibilities": [
+        "Read the callers and callees of every changed function, not only the diff",
+        "Report each finding with a concrete failing case, the smallest fix and the cost of skipping it",
+        "Group findings as must fix, should fix or nice to have, and end with a verdict",
+        "Check the change against its spec or acceptance criteria when one exists"
+      ],
+      "whenToInvoke": [
+        "Before merging any non-trivial change",
+        "When asked to review a pull request, branch, commit or the whole repository",
+        "When code feels over-engineered or bloated"
+      ],
+      "prohibitions": [
+        "Must not report a finding without a concrete failing case",
+        "Must not change code while reviewing",
+        "Must not raise style preferences the repository does not document"
+      ],
+      "skills": [],
+      "path": "agents/quality/code-reviewer/agent.json"
     },
     {
       "id": "implementation",
@@ -2370,7 +2662,8 @@ window.PROJECT_DATA = {
           ],
           "skills": [
             "architecture-and-contracts",
-            "existing-project-analysis"
+            "existing-project-analysis",
+            "vendor:domain-modeling"
           ],
           "path": "core/council/personas/development/software-architect.json"
         },
@@ -2410,6 +2703,8 @@ window.PROJECT_DATA = {
           ],
           "skills": [
             "controlled-implementation",
+            "vendor:ponytail",
+            "vendor:tdd",
             "ext:antfu-skills"
           ],
           "path": "core/council/personas/development/senior-application-developer.json"
@@ -2507,7 +2802,8 @@ window.PROJECT_DATA = {
           ],
           "skills": [
             "testing-and-verification",
-            "test-case-generation"
+            "test-case-generation",
+            "vendor:tdd"
           ],
           "path": "core/council/personas/development/test-quality-engineer.json"
         },
@@ -2551,6 +2847,30 @@ window.PROJECT_DATA = {
           "path": "core/council/personas/development/reliability-engineer.json"
         },
         {
+          "id": "code-reviewer",
+          "title": "Code Reviewer",
+          "role": "specialist",
+          "mission": "Review a change the way the person who will be paged when it breaks would: is it correct, safe, fit for the expected load, tested where it is risky, fast enough, and no bigger than it needs to be.",
+          "questions": [
+            "Which input or situation makes this return the wrong result?",
+            "Who else calls this function, and does the change break them?",
+            "Is the risky new branch covered by a test that fails when it breaks?"
+          ],
+          "challengeFocus": "Concrete failure cases and unnecessary code",
+          "sources": [
+            "dietrichgebert/ponytail (vendored: ponytail-review, ponytail-audit)",
+            "mattpocock/skills code-review (referenced)",
+            "Repository source, tests and CONTRIBUTING.md"
+          ],
+          "skills": [
+            "independent-review",
+            "vendor:ponytail-review",
+            "vendor:ponytail-audit",
+            "ext:code-review"
+          ],
+          "path": "agents/quality/code-reviewer/agent.json"
+        },
+        {
           "id": "maintainability-reviewer",
           "title": "Maintainability and Tech-Debt Reviewer",
           "role": "critic",
@@ -2566,7 +2886,8 @@ window.PROJECT_DATA = {
           ],
           "skills": [
             "thermo-nuclear-review",
-            "independent-review"
+            "independent-review",
+            "vendor:ponytail-audit"
           ],
           "path": "core/council/personas/development/maintainability-reviewer.json"
         },
@@ -2622,8 +2943,10 @@ window.PROJECT_DATA = {
             "Strategic council deliberations and stakeholder consensus records"
           ],
           "skills": [
+            "idea-to-prd",
             "feature-prioritization",
-            "requirements-analysis"
+            "requirements-analysis",
+            "vendor:grilling"
           ],
           "path": "agents/business/product-manager/agent.json"
         },
@@ -2644,8 +2967,12 @@ window.PROJECT_DATA = {
             "Approved Gate G0 Project Contract and strategic opportunity documents"
           ],
           "skills": [
+            "idea-to-prd",
             "requirements-analysis",
-            "test-case-generation"
+            "test-case-generation",
+            "vendor:grilling",
+            "ext:to-spec",
+            "ext:to-tickets"
           ],
           "path": "agents/business/business-analyst/agent.json"
         },
@@ -4382,14 +4709,19 @@ window.PROJECT_DATA = {
     }
   ],
   "validation": {
-    "timestamp": "2026-10-08T15:31:24Z",
+    "timestamp": "2026-10-08T15:43:05Z",
     "totalRun": 179,
     "passed": 179,
     "failed": 0,
     "skipped": 0,
-    "durationSeconds": 7.367
+    "durationSeconds": 7.383
   },
   "changelog": [
+    {
+      "version": "1.4.0",
+      "date": "2026-10-08",
+      "summary": "A code reviewer, an idea-to-PRD flow, and six more third-party skills for writing, testing and reviewing code."
+    },
     {
       "version": "1.3.0",
       "date": "2026-10-08",
@@ -4467,7 +4799,7 @@ window.PROJECT_DATA = {
           "skills",
           "vendor/skills"
         ],
-        "desc": "All 24 framework skills plus 4 third-party skills, with their licenses.",
+        "desc": "All 25 framework skills plus 10 third-party skills, with their licenses.",
         "cmd": "cp -R project-intelligence/skills project-intelligence/vendor/skills .claude/"
       },
       {
@@ -4478,7 +4810,7 @@ window.PROJECT_DATA = {
           "core/council",
           "core/schemas"
         ],
-        "desc": "41 persona definitions, council rosters and the referee.",
+        "desc": "42 persona definitions, council rosters and the referee.",
         "cmd": "npx -y github:sahasbelbase/project-intelligence council list"
       },
       {
@@ -4853,7 +5185,8 @@ window.PROJECT_DATA = {
                     "role": "chair",
                     "skills": [
                       "architecture-and-contracts",
-                      "existing-project-analysis"
+                      "existing-project-analysis",
+                      "vendor:domain-modeling"
                     ],
                     "matchedKeywords": []
                   },
@@ -4863,7 +5196,8 @@ window.PROJECT_DATA = {
                     "role": "critic",
                     "skills": [
                       "thermo-nuclear-review",
-                      "independent-review"
+                      "independent-review",
+                      "vendor:ponytail-audit"
                     ],
                     "matchedKeywords": []
                   },
@@ -4900,7 +5234,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), API and Integration Specialist, Developer Experience Specialist, Security Engineer.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - API and Integration Specialist  skills: architecture-and-contracts, cross-platform-adaptation\n  - Developer Experience Specialist  skills: documentation-and-handoff\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  project-intelligence council check"
+            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), API and Integration Specialist, Developer Experience Specialist, Security Engineer.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - API and Integration Specialist  skills: architecture-and-contracts, cross-platform-adaptation\n  - Developer Experience Specialist  skills: documentation-and-handoff\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  project-intelligence council check"
           }
         }
       ]
@@ -4965,7 +5299,8 @@ window.PROJECT_DATA = {
                     "role": "chair",
                     "skills": [
                       "architecture-and-contracts",
-                      "existing-project-analysis"
+                      "existing-project-analysis",
+                      "vendor:domain-modeling"
                     ],
                     "matchedKeywords": []
                   },
@@ -4975,7 +5310,8 @@ window.PROJECT_DATA = {
                     "role": "critic",
                     "skills": [
                       "thermo-nuclear-review",
-                      "independent-review"
+                      "independent-review",
+                      "vendor:ponytail-audit"
                     ],
                     "matchedKeywords": []
                   },
@@ -4985,7 +5321,8 @@ window.PROJECT_DATA = {
                     "role": "specialist",
                     "skills": [
                       "testing-and-verification",
-                      "test-case-generation"
+                      "test-case-generation",
+                      "vendor:tdd"
                     ],
                     "matchedKeywords": []
                   },
@@ -5001,7 +5338,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Test and Quality Engineer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Test and Quality Engineer  skills: testing-and-verification, test-case-generation\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"\n  project-intelligence council check"
+            "summary": "Task:  Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Test and Quality Engineer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Test and Quality Engineer  skills: testing-and-verification, test-case-generation, tdd\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"\n  project-intelligence council check"
           }
         }
       ]
@@ -5108,8 +5445,10 @@ window.PROJECT_DATA = {
                     "title": "Product Manager",
                     "role": "chair",
                     "skills": [
+                      "idea-to-prd",
                       "feature-prioritization",
-                      "requirements-analysis"
+                      "requirements-analysis",
+                      "vendor:grilling"
                     ],
                     "matchedKeywords": []
                   },
@@ -5197,7 +5536,8 @@ window.PROJECT_DATA = {
                     "role": "chair",
                     "skills": [
                       "architecture-and-contracts",
-                      "existing-project-analysis"
+                      "existing-project-analysis",
+                      "vendor:domain-modeling"
                     ],
                     "matchedKeywords": []
                   },
@@ -5207,7 +5547,8 @@ window.PROJECT_DATA = {
                     "role": "critic",
                     "skills": [
                       "thermo-nuclear-review",
-                      "independent-review"
+                      "independent-review",
+                      "vendor:ponytail-audit"
                     ],
                     "matchedKeywords": []
                   },
@@ -5229,7 +5570,7 @@ window.PROJECT_DATA = {
               "qa-analyst",
               "test-quality-engineer"
             ],
-            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - A new capability that spans product, design and engineering.\nGate:  G6\nCheck: low confidence (security-engineer (permission), business-model-analyst (pricing), data-visualization-specialist (dashboard)). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: feature-prioritization, requirements-analysis\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  project-intelligence council check"
+            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - A new capability that spans product, design and engineering.\nGate:  G6\nCheck: low confidence (security-engineer (permission), business-model-analyst (pricing), data-visualization-specialist (dashboard)). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: idea-to-prd, feature-prioritization, requirements-analysis, grilling\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  project-intelligence council check"
           }
         }
       ]

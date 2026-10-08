@@ -16,6 +16,7 @@ Zero external dependencies (Python standard library only).
 
 import argparse
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -27,6 +28,11 @@ from core.council.referee import Referee  # noqa: E402
 from core.orchestrator.router import route_request  # noqa: E402
 
 FRAMEWORK_ROOT = Path(__file__).resolve().parents[2]
+
+
+def cli_command() -> str:
+    """How to call the CLI in suggested commands. PI_CLI overrides it (the website uses a short form)."""
+    return os.environ.get("PI_CLI") or f'node "{FRAMEWORK_ROOT / "bin" / "cli.js"}"'
 
 
 def _current_gate(workspace: Path) -> Optional[str]:
@@ -60,7 +66,8 @@ def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = Fa
         raise ValueError("Describe the task, for example: Redesign the settings page")
     ref = Referee(FRAMEWORK_ROOT)
     plan = ref.plan(task, full_roster=full_roster)
-    workspace = Path(workspace) if workspace else FRAMEWORK_ROOT
+    # The gate belongs to the user's project: the given workspace, else the current folder.
+    workspace = Path(workspace) if workspace else Path.cwd()
     tier = plan["tier"]
 
     result: Dict[str, Any] = {
@@ -114,9 +121,10 @@ def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = Fa
 
     first = sessions[0]
     chair = next(m["personaId"] for m in first["convened"] if m["role"] == "chair")
+    cli = cli_command()
     result["next"] = [
-        f"python3 -m core.council.referee prompt {first['councilId']} {chair} 1 {_quote(task)}",
-        "python3 -m core.council.referee check",
+        f"{cli} council prompt {first['councilId']} {chair} 1 {_quote(task)}",
+        f"{cli} council check",
     ]
     return result
 
@@ -150,7 +158,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
     parser = argparse.ArgumentParser(prog="python3 -m core.orchestrator.dispatch", description="Plan how Project Intelligence handles a request.")
     parser.add_argument("task", nargs="+", help="What you want done, in plain words")
     parser.add_argument("--json", action="store_true", help="Print the plan as JSON")
-    parser.add_argument("--workspace", help="Project folder whose lifecycle state to read (default: the framework folder)")
+    parser.add_argument("--workspace", help="Project folder whose lifecycle state to read (default: the current folder)")
     parser.add_argument("--full-roster", action="store_true", help="Convene every persona on the council (major redesigns only)")
     args = parser.parse_args(argv)
     try:

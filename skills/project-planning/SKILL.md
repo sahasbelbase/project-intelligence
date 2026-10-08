@@ -1,6 +1,7 @@
 ---
 skillId: project-planning
-name: Project Planning & Critical Path Decomposition
+name: project-planning
+description: "Construct work breakdown structures, identify critical execution paths, map task dependencies, level resource allocations, and establish disjoint file boundaries for Project Managers and Coordinators."
 purpose: Construct work breakdown structures, identify critical execution paths, map task dependencies, level resource allocations, and establish disjoint file boundaries for Project Managers and Coordinators.
 whenToUse:
   - Decomposing approved architecture and requirements into phased execution schedules

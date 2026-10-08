@@ -256,23 +256,31 @@ const mcpTools = (() => {
 const cloneDir = 'project-intelligence';
 const BUNDLES = require('./bundles');
 const BUNDLE_TEXT = {
-  framework: { desc: 'Skills, agents, councils, contracts, instructions, adapters and the installer.', cmd: `node ${cloneDir}/bin/cli.js init --dir .` },
+  framework: { desc: 'Skills, agents, councils, contracts, instructions, adapters and the installer.', cmd: `npx -y github:sahasbelbase/project-intelligence init` },
   skills: { desc: `All ${skills.length} framework skills plus ${vendored.length} third-party skills, with their licenses.`, cmd: `cp -R ${cloneDir}/skills ${cloneDir}/vendor/skills .claude/` },
-  councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `python3 -m core.council.referee list` },
-  mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `python3 ${cloneDir}/adapters/mcp/server.py --workspace-root .` },
+  councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `npx -y github:sahasbelbase/project-intelligence council list` },
+  mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `npx -y github:sahasbelbase/project-intelligence mcp` },
 };
+// Runs straight from GitHub with npx. Switch to the npm name once the package is published.
+const RUN = 'npx -y github:sahasbelbase/project-intelligence';
 const install = {
   repoUrl,
+  run: RUN,
   clone: repoUrl ? `git clone ${repoUrl}.git` : null,
-  init: `node ${cloneDir}/bin/cli.js init --dir .`,
-  doctor: `node ${cloneDir}/bin/cli.js doctor`,
+  plugin: {
+    add: 'claude plugin marketplace add sahasbelbase/project-intelligence',
+    install: 'claude plugin install project-intelligence@sahasbelbase',
+    use: '/project-intelligence:ask <what you want done>',
+  },
+  init: `${RUN} init`,
+  doctor: `${RUN} doctor`,
   clients: [
-    { id: 'claude', label: 'Claude Code', how: 'Run in your project folder', code: `node ${cloneDir}/bin/cli.js init --client claude --dir .` },
-    { id: 'antigravity', label: 'Antigravity', how: 'Run in your project folder', code: `node ${cloneDir}/bin/cli.js init --client antigravity --dir .` },
-    { id: 'copilot', label: 'GitHub Copilot CLI', how: 'Add the MCP server, then ask Copilot to plan with plan_task', code: `copilot mcp add project-intelligence -- python3 /path/to/${cloneDir}/adapters/mcp/server.py --workspace-root .` },
+    { id: 'claude', label: 'Claude Code', how: 'Install the plugin, then use /project-intelligence:ask', code: 'claude plugin marketplace add sahasbelbase/project-intelligence\nclaude plugin install project-intelligence@sahasbelbase' },
+    { id: 'copilot', label: 'GitHub Copilot CLI', how: 'Add the MCP server, then ask Copilot to plan with plan_task', code: `copilot mcp add project-intelligence -- ${RUN} mcp` },
+    { id: 'antigravity', label: 'Antigravity', how: 'Run in your project folder', code: `${RUN} init --client antigravity` },
     {
       id: 'mcp', label: 'Any MCP client', how: 'Add to your client’s MCP config',
-      code: JSON.stringify({ mcpServers: { 'project-intelligence': { command: 'python3', args: [`/path/to/${cloneDir}/adapters/mcp/server.py`, '--workspace-root', '/path/to/your/project'] } } }, null, 2),
+      code: JSON.stringify({ mcpServers: { 'project-intelligence': { command: 'npx', args: ['-y', 'github:sahasbelbase/project-intelligence', 'mcp'] } } }, null, 2),
     },
   ],
   bundles: BUNDLES.map((b) => ({ ...b, desc: BUNDLE_TEXT[b.id].desc, cmd: BUNDLE_TEXT[b.id].cmd })),
@@ -286,7 +294,7 @@ const install = {
 function plan(task) {
   try {
     const out = execFileSync(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', task, '--json'],
-      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PI_CLI: 'project-intelligence' } });
     return JSON.parse(out);
   } catch (err) {
     throw new Error(`build-data: could not run the dispatcher for "${task}": ${err.message}`);
@@ -370,10 +378,10 @@ const demo = [
 }));
 
 const entryPoints = [
-  { id: 'claude', label: 'Claude Code', how: 'Slash command installed by init', example: '/orchestrator Redesign the settings page', setup: `node ${'project-intelligence'}/bin/cli.js init --client claude --dir .` },
-  { id: 'copilot', label: 'GitHub Copilot CLI', how: 'MCP tool plan_task', example: 'Plan this with project-intelligence: redesign the settings page', setup: 'copilot mcp add project-intelligence -- python3 /path/to/project-intelligence/adapters/mcp/server.py --workspace-root .' },
-  { id: 'antigravity', label: 'Antigravity', how: 'Orchestrator skill installed by init', example: 'Use the orchestrator skill to redesign the settings page', setup: `node project-intelligence/bin/cli.js init --client antigravity --dir .` },
-  { id: 'terminal', label: 'Any terminal', how: 'CLI command', example: 'node project-intelligence/bin/cli.js ask "Redesign the settings page"', setup: 'git clone the repository, then run the command from anywhere' },
+  { id: 'claude', label: 'Claude Code', how: 'Plugin skill', example: '/project-intelligence:ask Redesign the settings page', setup: `${install.plugin.add}\n${install.plugin.install}` },
+  { id: 'copilot', label: 'GitHub Copilot CLI', how: 'MCP tool plan_task', example: 'Plan this with project-intelligence: redesign the settings page', setup: `copilot mcp add project-intelligence -- ${RUN} mcp` },
+  { id: 'antigravity', label: 'Antigravity', how: 'Orchestrator skill installed by init', example: 'Use the orchestrator skill to redesign the settings page', setup: `${RUN} init --client antigravity` },
+  { id: 'terminal', label: 'Any terminal', how: 'CLI command', example: `${RUN} ask "Redesign the settings page"`, setup: 'Nothing to install: npx fetches it on first run. Needs Node 18+ and Python 3.10+.' },
 ];
 
 const data = {

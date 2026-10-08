@@ -79,9 +79,9 @@
           <p class="lede">One install adds every skill, the agents and councils that use them, and the rules they follow. Then ask your agent for what you need, or call a skill by name.</p>
         </div>
         <div class="install-card">
-          <span class="kicker">Install into your project</span>
-          ${cmd(inst.init)}
-          <p class="note">From a clone of the repository${inst.clone ? html` (<code>${inst.clone}</code>)` : ''}. Works with Claude Code, Antigravity and any MCP client · ${count(totalSkills, 'skill')} · ${inst.license}</p>
+          <span class="kicker">Install in Claude Code</span>
+          <div class="cmd-stack">${cmd(inst.plugin.add)}${cmd(inst.plugin.install)}</div>
+          <p class="note">Then type <code>${inst.plugin.use}</code>. Other tools: <code>${inst.init}</code> · ${count(totalSkills, 'skill')} · ${inst.license}</p>
         </div>
       </section>
 
@@ -138,7 +138,7 @@
 
       <section class="cta" aria-labelledby="cta-title">
         <div><h2 id="cta-title">Install and get to work</h2><p>${inst.license} licensed. Needs Node ${inst.node || '18+'} and Python 3.10 or later, with no other dependencies.</p></div>
-        ${cmd(inst.init)}
+        <div class="cmd-stack">${cmd(inst.plugin.add)}${cmd(inst.plugin.install)}</div>
       </section>`;
   }
 
@@ -375,10 +375,11 @@
     return html`
       <section class="hero" aria-labelledby="install-title" style="padding-bottom:48px">
         <h1 id="install-title" style="max-width:15ch">The whole framework, in one install.</h1>
-        <p class="lede" style="max-width:56ch">Clone the repository once, then install into any project. The installer adds skills, standing rules, hooks and the MCP server, and keeps a manifest so <code>uninstall</code> can undo it.</p>
+        <p class="lede" style="max-width:56ch">In Claude Code it's a plugin: skills, the <code>/project-intelligence:ask</code> command and the MCP server in one install that updates itself. Everywhere else, one <code>npx</code> command sets up a project and keeps a manifest so <code>uninstall</code> can undo it.</p>
         <div class="cmd-stack" style="max-width:660px;margin-top:32px">
-          ${inst.clone ? html`<div><div class="step-label"><span class="step-dot" aria-hidden="true">1</span>Clone the repository</div>${cmd(inst.clone, { large: true })}</div>` : ''}
-          <div><div class="step-label"><span class="step-dot" aria-hidden="true">${inst.clone ? 2 : 1}</span>Install into your project folder</div>${cmd(inst.init, { large: true })}</div>
+          <div><div class="step-label"><span class="step-dot" aria-hidden="true">1</span>Add the marketplace in Claude Code</div>${cmd(inst.plugin.add, { large: true })}</div>
+          <div><div class="step-label"><span class="step-dot" aria-hidden="true">2</span>Install the plugin, then type <code>${inst.plugin.use}</code></div>${cmd(inst.plugin.install, { large: true })}</div>
+          <div><div class="step-label"><span class="step-dot" aria-hidden="true">or</span>Any other tool: set up the current project</div>${cmd(inst.init, { large: true })}</div>
         </div>
         <p class="soft" style="margin-top:16px">${canDownload()
           ? html`Prefer a file? <a href="/api/download/framework.zip" download>Download the framework as a ZIP</a> (last commit, ${state.server.commit}).`
@@ -493,14 +494,14 @@
   function userLine(t, client) {
     const task = t.task;
     if (client === 'claude') {
-      return html`<div class="term-line"><span class="glyph">&gt;</span>/orchestrator ${task}</div>
-        <div class="term-line muted"><span class="glyph">•</span>Bash(node project-intelligence/bin/cli.js ask "${task}")</div>`;
+      return html`<div class="term-line"><span class="glyph">&gt;</span>/project-intelligence:ask ${task}</div>
+        <div class="term-line muted"><span class="glyph">•</span>Bash(project-intelligence ask "${task}")</div>`;
     }
     if (client === 'copilot') {
       return html`<div class="term-line"><span class="glyph">&gt;</span>${task}</div>
         <div class="term-line muted"><span class="glyph">•</span>plan_task (MCP: project-intelligence)</div>`;
     }
-    return html`<div class="term-line"><span class="glyph">$</span>node project-intelligence/bin/cli.js ask "${task}"</div>`;
+    return html`<div class="term-line"><span class="glyph">$</span>${DATA.install.run.replace(' -y', '')} ask "${task}"</div>`;
   }
 
   function renderFrame(f, client) {

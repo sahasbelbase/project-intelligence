@@ -1,6 +1,7 @@
 ---
 skillId: seo-audit
-name: SEO and Discoverability Audit
+name: seo-audit
+description: "Make a project's website, docs and repository easy for search engines, social previews and people to find and understand: metadata, structured data, crawlability, performance, accessibility and repository metadata."
 purpose: "Make a project's website, docs and repository easy for search engines, social previews and people to find and understand: metadata, structured data, crawlability, performance, accessibility and repository metadata."
 whenToUse:
   - Before publishing or relaunching a project website, docs site or landing page

@@ -1,6 +1,7 @@
 ---
 skillId: council-review
-name: Multi-Persona Council Deliberation & Decision Workflow
+name: council-review
+description: "Execute the canonical 4-round multi-persona council workflow to deliberate high-stakes architectural, scope, or strategic decisions, achieve reasoned consensus, preserve minority dissent, and generate a validated Council Decision Brief."
 purpose: Execute the canonical 4-round multi-persona council workflow to deliberate high-stakes architectural, scope, or strategic decisions, achieve reasoned consensus, preserve minority dissent, and generate a validated Council Decision Brief.
 whenToUse:
   - Deliberating major strategic or architectural decisions with high reversibility costs (Type 1 decisions)

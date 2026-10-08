@@ -1,6 +1,7 @@
 ---
 skillId: cross-platform-adaptation
-name: Cross-Platform Adaptation
+name: cross-platform-adaptation
+description: "Project canonical Project Intelligence instructions, skills, and contracts into platform-specific configuration formats (Claude Code, Copilot, Codex, Antigravity) with graceful degradation."
 purpose: Project canonical Project Intelligence instructions, skills, and contracts into platform-specific configuration formats (Claude Code, Copilot, Codex, Antigravity) with graceful degradation.
 whenToUse:
   - Exporting the project's canonical contracts, skills, and rules to Claude Code (CLAUDE.md, .claude/hooks)
@@ -31,7 +32,7 @@ procedure:
     action: Map universal instructions from instructions/universal/core-rules.md into the platform's standing instructions file (e.g., CLAUDE.md or .github/copilot-instructions.md).
   - stepNumber: 3
     title: Skill Format Translation
-    action: Translate canonical skills into target format: export SKILL.md for Claude Code and Antigravity, or copy to .github/skills/ for GitHub Copilot.
+    action: "Translate canonical skills into target format: export SKILL.md for Claude Code and Antigravity, or copy to .github/skills/ for GitHub Copilot."
   - stepNumber: 4
     title: Lifecycle Hook Projection
     action: For platforms supporting hooks (Claude Code, Antigravity), generate deterministic hook scripts (e.g., SessionStart memory reconciliation, PreToolUse boundary checks).

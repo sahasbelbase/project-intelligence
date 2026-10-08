@@ -1,6 +1,7 @@
 ---
 skillId: ui-skills-routing
-name: Modular UI Skills Routing & Dynamic Web Registry
+name: ui-skills-routing
+description: "Serve as the minimal-context routing layer for UI tasks, selecting the smallest useful skill context through the ui-skills registry and web scraping to prevent context bloat and optimize token efficiency across hierarchical agent tiers."
 purpose: Minimal-context routing layer for UI tasks, selecting the smallest useful skill context through ui-skills and web scraping to prevent context bloat and optimize token efficiency across hierarchical agent tiers.
 whenToUse:
   - Before commencing any user-interface, component, visual layout, or styling task
@@ -26,7 +27,7 @@ procedure:
     action: Identify the narrowest matching category (e.g., layout, craft, motion, forms, tables, typography) and target stack.
   - stepNumber: 3
     title: Smallest Useful Context Selection
-    action: Enforce strict selection rules: Prefer 1 skill. Use 2 only for dual angles. Use 3 only for broad redesigns. Never use more than 3.
+    action: "Enforce strict selection rules: Prefer 1 skill. Use 2 only for dual angles. Use 3 only for broad redesigns. Never use more than 3."
   - stepNumber: 4
     title: Dynamic Retrieval & Injection
     action: Fetch the exact skill slug via CLI (npx ui-skills get <slug>) or registry scrape, loading only the necessary token budget.

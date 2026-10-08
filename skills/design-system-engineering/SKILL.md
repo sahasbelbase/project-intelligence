@@ -1,6 +1,7 @@
 ---
 skillId: design-system-engineering
-name: Design System Engineering
+name: design-system-engineering
+description: "Translate design decisions into concrete design tokens, component APIs, responsive breakpoints, accessible themes, and CSS/styling contracts."
 purpose: Translate design decisions into concrete design tokens, component APIs, responsive breakpoints, accessible themes, and CSS/styling contracts.
 whenToUse:
   - Transforming high-level design concepts into executable CSS variables, Tailwind tokens, or theme structures
@@ -30,10 +31,10 @@ procedure:
     action: Export tokens to framework-native configuration files (e.g., globals.css with CSS custom properties, tailwind.config.js, or tokens.ts).
   - stepNumber: 3
     title: Component State Specification
-    action: Specify interactive states for all component inventory items: default, hover, active, focus-visible, disabled, loading, and error.
+    action: "Specify interactive states for all component inventory items: default, hover, active, focus-visible, disabled, loading, and error."
   - stepNumber: 4
     title: Responsive Layout and Breakpoint Implementation
-    action: Codify responsive media queries and container query rules for small (sm: 640px), medium (md: 768px), large (lg: 1024px), and extra-large (xl: 1280px) viewports.
+    action: "Codify responsive media queries and container query rules for small (sm: 640px), medium (md: 768px), large (lg: 1024px), and extra-large (xl: 1280px) viewports."
   - stepNumber: 5
     title: Accessibility and Motion Tokens Integration
     action: Ensure prefers-reduced-motion media query tokens are established and text-to-background contrast tokens meet WCAG 2.1 AA standards.

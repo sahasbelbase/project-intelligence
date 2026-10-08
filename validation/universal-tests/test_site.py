@@ -129,7 +129,8 @@ class TestSiteData(unittest.TestCase):
                         self.assertTrue((ROOT / "memory" / "council-briefs" / f"{turn['sessionId']}.json").exists())
 
     def test_install_commands_use_the_repository_cli(self):
-        self.assertIn("bin/cli.js init", self.data["install"]["init"])
+        self.assertIn("github:sahasbelbase/project-intelligence init", self.data["install"]["init"])
+        self.assertEqual(self.data["install"]["plugin"]["install"], "claude plugin install project-intelligence@sahasbelbase")
         self.assertNotIn("npx project-intelligence", json.dumps(self.data["install"]))
 
 

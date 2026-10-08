@@ -2,7 +2,29 @@
 
 > **A portable, local-first AI Project Orchestrator framework establishing a deterministic engineering lifecycle, shared contracts, git-aware memory, anti-slop quality gates, and multi-agent coordination across modern AI coding environments.**
 
-**Website:** [sahasbelbase.github.io/project-intelligence](https://sahasbelbase.github.io/project-intelligence/) · **Quick start:** clone the repository, then run `node project-intelligence/bin/cli.js init --dir .` in your project, and ask `/orchestrator <request>` in Claude Code (or `node project-intelligence/bin/cli.js ask "<request>"` anywhere).
+**Website:** [sahasbelbase.github.io/project-intelligence](https://sahasbelbase.github.io/project-intelligence/)
+
+### Install
+
+**Claude Code (plugin):**
+```bash
+claude plugin marketplace add sahasbelbase/project-intelligence
+claude plugin install project-intelligence@sahasbelbase
+```
+Then type `/project-intelligence:ask <what you want done>`.
+
+**Any other tool (run in your project folder):**
+```bash
+npx -y github:sahasbelbase/project-intelligence init     # Claude Code and Antigravity files
+npx -y github:sahasbelbase/project-intelligence ask "Redesign the settings page"
+```
+
+**GitHub Copilot CLI and other MCP clients:**
+```bash
+copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp
+```
+
+Requires Node 18+ and Python 3.10+, with no other dependencies.
 
 ---
 
@@ -59,7 +81,8 @@ project-intelligence/
 ├── instructions/                   # Hierarchical agent instructions (universal, profiles, tasks)
 ├── agents/                         # 18 agent definitions (agent.json + agent.md)
 ├── adapters/                       # Claude Code, Antigravity, Copilot, Codex, MCP server (11 tools)
-├── installer/ · bin/               # CLI: init, doctor, update, uninstall, ask, council
+├── installer/ · bin/               # CLI: init, doctor, update, uninstall, ask, council, mcp
+├── .claude-plugin/ · plugin-skills/ # Claude Code plugin manifest, marketplace and /ask skill (generated)
 ├── web/                            # Website: build-data.js generates data.js from the repository
 ├── validation/                     # Test runner, suites and fixtures
 └── docs/                           # Architecture, guides, research, ADRs, and review reports
@@ -146,12 +169,14 @@ Every request goes through one planner, whichever tool you use. It asks the coun
 
 | Tool | How you ask | Set up |
 |---|---|---|
-| Claude Code | `/orchestrator <request>` | `node project-intelligence/bin/cli.js init --client claude` |
-| GitHub Copilot CLI | Ask in chat; Copilot calls the `plan_task` MCP tool | `copilot mcp add project-intelligence -- python3 /path/to/project-intelligence/adapters/mcp/server.py --workspace-root .` |
-| Antigravity | Ask in chat; the orchestrator skill runs the planner | `node project-intelligence/bin/cli.js init --client antigravity` |
-| Any terminal | `node project-intelligence/bin/cli.js ask "<request>"` (add `--json` for JSON) | Clone the repository |
+| Claude Code | `/project-intelligence:ask <request>` (plugin) or `/orchestrator <request>` (after `init`) | `claude plugin install project-intelligence@sahasbelbase` |
+| GitHub Copilot CLI | Ask in chat; Copilot calls the `plan_task` MCP tool | `copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp` |
+| Antigravity | Ask in chat; the orchestrator skill runs the planner | `npx -y github:sahasbelbase/project-intelligence init --client antigravity` |
+| Any terminal | `npx -y github:sahasbelbase/project-intelligence ask "<request>"` (add `--json` for JSON) | Nothing; npx fetches it |
 
-For council work, the agent fetches each persona's instructions with `cli.js council prompt <council> <persona> <round> "<request>"`, writes the rounds, and saves them with `cli.js council record <session.json>`, which validates the session before writing `memory/council-briefs/`.
+For council work, the agent fetches each persona's instructions with `project-intelligence council prompt <council> <persona> <round> "<request>"`, writes the rounds, and saves them with `project-intelligence council record <session.json>`, which validates the session before writing the project's `memory/council-briefs/`.
+
+Maintainers: run `npm run build:plugin` after changing the orchestrator instructions or the version; it regenerates `.claude-plugin/` and `plugin-skills/ask/`.
 
 ### Councils (`core/council/`)
 For decisions that deserve more than one view, a council convenes. Three councils are defined in `core/council/councils.json`: design (13 personas), development (12) and product (12, reusing the product, business-analyst, customer-advocate, strategy and SEO agents). Persona definitions live in `core/council/personas/` and follow `core/schemas/persona-definition.schema.json`.

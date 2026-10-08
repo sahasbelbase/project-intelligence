@@ -1,6 +1,7 @@
 ---
 skillId: project-reach
-name: Project Launch and Reach
+name: project-reach
+description: "Plan and run an honest launch that gets a project in front of the people who need it: positioning, a landing-page README, the right communities and directories, launch posts, and measuring what worked."
 purpose: "Plan and run an honest launch that gets a project in front of the people who need it: positioning, a landing-page README, the right communities and directories, launch posts, and measuring what worked."
 whenToUse:
   - Before announcing a new project, major release or website

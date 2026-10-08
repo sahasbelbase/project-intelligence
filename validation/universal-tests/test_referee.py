@@ -254,7 +254,7 @@ class TestOrchestratorDispatch(unittest.TestCase):
                 text = render_text(plan)
                 self.assertIn(f"tier {tier}", text)
         council = dispatch("Redesign the agents page navigation and colors")
-        self.assertIn("core.council.referee prompt design visual-design-director 1", council["next"][0])
+        self.assertIn("council prompt design visual-design-director 1", council["next"][0])
 
     def test_empty_task_rejected(self):
         from core.orchestrator.dispatch import dispatch

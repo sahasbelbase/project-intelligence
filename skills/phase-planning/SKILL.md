@@ -1,6 +1,7 @@
 ---
 skillId: phase-planning
-name: Phase Planning
+name: phase-planning
+description: "Decompose architectural specifications into bounded, sequential phases, work breakdown structures (WBS), and atomic tasks with strict file ownership."
 purpose: Decompose architectural specifications into bounded, sequential phases, work breakdown structures (WBS), and atomic tasks with strict file ownership.
 whenToUse:
   - Translating an approved architecture contract into an actionable implementation plan
@@ -24,7 +25,7 @@ inputs:
 procedure:
   - stepNumber: 1
     title: Work Breakdown Structure (WBS) Formulation
-    action: Deconstruct architecture components into sequential implementation phases (Phase 1: Foundations, Phase 2: Core, Phase 3: Integration, Phase 4: Polish).
+    action: "Deconstruct architecture components into sequential implementation phases (Phase 1: Foundations, Phase 2: Core, Phase 3: Integration, Phase 4: Polish)."
   - stepNumber: 2
     title: Atomic Task Decomposition
     action: Break each phase into discrete atomic tasks. For each task, define explicit preconditions, deliverables, and acceptance criteria.

@@ -1,6 +1,7 @@
 ---
 skillId: controlled-implementation
-name: Controlled Implementation
+name: controlled-implementation
+description: "Execute atomic implementation tasks within strictly assigned file boundaries, adhering to mandatory baseline quality and test-driven cycles to achieve G4."
 purpose: Execute atomic implementation tasks within strictly assigned file boundaries, adhering to mandatory baseline quality and test-driven cycles to achieve G4.
 whenToUse:
   - Writing production source code or unit test suites during Gate G4 execution
@@ -30,7 +31,7 @@ procedure:
     action: Author unit or contract test specifications defining expected inputs, outputs, and edge cases before implementing core logic.
   - stepNumber: 3
     title: Clean Code Implementation
-    action: Implement production logic adhering to Mandatory Baseline Quality (BL-001 through BL-007): zero decorative emoji, zero fake data in prod paths, full error handling, clean typings.
+    action: "Implement production logic adhering to Mandatory Baseline Quality (BL-001 through BL-007): zero decorative emoji, zero fake data in prod paths, full error handling, clean typings."
   - stepNumber: 4
     title: Local Compilation and Lint Verification
     action: Run local formatters, linters, and type-checkers on modified files. Ensure zero syntax errors, type mismatches, or lint violations.

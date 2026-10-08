@@ -1,0 +1,11 @@
+#!/usr/bin/env node
+/**
+ * Project Intelligence — command-line entry point (`project-intelligence`).
+ * Same commands as bin/cli.js: init, doctor, update, uninstall, ask, council.
+ */
+require('./cli.js').main(process.argv.slice(2)).then((code) => {
+  process.exitCode = typeof code === 'number' ? code : 0;
+}).catch((err) => {
+  console.error(`[Project Intelligence] Fatal error: ${err && err.message ? err.message : err}`);
+  process.exitCode = 1;
+});

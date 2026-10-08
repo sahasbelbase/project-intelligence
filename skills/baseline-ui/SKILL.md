@@ -1,6 +1,7 @@
 ---
 skillId: baseline-ui
-name: Baseline UI Craftsmanship & Anti-Slop Layout Standards
+name: baseline-ui
+description: "Enforce world-class visual craftsmanship, 4px/8px geometric spacing cadence, strict design token discipline, WCAG 2.1 AA mathematical contrast, and motion bounds to eliminate sloppy UI."
 purpose: Enforce world-class visual craftsmanship, 4px/8px geometric spacing cadence, strict design token discipline, WCAG 2.1 AA mathematical contrast, and motion bounds to eliminate sloppy UI.
 whenToUse:
   - Building or refactoring user interfaces, web components, dashboards, and layouts
@@ -46,7 +47,7 @@ failureAndRecovery:
     - Arbitrary pixel spacing values detected in component styling
     - Hardcoded hex colors bypassing semantic token system
     - Text contrast ratio below WCAG 2.1 AA 4.5:1 threshold
-    - Focus outlines suppressed with outline: none without replacement
+    - "Focus outlines suppressed with outline: none without replacement"
   recoveryStrategy: Reject Gate G2/G5. Output exact line references and mathematical token replacements. Map arbitrary values to the nearest 4px/8px step.
 verificationCriteria:
   - 100% of spacing declarations adhere to 4px/8px scale

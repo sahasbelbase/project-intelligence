@@ -87,7 +87,8 @@ class ProjectIntelligenceTools:
             raise ValueError("task is limited to 2000 characters")
         from core.orchestrator.dispatch import dispatch, render_text
 
-        result = dispatch(task, self.workspace_root)
+        # The client starts the server in the user's project, so the gate comes from there.
+        result = dispatch(task, pathlib.Path.cwd())
         result["summary"] = render_text(result)
         return result
 

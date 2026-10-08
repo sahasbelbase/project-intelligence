@@ -1,6 +1,7 @@
 ---
 skillId: thermo-nuclear-review
-name: Thermo-Nuclear Code Quality Review & Code Judo
+name: thermo-nuclear-review
+description: "Conduct an uncompromising, adversarial code audit that aggressively simplifies architecture, collapses redundant indirection, eliminates dead complexity through Code Judo, and enforces the inevitability standard."
 purpose: Conduct an uncompromising, adversarial code audit that aggressively simplifies architecture, collapses redundant indirection, eliminates dead complexity through Code Judo, and enforces the inevitability standard.
 whenToUse:
   - Evaluating code changes at Gate G5 before merging into master or release branches
@@ -33,7 +34,7 @@ procedure:
     action: Scan for unused imports, unreachable error branches, commented-out legacy code, defensive null checks where types or invariants guarantee non-nullness, and redundant try-except blocks.
   - stepNumber: 5
     title: The Inevitable Code Standard Evaluation
-    action: Evaluate readability and cognitive ergonomics: verify that the code reads directly and obviously, with zero premature generalization hooks, speculative configuration flags, or excessive comment chatter.
+    action: "Evaluate readability and cognitive ergonomics: verify that the code reads directly and obviously, with zero premature generalization hooks, speculative configuration flags, or excessive comment chatter."
   - stepNumber: 6
     title: Authoritative Verdict & Simplification Plan
     action: Emit formal verdict (APPROVED or REJECTED) with concrete Code Judo refactoring instructions referencing exact file paths, line ranges, and line savings.

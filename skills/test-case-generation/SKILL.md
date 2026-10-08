@@ -1,6 +1,7 @@
 ---
 skillId: test-case-generation
-name: Test Case Generation & Verification Suite Design
+name: test-case-generation
+description: "Design, formalize, and generate comprehensive positive, negative, boundary, regression, and security test cases with 100% requirements traceability for QA Analysts."
 purpose: Design, formalize, and generate comprehensive positive, negative, boundary, regression, and security test cases with 100% requirements traceability for QA Analysts.
 whenToUse:
   - Transforming Given-When-Then acceptance criteria into executable test cases

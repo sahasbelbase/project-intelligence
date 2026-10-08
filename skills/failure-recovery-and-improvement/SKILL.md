@@ -1,6 +1,7 @@
 ---
 skillId: failure-recovery-and-improvement
-name: Failure Recovery and Improvement
+name: failure-recovery-and-improvement
+description: "Diagnose execution failures, gate rejections, test breakages, or memory corruption; execute rollback or remediation; update memory and post-mortem backlog."
 purpose: Diagnose execution failures, gate rejections, test breakages, or memory corruption; execute rollback or remediation; update memory and post-mortem backlog.
 whenToUse:
   - A task fails during Gate G4 execution or regression test suites break
@@ -15,17 +16,17 @@ prerequisites:
 inputs:
   - name: failureContext
     type: object
-    description: Details of the failure: failed task ID, error output, stack trace, or rejection report
+    description: "Details of the failure: failed task ID, error output, stack trace, or rejection report"
   - name: failureType
     type: string
-    description: Classification: TEST_FAILURE, GATE_REJECTION, BOUNDARY_VIOLATION, MEMORY_DRIFT, BUILD_ERROR
+    description: "Classification: TEST_FAILURE, GATE_REJECTION, BOUNDARY_VIOLATION, MEMORY_DRIFT, BUILD_ERROR"
   - name: allowRollback
     type: boolean
     description: Whether automated git stash/reset rollback is permitted
 procedure:
   - stepNumber: 1
     title: Root Cause Analysis (RCA)
-    action: Analyze error stack trace, test assertion failures, or review comments. Trace error to exact root cause: logic defect, schema discrepancy, missing dependency, or race condition.
+    action: "Analyze error stack trace, test assertion failures, or review comments. Trace error to exact root cause: logic defect, schema discrepancy, missing dependency, or race condition."
   - stepNumber: 2
     title: Blast Radius and Repository State Assessment
     action: Run git status and git diff. Assess whether uncommitted changes are safe or require stash/revert. Verify whether other modules or workstreams were impacted.
@@ -37,7 +38,7 @@ procedure:
     action: Re-run the failing test suite or gate check using testing-and-verification. Verify that the remediation resolves the root cause without introducing new regressions.
   - stepNumber: 5
     title: Memory State and Backlog Update
-    action: Record the incident in memory/state.json: add bug or technical debt item to backlogAndHistory, update executionState, and document post-mortem lesson in durableKnowledge.
+    action: "Record the incident in memory/state.json: add bug or technical debt item to backlogAndHistory, update executionState, and document post-mortem lesson in durableKnowledge."
   - stepNumber: 6
     title: Process Improvement Rule Formulation
     action: Formulate a defensive rule or linter check to permanently prevent this class of failure in future development cycles.

@@ -1,6 +1,7 @@
 ---
 skillId: existing-project-analysis
-name: Existing Project Analysis
+name: existing-project-analysis
+description: "Perform deep, non-destructive reconnaissance on an existing codebase to detect architecture, build systems, conventions, tech debt, and drift."
 purpose: Perform deep, non-destructive reconnaissance on an existing codebase to detect architecture, build systems, conventions, tech debt, and drift.
 whenToUse:
   - Onboarding an established repository into Project Intelligence governance

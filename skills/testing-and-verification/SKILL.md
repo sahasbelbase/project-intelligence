@@ -1,6 +1,7 @@
 ---
 skillId: testing-and-verification
-name: Testing and Verification
+name: testing-and-verification
+description: "Execute verification suites (unit, integration, linting, security, coverage, a11y) to generate verifiable, honest proof of correctness for G4 exit."
 purpose: Execute verification suites (unit, integration, linting, security, coverage, a11y) to generate verifiable, honest proof of correctness for G4 exit.
 whenToUse:
   - Validating implemented features against active quality profile thresholds
@@ -24,7 +25,7 @@ inputs:
 procedure:
   - stepNumber: 1
     title: Quality Profile Rules Extraction
-    action: Load active profile settings from core/quality/profiles.json. Determine required suites: linting, unit tests, coverage percentage, security scans, accessibility.
+    action: "Load active profile settings from core/quality/profiles.json. Determine required suites: linting, unit tests, coverage percentage, security scans, accessibility."
   - stepNumber: 2
     title: Static Analysis and Linter Execution
     action: Run configured static analysis tools (e.g., eslint, ruff, flake8, mypy, tsc). Verify zero errors and zero unsuppressed warnings.
@@ -39,7 +40,7 @@ procedure:
     action: If mandated by profile, execute dependency vulnerability audit (e.g., pip-audit, npm audit, trivy). Confirm zero high/critical vulnerabilities.
   - stepNumber: 6
     title: Honest Verification Evidence Compilation
-    action: Compile comprehensive evidence report. Record each check with strict honest status: PASSED, FAILED, BLOCKED, SKIPPED, or UNAVAILABLE. Never report unexecuted checks as passed.
+    action: "Compile comprehensive evidence report. Record each check with strict honest status: PASSED, FAILED, BLOCKED, SKIPPED, or UNAVAILABLE. Never report unexecuted checks as passed."
 expectedOutputs:
   - Honest verification evidence report with execution commands, exit codes, and coverage metrics
   - Contracts/quality/contract.json updated with verification results

@@ -219,7 +219,7 @@ function handleApiRequest(req, res, parsedUrl) {
       }
       // Arguments are passed as a list (no shell), so task text cannot inject commands.
       execFile(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', task.trim(), '--json'],
-        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024 }, (err, stdout) => {
+        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: 'project-intelligence' } }, (err, stdout) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'The planner could not run. Is python3 installed?' }));

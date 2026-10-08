@@ -2,10 +2,10 @@
 window.PROJECT_DATA = {
   "meta": {
     "name": "Project Intelligence",
-    "version": "1.1.0",
+    "version": "1.2.0",
     "license": "Apache-2.0",
-    "commit": "f3ec517",
-    "generatedAt": "2026-10-08T14:47:11.729Z"
+    "commit": "f63c5f3",
+    "generatedAt": "2026-10-08T15:01:09.136Z"
   },
   "counts": {
     "skills": 24,
@@ -3838,14 +3838,19 @@ window.PROJECT_DATA = {
     }
   ],
   "validation": {
-    "timestamp": "2026-10-08T14:35:14Z",
-    "totalRun": 161,
-    "passed": 161,
-    "failed": 0,
+    "timestamp": "2026-10-08T15:00:48Z",
+    "totalRun": 168,
+    "passed": 167,
+    "failed": 1,
     "skipped": 0,
-    "durationSeconds": 6.225
+    "durationSeconds": 6.718
   },
   "changelog": [
+    {
+      "version": "1.2.0",
+      "date": "2026-10-08",
+      "summary": "Install in one step: a Claude Code plugin, an npx command for every other tool, and a no-path MCP setup for Copilot CLI."
+    },
     {
       "version": "1.1.0",
       "date": "2026-10-08",
@@ -3859,33 +3864,39 @@ window.PROJECT_DATA = {
   ],
   "install": {
     "repoUrl": "https://github.com/sahasbelbase/project-intelligence",
+    "run": "npx -y github:sahasbelbase/project-intelligence",
     "clone": "git clone https://github.com/sahasbelbase/project-intelligence.git",
-    "init": "node project-intelligence/bin/cli.js init --dir .",
-    "doctor": "node project-intelligence/bin/cli.js doctor",
+    "plugin": {
+      "add": "claude plugin marketplace add sahasbelbase/project-intelligence",
+      "install": "claude plugin install project-intelligence@sahasbelbase",
+      "use": "/project-intelligence:ask <what you want done>"
+    },
+    "init": "npx -y github:sahasbelbase/project-intelligence init",
+    "doctor": "npx -y github:sahasbelbase/project-intelligence doctor",
     "clients": [
       {
         "id": "claude",
         "label": "Claude Code",
-        "how": "Run in your project folder",
-        "code": "node project-intelligence/bin/cli.js init --client claude --dir ."
-      },
-      {
-        "id": "antigravity",
-        "label": "Antigravity",
-        "how": "Run in your project folder",
-        "code": "node project-intelligence/bin/cli.js init --client antigravity --dir ."
+        "how": "Install the plugin, then use /project-intelligence:ask",
+        "code": "claude plugin marketplace add sahasbelbase/project-intelligence\nclaude plugin install project-intelligence@sahasbelbase"
       },
       {
         "id": "copilot",
         "label": "GitHub Copilot CLI",
         "how": "Add the MCP server, then ask Copilot to plan with plan_task",
-        "code": "copilot mcp add project-intelligence -- python3 /path/to/project-intelligence/adapters/mcp/server.py --workspace-root ."
+        "code": "copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp"
+      },
+      {
+        "id": "antigravity",
+        "label": "Antigravity",
+        "how": "Run in your project folder",
+        "code": "npx -y github:sahasbelbase/project-intelligence init --client antigravity"
       },
       {
         "id": "mcp",
         "label": "Any MCP client",
         "how": "Add to your client’s MCP config",
-        "code": "{\n  \"mcpServers\": {\n    \"project-intelligence\": {\n      \"command\": \"python3\",\n      \"args\": [\n        \"/path/to/project-intelligence/adapters/mcp/server.py\",\n        \"--workspace-root\",\n        \"/path/to/your/project\"\n      ]\n    }\n  }\n}"
+        "code": "{\n  \"mcpServers\": {\n    \"project-intelligence\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"github:sahasbelbase/project-intelligence\",\n        \"mcp\"\n      ]\n    }\n  }\n}"
       }
     ],
     "bundles": [
@@ -3897,7 +3908,7 @@ window.PROJECT_DATA = {
           "."
         ],
         "desc": "Skills, agents, councils, contracts, instructions, adapters and the installer.",
-        "cmd": "node project-intelligence/bin/cli.js init --dir ."
+        "cmd": "npx -y github:sahasbelbase/project-intelligence init"
       },
       {
         "id": "skills",
@@ -3919,7 +3930,7 @@ window.PROJECT_DATA = {
           "core/schemas"
         ],
         "desc": "41 persona definitions, council rosters and the referee.",
-        "cmd": "python3 -m core.council.referee list"
+        "cmd": "npx -y github:sahasbelbase/project-intelligence council list"
       },
       {
         "id": "mcp",
@@ -3932,7 +3943,7 @@ window.PROJECT_DATA = {
           "contracts"
         ],
         "desc": "11 tools for gates, contracts, quality checks and memory, with no pip dependencies.",
-        "cmd": "python3 project-intelligence/adapters/mcp/server.py --workspace-root ."
+        "cmd": "npx -y github:sahasbelbase/project-intelligence mcp"
       }
     ],
     "license": "Apache-2.0",
@@ -4060,8 +4071,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "python3 -m core.council.referee prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"",
-              "python3 -m core.council.referee check"
+              "project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"",
+              "project-intelligence council check"
             ],
             "sessions": [
               {
@@ -4120,7 +4131,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\nRoute: tier 2 (Council) - Broad change within the design council's area.\nGate:  G6\n\n1. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Color and Harmony Specialist, Information Architect.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Color and Harmony Specialist  skills: design-system-engineering\n  - Information Architect  skills: design-discovery\n\nNext:\n  python3 -m core.council.referee prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"\n  python3 -m core.council.referee check"
+            "summary": "Task:  Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\nRoute: tier 2 (Council) - Broad change within the design council's area.\nGate:  G6\n\n1. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Color and Harmony Specialist, Information Architect.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Color and Harmony Specialist  skills: design-system-engineering\n  - Information Architect  skills: design-discovery\n\nNext:\n  project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"\n  project-intelligence council check"
           }
         },
         {
@@ -4203,8 +4214,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "python3 -m core.council.referee prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"",
-              "python3 -m core.council.referee check"
+              "project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"",
+              "project-intelligence council check"
             ],
             "sessions": [
               {
@@ -4264,7 +4275,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - Broad change within the development council's area.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Senior Application Developer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Senior Application Developer  skills: controlled-implementation, antfu-skills (install separately)\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  python3 -m core.council.referee prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  python3 -m core.council.referee check"
+            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - Broad change within the development council's area.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Senior Application Developer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Senior Application Developer  skills: controlled-implementation, antfu-skills (install separately)\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  project-intelligence council check"
           }
         }
       ]
@@ -4327,8 +4338,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "python3 -m core.council.referee prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"",
-              "python3 -m core.council.referee check"
+              "project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"",
+              "project-intelligence council check"
             ],
             "sessions": [
               {
@@ -4491,7 +4502,7 @@ window.PROJECT_DATA = {
               "qa-analyst",
               "test-quality-engineer"
             ],
-            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - Crosses product, design and engineering concerns.\nGate:  G6\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst, Innovation and Ideation Specialist.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Senior Application Developer, Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: feature-prioritization, requirements-analysis\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n  - Innovation and Ideation Specialist  skills: project-discovery\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Senior Application Developer  skills: controlled-implementation, antfu-skills (install separately)\n  - Security Engineer  skills: independent-review\n\nNext:\n  python3 -m core.council.referee prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  python3 -m core.council.referee check"
+            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - Crosses product, design and engineering concerns.\nGate:  G6\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst, Innovation and Ideation Specialist.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Senior Application Developer, Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: feature-prioritization, requirements-analysis\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n  - Innovation and Ideation Specialist  skills: project-discovery\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review\n  - Senior Application Developer  skills: controlled-implementation, antfu-skills (install separately)\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  project-intelligence council check"
           }
         }
       ]
@@ -4501,30 +4512,30 @@ window.PROJECT_DATA = {
     {
       "id": "claude",
       "label": "Claude Code",
-      "how": "Slash command installed by init",
-      "example": "/orchestrator Redesign the settings page",
-      "setup": "node project-intelligence/bin/cli.js init --client claude --dir ."
+      "how": "Plugin skill",
+      "example": "/project-intelligence:ask Redesign the settings page",
+      "setup": "claude plugin marketplace add sahasbelbase/project-intelligence\nclaude plugin install project-intelligence@sahasbelbase"
     },
     {
       "id": "copilot",
       "label": "GitHub Copilot CLI",
       "how": "MCP tool plan_task",
       "example": "Plan this with project-intelligence: redesign the settings page",
-      "setup": "copilot mcp add project-intelligence -- python3 /path/to/project-intelligence/adapters/mcp/server.py --workspace-root ."
+      "setup": "copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp"
     },
     {
       "id": "antigravity",
       "label": "Antigravity",
       "how": "Orchestrator skill installed by init",
       "example": "Use the orchestrator skill to redesign the settings page",
-      "setup": "node project-intelligence/bin/cli.js init --client antigravity --dir ."
+      "setup": "npx -y github:sahasbelbase/project-intelligence init --client antigravity"
     },
     {
       "id": "terminal",
       "label": "Any terminal",
       "how": "CLI command",
-      "example": "node project-intelligence/bin/cli.js ask \"Redesign the settings page\"",
-      "setup": "git clone the repository, then run the command from anywhere"
+      "example": "npx -y github:sahasbelbase/project-intelligence ask \"Redesign the settings page\"",
+      "setup": "Nothing to install: npx fetches it on first run. Needs Node 18+ and Python 3.10+."
     }
   ]
 };

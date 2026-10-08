@@ -1,6 +1,7 @@
 ---
 skillId: business-case
-name: Commercial Business Case Formulation
+name: business-case
+description: "Formulate commercial business cases, quantify return on investment (ROI), articulate differentiated value propositions, model monetization options, and anticipate buyer objections for Sales, Commercial, and Finance Analysts."
 purpose: Formulate commercial business cases, quantify return on investment (ROI), articulate differentiated value propositions, model monetization options, and anticipate buyer objections for Sales, Commercial, and Finance Analysts.
 whenToUse:
   - Evaluating commercial viability and investment justification during Gate G0 and G1

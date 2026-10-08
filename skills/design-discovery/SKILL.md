@@ -1,6 +1,7 @@
 ---
 skillId: design-discovery
-name: Design Discovery
+name: design-discovery
+description: "Capture visual identity, user flows, UI/UX aesthetics, layout constraints, and formal design system requirements or evaluate G2 exemption rationale."
 purpose: Capture visual identity, user flows, UI/UX aesthetics, layout constraints, and formal design system requirements or evaluate G2 exemption rationale.
 whenToUse:
   - Initiating a project or feature that includes a user-facing visual interface (Web, Mobile, Desktop, TV, Watch)

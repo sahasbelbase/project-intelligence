@@ -42,11 +42,11 @@ function parseArgs(args) {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (!parsed.command && ['init', 'doctor', 'update', 'uninstall', 'ask', 'council'].includes(arg)) {
+    if (!parsed.command && ['init', 'doctor', 'update', 'uninstall', 'ask', 'council', 'mcp'].includes(arg)) {
       parsed.command = arg;
     } else if (arg === '--json') {
       parsed.json = true;
-    } else if ((parsed.command === 'ask' || parsed.command === 'council') && !arg.startsWith('--')) {
+    } else if ((parsed.command === 'ask' || parsed.command === 'council' || parsed.command === 'mcp') && !arg.startsWith('--')) {
       parsed.rest.push(arg);
     } else if (arg === '--client') {
       parsed.client = args[++i] || 'all';
@@ -100,8 +100,9 @@ Commands:
   update        Update framework skills and rules while preserving user contracts
   uninstall     Cleanly remove created files and revert merged standing rules
   ask "<task>"  Plan a request: which tier, skills, agents or councils handle it (add --json for JSON)
-  council <plan|list|check|prompt> ...
+  council <plan|prompt|record|list|check> ...
                 Run the council referee (see core/council/referee.py)
+  mcp           Start the MCP server on stdio (for Copilot CLI and other MCP clients)
 
 Options:
   --client <antigravity|claude|all>   Target AI coding assistant platform (default: all)
@@ -351,7 +352,10 @@ async function handleUninstall(options, targetDir) {
  */
 function runPython(args) {
   const python = process.env.PYTHON || 'python3';
-  const res = spawnSync(python, args, { cwd: PACKAGE_ROOT, stdio: 'inherit' });
+  // Run in the user's folder (council records and the lifecycle gate live there) and
+  // import the framework from the package root.
+  const env = { ...process.env, PYTHONPATH: [PACKAGE_ROOT, process.env.PYTHONPATH].filter(Boolean).join(path.delimiter) };
+  const res = spawnSync(python, args, { cwd: process.cwd(), env, stdio: 'inherit' });
   if (res.error) {
     console.error(`[Project Intelligence] Could not run ${python}: ${res.error.message}. Install Python 3.10 or later, or set PYTHON.`);
     return 1;
@@ -398,6 +402,9 @@ async function main(args = process.argv.slice(2)) {
       return handleAsk(options, targetDir);
     case 'council':
       return runPython(['-m', 'core.council.referee', ...options.rest]);
+    case 'mcp':
+      // stdio MCP server for Copilot CLI, Cursor and other clients; stdout carries JSON-RPC only.
+      return runPython([path.join(PACKAGE_ROOT, 'adapters', 'mcp', 'server.py')]);
     default:
       console.error(`Unknown command: ${options.command}`);
       printHelp();

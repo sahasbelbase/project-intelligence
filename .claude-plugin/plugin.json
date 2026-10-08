@@ -1,0 +1,38 @@
+{
+  "name": "project-intelligence",
+  "displayName": "Project Intelligence",
+  "version": "1.2.0",
+  "description": "Plans every request: answers it, hands it to a specialist, or convenes a design, development or product council. Ships 28 skills, 37 council personas, lifecycle gates and an MCP server.",
+  "author": {
+    "name": "Sahas Belbase",
+    "url": "https://github.com/sahasbelbase"
+  },
+  "homepage": "https://sahasbelbase.github.io/project-intelligence/",
+  "repository": "https://github.com/sahasbelbase/project-intelligence",
+  "license": "Apache-2.0",
+  "keywords": [
+    "orchestrator",
+    "council",
+    "skills",
+    "lifecycle",
+    "code-quality",
+    "seo",
+    "mcp"
+  ],
+  "skills": [
+    "./vendor/skills/",
+    "./plugin-skills/"
+  ],
+  "agents": [],
+  "mcpServers": {
+    "project-intelligence": {
+      "command": "python3",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/adapters/mcp/server.py"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

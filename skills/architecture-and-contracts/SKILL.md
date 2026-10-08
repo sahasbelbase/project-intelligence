@@ -1,6 +1,7 @@
 ---
 skillId: architecture-and-contracts
-name: Architecture and Contracts
+name: architecture-and-contracts
+description: "Formulate system architecture, component boundaries, schemas, API contracts, threat models, and architectural decision records (ADRs) to clear G3."
 purpose: Formulate system architecture, component boundaries, schemas, API contracts, threat models, and architectural decision records (ADRs) to clear G3.
 whenToUse:
   - Defining software subsystem boundaries, data models, and component interfaces

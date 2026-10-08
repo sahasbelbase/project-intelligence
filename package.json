@@ -1,15 +1,41 @@
 {
-  "name": "project-intelligence",
-  "version": "1.1.0",
-  "description": "Deterministic lifecycle framework and native platform adapters for AI coding assistants",
+  "name": "@sahasbelbase/project-intelligence",
+  "version": "1.2.0",
+  "description": "Skills, specialist agents, multi-persona councils and lifecycle gates for AI coding agents. Works with Claude Code, GitHub Copilot CLI, Antigravity and any MCP client.",
+  "keywords": [
+    "agent-skills",
+    "agentic-coding",
+    "ai",
+    "antigravity",
+    "claude-code",
+    "claude-code-plugin",
+    "council",
+    "developer-tools",
+    "github-copilot",
+    "lifecycle",
+    "mcp",
+    "multi-agent",
+    "orchestrator"
+  ],
+  "homepage": "https://sahasbelbase.github.io/project-intelligence/",
+  "bugs": {
+    "url": "https://github.com/sahasbelbase/project-intelligence/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sahasbelbase/project-intelligence.git"
+  },
+  "license": "Apache-2.0",
+  "author": "Sahas Belbase",
   "main": "installer/cli.js",
   "bin": {
-    "project-intelligence": "./bin/cli.js"
+    "project-intelligence": "./bin/project-intelligence"
   },
   "scripts": {
     "site": "node web/server.js",
     "serve": "node web/server.js",
-    "build:data": "node web/build-data.js"
+    "build:data": "node web/build-data.js",
+    "build:plugin": "node installer/build-plugin.js"
   },
   "files": [
     "bin",
@@ -24,20 +50,15 @@
     "vendor",
     "web",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    ".claude-plugin",
+    "plugin-skills",
+    "CHANGELOG.md"
   ],
   "engines": {
     "node": ">=18.0.0"
   },
-  "keywords": [
-    "ai",
-    "agentic-coding",
-    "antigravity",
-    "claude-code",
-    "mcp",
-    "lifecycle",
-    "orchestrator"
-  ],
-  "author": "Sahas Belbase",
-  "license": "Apache-2.0"
+  "publishConfig": {
+    "access": "public"
+  }
 }

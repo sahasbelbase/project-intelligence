@@ -1,6 +1,7 @@
 ---
 skillId: requirements-analysis
-name: Requirements Analysis & Specification
+name: requirements-analysis
+description: "Elicit, structure, analyze, and formalize functional requirements, acceptance criteria, business rules, edge cases, and ambiguity logs for Business Analysts."
 purpose: Elicit, structure, analyze, and formalize functional requirements, acceptance criteria, business rules, edge cases, and ambiguity logs for Business Analysts.
 whenToUse:
   - Deconstructing high-level project goals and stakeholder concepts into testable requirements

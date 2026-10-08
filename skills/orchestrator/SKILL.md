@@ -1,6 +1,7 @@
 ---
 skillId: orchestrator
-name: Universal Master Orchestrator
+name: orchestrator
+description: "Universal master orchestrator entry point. Parses intent, checks lifecycle state, dispatches to matching personas/skills or convenes council."
 purpose: Universal master orchestrator entry point. Parses intent, checks lifecycle state, dispatches to matching personas/skills or convenes council.
 whenToUse:
   - Receiving any broad, ambiguous, or multi-faceted project request

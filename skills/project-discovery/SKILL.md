@@ -1,6 +1,7 @@
 ---
 skillId: project-discovery
-name: Project Discovery
+name: project-discovery
+description: "Inspect the development environment, baseline repository state, tools, and constraints to establish the project charter and G0 contract."
 purpose: Inspect the development environment, baseline repository state, tools, and constraints to establish the project charter and G0 contract.
 whenToUse:
   - Initializing a greenfield project without an established Project Intelligence configuration

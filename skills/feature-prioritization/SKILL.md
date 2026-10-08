@@ -1,6 +1,7 @@
 ---
 skillId: feature-prioritization
-name: Feature Prioritization & MVP Scoping
+name: feature-prioritization
+description: "Score, prioritize, and partition product features using Value vs Risk vs Complexity frameworks, establish strict MVP scope boundaries, and enforce explicit exclusion lists for Product Managers."
 purpose: Score, prioritize, and partition product features using Value vs Risk vs Complexity frameworks, establish strict MVP scope boundaries, and enforce explicit exclusion lists for Product Managers.
 whenToUse:
   - Prioritizing candidate features during product discovery and Gate G1 scope formulation
@@ -33,7 +34,7 @@ procedure:
     action: Score each feature on Technical Complexity (1-5) and Implementation/Security Risk (1-5).
   - stepNumber: 4
     title: Value vs Risk vs Complexity Matrix Mapping
-    action: Plot features into quadrant tiers: Quick Wins (High Value, Low Complexity), Strategic Bets (High Value, High Complexity), Nice-to-Haves (Low Value, Low Complexity), and Time Sinks (Low Value, High Complexity).
+    action: "Plot features into quadrant tiers: Quick Wins (High Value, Low Complexity), Strategic Bets (High Value, High Complexity), Nice-to-Haves (Low Value, Low Complexity), and Time Sinks (Low Value, High Complexity)."
   - stepNumber: 5
     title: MVP Scope Boundary Demarcation
     action: Select the minimal cohesive set of Quick Wins and essential Strategic Bets required to deliver end-to-end user value in Phase 1.

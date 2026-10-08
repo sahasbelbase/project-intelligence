@@ -420,7 +420,9 @@ class Referee:
         }
 
     def save(self, record: Dict[str, Any], directory: Optional[Path] = None) -> Path:
-        directory = Path(directory) if directory else self.root / "memory" / "council-briefs"
+        # Records belong to the project being worked on (the current folder), not to the
+        # framework's own install location, which a plugin update replaces.
+        directory = Path(directory) if directory else Path.cwd() / "memory" / "council-briefs"
         directory.mkdir(parents=True, exist_ok=True)
         path = directory / f"{record['brief']['decisionId']}.json"
         path.write_text(json.dumps(record, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -490,7 +492,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
         except (RefereeError, json.JSONDecodeError, OSError) as err:
             print(f"Not saved: {err}", file=sys.stderr)
             return 1
-        print(f"Saved {path.relative_to(ref.root)}")
+        print(f"Saved {path}")
     elif args.cmd == "list":
         for cid, c in ref.config["councils"].items():
             print(f"{c['title']} ({len(c['roster'])}): chair {c['chair']}, critic {c['critic']}")
@@ -498,7 +500,7 @@ def _main(argv: Optional[List[str]] = None) -> int:
                 print(f"  - {pid}: {ref.persona(pid)['title']}")
     elif args.cmd == "check":
         errors = ref.validate_registry()
-        briefs = ref.root / "memory" / "council-briefs"
+        briefs = Path.cwd() / "memory" / "council-briefs"
         for path in sorted(briefs.glob("*.json")) if briefs.exists() else []:
             errors += [f"{path.name}: {e}" for e in ref.validate_record(json.loads(path.read_text(encoding="utf-8")))]
         if errors:

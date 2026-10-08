@@ -1,6 +1,7 @@
 ---
 skillId: independent-review
-name: Independent Review
+name: independent-review
+description: "Conduct impartial, adversarial evaluation of code changes against contracts, anti-slop rules, security policies, and edge cases to clear G5."
 purpose: Conduct impartial, adversarial evaluation of code changes against contracts, anti-slop rules, security policies, and edge cases to clear G5.
 whenToUse:
   - Evaluating completed code changes prior to release or handoff (Gate G5 entry)
@@ -27,16 +28,16 @@ procedure:
     action: Inspect git diff across all modified files. Compare implemented functionality against requirements contract. Flag any unapproved features or scope expansion.
   - stepNumber: 2
     title: Anti-Slop and Baseline Policy Audit
-    action: Audit codebase against rules BL-001 through BL-007: check for gratuitous emoji, hardcoded mock values in prod paths, empty stub functions, and unapproved packages.
+    action: "Audit codebase against rules BL-001 through BL-007: check for gratuitous emoji, hardcoded mock values in prod paths, empty stub functions, and unapproved packages."
   - stepNumber: 3
     title: Adversarial Edge Case and Security Review
-    action: Evaluate handling of boundary conditions: empty inputs, integer overflow, network timeouts, invalid schema payloads, injection flaws, and race conditions.
+    action: "Evaluate handling of boundary conditions: empty inputs, integer overflow, network timeouts, invalid schema payloads, injection flaws, and race conditions."
   - stepNumber: 4
     title: Quality Evidence Verification
     action: Verify that test and linting evidence is complete, legitimate, and reproducible. Confirm test coverage meets the profile threshold.
   - stepNumber: 5
     title: Defect Categorization and Triage
-    action: Classify discovered issues by severity: BLOCKING (prevents release), MAJOR (must fix before G6), MINOR (logged to technical debt backlog).
+    action: "Classify discovered issues by severity: BLOCKING (prevents release), MAJOR (must fix before G6), MINOR (logged to technical debt backlog)."
   - stepNumber: 6
     title: Independent Review Report Generation
     action: Publish review findings in docs/validation/independent-review-report.md. Update contracts/quality/contract.json status to APPROVED or REJECTED.

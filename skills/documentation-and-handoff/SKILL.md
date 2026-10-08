@@ -1,6 +1,7 @@
 ---
 skillId: documentation-and-handoff
-name: Documentation and Handoff
+name: documentation-and-handoff
+description: "Generate comprehensive developer guides, release contracts, changelogs, operational runbooks, and synchronized memory states to clear G6."
 purpose: Generate comprehensive developer guides, release contracts, changelogs, operational runbooks, and synchronized memory states to clear G6.
 whenToUse:
   - Finalizing a release, milestone, or sprint deliverable (Gate G6 entry)

@@ -123,3 +123,26 @@ class TestRunsFromUserProject(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestInvocation(unittest.TestCase):
+    """Installed files must not point into npm's temporary npx cache."""
+
+    def _call(self, expr):
+        if shutil.which("node") is None:
+            self.skipTest("node is not installed")
+        out = subprocess.run(["node", "-e", f"const i=require('./installer/invocation');console.log(JSON.stringify({expr}))"],
+                             cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        return json.loads(out)
+
+    def test_npx_cache_uses_npx(self):
+        root = "/home/u/.npm/_npx/abc123/node_modules/@sahasbelbase/project-intelligence"
+        self.assertEqual(self._call(f"i.cliInvocation({json.dumps(root)})"), "npx -y github:sahasbelbase/project-intelligence")
+        entry = self._call(f"i.mcpServerEntry({json.dumps(root)}, '/home/u/app')")
+        self.assertEqual(entry["command"], "npx")
+        self.assertEqual(entry["args"][-1], "mcp")
+
+    def test_normal_install_uses_absolute_path(self):
+        self.assertEqual(self._call("i.cliInvocation('/opt/pi')"), 'node "/opt/pi/bin/cli.js"')
+        self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/home/u/app')")["args"], ["/opt/pi/adapters/mcp/server.py"])
+        self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/opt/pi')")["args"], ["adapters/mcp/server.py"])

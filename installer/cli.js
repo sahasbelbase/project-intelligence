@@ -24,6 +24,7 @@ const { installClaude } = require('./adapters/claude');
 const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const pkg = require(path.join(PACKAGE_ROOT, 'package.json'));
 const { spawnSync } = require('child_process');
+const { cliInvocation } = require('./invocation');
 
 function parseArgs(args) {
   const parsed = {
@@ -201,7 +202,7 @@ async function handleInit(options, targetDir) {
   console.log('\n========================================================================');
   console.log('INITIALIZATION COMPLETE');
   console.log('You can now interact with your AI assistant using Project Intelligence.');
-  console.log(`Run \`node ${path.join(PACKAGE_ROOT, 'bin', 'cli.js')} doctor\` anytime to check system health.`);
+  console.log(`Run \`${cliInvocation(PACKAGE_ROOT)} doctor\` anytime to check system health.`);
   console.log('========================================================================\n');
   return 0;
 }

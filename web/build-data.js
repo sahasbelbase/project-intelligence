@@ -261,8 +261,8 @@ const BUNDLE_TEXT = {
   councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `npx -y github:sahasbelbase/project-intelligence council list` },
   mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `npx -y github:sahasbelbase/project-intelligence mcp` },
 };
-// Runs straight from GitHub with npx. Switch to the npm name once the package is published.
-const RUN = 'npx -y github:sahasbelbase/project-intelligence';
+// Runs straight from GitHub with npx (the spec lives in installer/invocation.js).
+const RUN = `npx -y ${require('../installer/invocation').RUN_SPEC}`;
 const install = {
   repoUrl,
   run: RUN,

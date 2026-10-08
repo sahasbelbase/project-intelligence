@@ -7,15 +7,16 @@
 
 const fs = require('fs');
 const path = require('path');
+const { cliInvocation, mcpServerEntry } = require('../invocation');
 const { injectMarkerBlock } = require('../manifest');
 
 /**
  * Routing instructions shared by the installed orchestrator skill and the Claude Code
- * /orchestrator command. cliPath is the absolute path to this package's bin/cli.js,
- * so installed projects call the framework they were installed from.
+ * /orchestrator command. `cli` is the command prefix that runs this package's CLI
+ * (see installer/invocation.js), so installed projects call the framework they were
+ * installed from.
  */
-function routingSection(cliPath) {
-  const cli = `node ${JSON.stringify(cliPath)}`;
+function routingSection(cli) {
   return `## Handling a request
 1. **Plan it first.** Run \`${cli} ask "<request>"\` (or call the MCP tool \`plan_task\`). It returns a tier and who handles the work.
 2. **Tier 0, answer:** answer directly from the framework files.
@@ -31,7 +32,7 @@ function routingSection(cliPath) {
 `;
 }
 
-function buildOrchestratorSkillMd(cliPath) {
+function buildOrchestratorSkillMd(cli) {
   return `---
 name: orchestrator
 description: Lead Project Orchestrator. Plans every request (answer, specialist or council), governs lifecycle gates G0 through G6, validates contracts and enforces anti-slop rules.
@@ -49,7 +50,7 @@ triggers:
 ## Overview
 Plans every request, convenes councils when a decision needs several perspectives, and governs the canonical project lifecycle across Gates G0 through G6.
 
-${routingSection(cliPath)}
+${routingSection(cli)}
 ## Core Responsibilities
 1. **Deterministic Gate Transitions**: Progression between lifecycle gates (G0–G6) strictly follows \`core/lifecycle/lifecycle-fsm.json\`.
 2. **Mandatory Human-in-the-Loop Sign-Off**: The orchestrator never bypasses required human approvals.
@@ -68,7 +69,7 @@ ${routingSection(cliPath)}
 `;
 }
 
-const ORCHESTRATOR_SKILL_MD = buildOrchestratorSkillMd(path.resolve(__dirname, '..', '..', 'bin', 'cli.js'));
+const ORCHESTRATOR_SKILL_MD = buildOrchestratorSkillMd(cliInvocation(path.resolve(__dirname, '..', '..')));
 
 const REQUIREMENTS_SKILL_MD = `---
 name: requirements-analysis
@@ -161,7 +162,7 @@ function installAntigravity(targetDir, options, context) {
   }
 
   // Install orchestrator and requirements-analysis skills
-  writeFile('.agents/skills/orchestrator/SKILL.md', buildOrchestratorSkillMd(path.join(packageRoot, 'bin', 'cli.js')));
+  writeFile('.agents/skills/orchestrator/SKILL.md', buildOrchestratorSkillMd(cliInvocation(packageRoot)));
   writeFile('.agents/skills/requirements-analysis/SKILL.md', REQUIREMENTS_SKILL_MD);
 
   // 2. Standing Rules for GEMINI.md and .agents/rules/AGENTS.md
@@ -234,19 +235,8 @@ function installAntigravity(targetDir, options, context) {
       backupContent: original,
     });
 
-    let serverScriptPath = 'adapters/mcp/server.py';
-    if (path.resolve(targetDir) !== path.resolve(packageRoot)) {
-      serverScriptPath = path.join(packageRoot, 'adapters', 'mcp', 'server.py');
-    }
-
     mcpConfig.mcpServers = mcpConfig.mcpServers || {};
-    mcpConfig.mcpServers['project-intelligence'] = {
-      command: 'python3',
-      args: [serverScriptPath],
-      env: {
-        PYTHONUNBUFFERED: '1',
-      },
-    };
+    mcpConfig.mcpServers['project-intelligence'] = mcpServerEntry(packageRoot, targetDir);
 
     if (!dryRun) {
       fs.writeFileSync(mcpFullPath, JSON.stringify(mcpConfig, null, 2) + '\n', 'utf8');

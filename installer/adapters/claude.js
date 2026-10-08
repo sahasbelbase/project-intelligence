@@ -7,10 +7,11 @@
 
 const fs = require('fs');
 const path = require('path');
+const { cliInvocation, mcpServerEntry } = require('../invocation');
 const { injectMarkerBlock } = require('../manifest');
 const { ORCHESTRATOR_SKILL_MD, REQUIREMENTS_SKILL_MD, buildOrchestratorSkillMd, routingSection } = require('./antigravity');
 
-function buildClaudeOrchestratorCommand(cliPath) {
+function buildClaudeOrchestratorCommand(cli) {
   return `---
 description: Plan and run a request through Project Intelligence - answer, specialist or council.
 argument-hint: <what you want done>
@@ -20,12 +21,12 @@ You are the Project Intelligence Lead Orchestrator. The request is:
 
 $ARGUMENTS
 
-${routingSection(cliPath)}
+${routingSection(cli)}
 Before changing files, check the lifecycle gate with the MCP tool \`project_status\` (or \`memory/execution-state.json\`) and follow the anti-slop rules: no emojis in code, real tests, verbatim execution evidence.
 `;
 }
 
-const CLAUDE_COMMAND_ORCHESTRATOR_MD = buildClaudeOrchestratorCommand(path.resolve(__dirname, '..', '..', 'bin', 'cli.js'));
+const CLAUDE_COMMAND_ORCHESTRATOR_MD = buildClaudeOrchestratorCommand(cliInvocation(path.resolve(__dirname, '..', '..')));
 
 function installClaude(targetDir, options, context) {
   const { dryRun = false, mcp = true } = options;
@@ -73,7 +74,7 @@ function installClaude(targetDir, options, context) {
   ensureDir('.claude/hooks');
 
   // Install slash command /orchestrator
-  writeFile('.claude/commands/orchestrator.md', buildClaudeOrchestratorCommand(path.join(packageRoot, 'bin', 'cli.js')));
+  writeFile('.claude/commands/orchestrator.md', buildClaudeOrchestratorCommand(cliInvocation(packageRoot)));
 
   // Copy canonical skills from packageRoot/skills
   const canonicalSkillsDir = path.join(packageRoot, 'skills');
@@ -108,7 +109,7 @@ function installClaude(targetDir, options, context) {
   }
 
   // Install orchestrator and requirements-analysis skills
-  writeFile('.claude/skills/orchestrator/SKILL.md', buildOrchestratorSkillMd(path.join(packageRoot, 'bin', 'cli.js')));
+  writeFile('.claude/skills/orchestrator/SKILL.md', buildOrchestratorSkillMd(cliInvocation(packageRoot)));
   writeFile('.claude/skills/requirements-analysis/SKILL.md', REQUIREMENTS_SKILL_MD);
 
   // 2. Install Hooks
@@ -243,19 +244,8 @@ function installClaude(targetDir, options, context) {
       backupContent: originalMcp,
     });
 
-    let serverScriptPath = 'adapters/mcp/server.py';
-    if (path.resolve(targetDir) !== path.resolve(packageRoot)) {
-      serverScriptPath = path.join(packageRoot, 'adapters', 'mcp', 'server.py');
-    }
-
     mcpConfig.mcpServers = mcpConfig.mcpServers || {};
-    mcpConfig.mcpServers['project-intelligence'] = {
-      command: 'python3',
-      args: [serverScriptPath],
-      env: {
-        PYTHONUNBUFFERED: '1',
-      },
-    };
+    mcpConfig.mcpServers['project-intelligence'] = mcpServerEntry(packageRoot, targetDir);
 
     if (!dryRun) {
       fs.writeFileSync(mcpFullPath, JSON.stringify(mcpConfig, null, 2) + '\n', 'utf8');

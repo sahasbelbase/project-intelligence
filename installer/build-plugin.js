@@ -22,7 +22,7 @@ const PLUGIN_NAME = 'project-intelligence';
 const MARKETPLACE_NAME = 'sahasbelbase';
 const AUTHOR = { name: 'Sahas Belbase', url: 'https://github.com/sahasbelbase' };
 // Resolved by Claude Code when it loads the command, so the plugin calls its own copy.
-const CLI = '${CLAUDE_PLUGIN_ROOT}/bin/cli.js';
+const CLI = 'node "${CLAUDE_PLUGIN_ROOT}/bin/cli.js"';
 
 const askCommand = `---
 name: ask

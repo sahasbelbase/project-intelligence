@@ -5,6 +5,13 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.4.1] - 2026-10-08
+
+Summary: Published to npm as @sahasbelbase/project-intelligence.
+
+### Changed
+- **Install commands**: `npx -y @sahasbelbase/project-intelligence <command>` replaces the `npx -y github:...` form on the website, in the README and in files written by `init` when it runs through npx.
+
 ## [1.4.0] - 2026-10-08
 
 Summary: A code reviewer, an idea-to-PRD flow, and six more third-party skills for writing, testing and reviewing code.

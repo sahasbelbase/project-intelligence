@@ -147,7 +147,7 @@ class TestInvocation(unittest.TestCase):
 
     def test_npx_cache_uses_npx(self):
         root = "/home/u/.npm/_npx/abc123/node_modules/@sahasbelbase/project-intelligence"
-        self.assertEqual(self._call(f"i.cliInvocation({json.dumps(root)})"), "npx -y github:sahasbelbase/project-intelligence")
+        self.assertEqual(self._call(f"i.cliInvocation({json.dumps(root)})"), "npx -y @sahasbelbase/project-intelligence")
         entry = self._call(f"i.mcpServerEntry({json.dumps(root)}, '/home/u/app')")
         self.assertEqual(entry["command"], "npx")
         self.assertEqual(entry["args"][-1], "mcp")

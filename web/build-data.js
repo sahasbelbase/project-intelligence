@@ -273,15 +273,15 @@ const mcpTools = (() => {
   return (src.match(/^\| `[a-z_]+` ?\|/gm) || []).length;
 })();
 const cloneDir = 'project-intelligence';
+// Runs from npm with npx (the spec lives in installer/invocation.js).
+const RUN = `npx -y ${require('../installer/invocation').RUN_SPEC}`;
 const BUNDLES = require('./bundles');
 const BUNDLE_TEXT = {
-  framework: { desc: 'Skills, agents, councils, contracts, instructions, adapters and the installer.', cmd: `npx -y github:sahasbelbase/project-intelligence init` },
+  framework: { desc: 'Skills, agents, councils, contracts, instructions, adapters and the installer.', cmd: `${RUN} init` },
   skills: { desc: `All ${skills.length} framework skills plus ${vendored.length} third-party skills, with their licenses.`, cmd: `cp -R ${cloneDir}/skills ${cloneDir}/vendor/skills .claude/` },
-  councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `npx -y github:sahasbelbase/project-intelligence council list` },
-  mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `npx -y github:sahasbelbase/project-intelligence mcp` },
+  councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `${RUN} council list` },
+  mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `${RUN} mcp` },
 };
-// Runs straight from GitHub with npx (the spec lives in installer/invocation.js).
-const RUN = `npx -y ${require('../installer/invocation').RUN_SPEC}`;
 const install = {
   repoUrl,
   run: RUN,
@@ -299,7 +299,7 @@ const install = {
     { id: 'antigravity', label: 'Antigravity', how: 'Run in your project folder', code: `${RUN} init --client antigravity` },
     {
       id: 'mcp', label: 'Any MCP client', how: 'Add to your client’s MCP config',
-      code: JSON.stringify({ mcpServers: { 'project-intelligence': { command: 'npx', args: ['-y', 'github:sahasbelbase/project-intelligence', 'mcp'] } } }, null, 2),
+      code: JSON.stringify({ mcpServers: { 'project-intelligence': { command: 'npx', args: ['-y', require('../installer/invocation').RUN_SPEC, 'mcp'] } } }, null, 2),
     },
   ],
   bundles: BUNDLES.map((b) => ({ ...b, desc: BUNDLE_TEXT[b.id].desc, cmd: BUNDLE_TEXT[b.id].cmd })),

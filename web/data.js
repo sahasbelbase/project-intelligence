@@ -2,10 +2,10 @@
 window.PROJECT_DATA = {
   "meta": {
     "name": "Project Intelligence",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "license": "Apache-2.0",
-    "commit": "f073eb1",
-    "generatedAt": "2026-10-08T15:43:37.380Z"
+    "commit": "abc28ba",
+    "generatedAt": "2026-10-08T16:08:34.889Z"
   },
   "counts": {
     "skills": 25,
@@ -4709,14 +4709,19 @@ window.PROJECT_DATA = {
     }
   ],
   "validation": {
-    "timestamp": "2026-10-08T15:43:05Z",
+    "timestamp": "2026-10-08T15:48:25Z",
     "totalRun": 179,
     "passed": 179,
     "failed": 0,
     "skipped": 0,
-    "durationSeconds": 7.383
+    "durationSeconds": 7.431
   },
   "changelog": [
+    {
+      "version": "1.4.1",
+      "date": "2026-10-08",
+      "summary": "Published to npm as @sahasbelbase/project-intelligence."
+    },
     {
       "version": "1.4.0",
       "date": "2026-10-08",
@@ -4745,15 +4750,15 @@ window.PROJECT_DATA = {
   ],
   "install": {
     "repoUrl": "https://github.com/sahasbelbase/project-intelligence",
-    "run": "npx -y github:sahasbelbase/project-intelligence",
+    "run": "npx -y @sahasbelbase/project-intelligence",
     "clone": "git clone https://github.com/sahasbelbase/project-intelligence.git",
     "plugin": {
       "add": "claude plugin marketplace add sahasbelbase/project-intelligence",
       "install": "claude plugin install project-intelligence@sahasbelbase",
       "use": "/project-intelligence:ask <what you want done>"
     },
-    "init": "npx -y github:sahasbelbase/project-intelligence init",
-    "doctor": "npx -y github:sahasbelbase/project-intelligence doctor",
+    "init": "npx -y @sahasbelbase/project-intelligence init",
+    "doctor": "npx -y @sahasbelbase/project-intelligence doctor",
     "clients": [
       {
         "id": "claude",
@@ -4765,19 +4770,19 @@ window.PROJECT_DATA = {
         "id": "copilot",
         "label": "GitHub Copilot CLI",
         "how": "Add the MCP server, then ask Copilot to plan with plan_task",
-        "code": "copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp"
+        "code": "copilot mcp add project-intelligence -- npx -y @sahasbelbase/project-intelligence mcp"
       },
       {
         "id": "antigravity",
         "label": "Antigravity",
         "how": "Run in your project folder",
-        "code": "npx -y github:sahasbelbase/project-intelligence init --client antigravity"
+        "code": "npx -y @sahasbelbase/project-intelligence init --client antigravity"
       },
       {
         "id": "mcp",
         "label": "Any MCP client",
         "how": "Add to your client’s MCP config",
-        "code": "{\n  \"mcpServers\": {\n    \"project-intelligence\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"github:sahasbelbase/project-intelligence\",\n        \"mcp\"\n      ]\n    }\n  }\n}"
+        "code": "{\n  \"mcpServers\": {\n    \"project-intelligence\": {\n      \"command\": \"npx\",\n      \"args\": [\n        \"-y\",\n        \"@sahasbelbase/project-intelligence\",\n        \"mcp\"\n      ]\n    }\n  }\n}"
       }
     ],
     "bundles": [
@@ -4789,7 +4794,7 @@ window.PROJECT_DATA = {
           "."
         ],
         "desc": "Skills, agents, councils, contracts, instructions, adapters and the installer.",
-        "cmd": "npx -y github:sahasbelbase/project-intelligence init"
+        "cmd": "npx -y @sahasbelbase/project-intelligence init"
       },
       {
         "id": "skills",
@@ -4811,7 +4816,7 @@ window.PROJECT_DATA = {
           "core/schemas"
         ],
         "desc": "42 persona definitions, council rosters and the referee.",
-        "cmd": "npx -y github:sahasbelbase/project-intelligence council list"
+        "cmd": "npx -y @sahasbelbase/project-intelligence council list"
       },
       {
         "id": "mcp",
@@ -4824,7 +4829,7 @@ window.PROJECT_DATA = {
           "contracts"
         ],
         "desc": "11 tools for gates, contracts, quality checks and memory, with no pip dependencies.",
-        "cmd": "npx -y github:sahasbelbase/project-intelligence mcp"
+        "cmd": "npx -y @sahasbelbase/project-intelligence mcp"
       }
     ],
     "license": "Apache-2.0",
@@ -5589,20 +5594,20 @@ window.PROJECT_DATA = {
       "label": "GitHub Copilot CLI",
       "how": "MCP tool plan_task",
       "example": "Plan this with project-intelligence: redesign the settings page",
-      "setup": "copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp"
+      "setup": "copilot mcp add project-intelligence -- npx -y @sahasbelbase/project-intelligence mcp"
     },
     {
       "id": "antigravity",
       "label": "Antigravity",
       "how": "Orchestrator skill installed by init",
       "example": "Use the orchestrator skill to redesign the settings page",
-      "setup": "npx -y github:sahasbelbase/project-intelligence init --client antigravity"
+      "setup": "npx -y @sahasbelbase/project-intelligence init --client antigravity"
     },
     {
       "id": "terminal",
       "label": "Any terminal",
       "how": "CLI command",
-      "example": "npx -y github:sahasbelbase/project-intelligence ask \"Redesign the settings page\"",
+      "example": "npx -y @sahasbelbase/project-intelligence ask \"Redesign the settings page\"",
       "setup": "Nothing to install: npx fetches it on first run. Needs Node 18+ and Python 3.10+."
     }
   ]

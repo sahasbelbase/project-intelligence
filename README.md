@@ -15,13 +15,13 @@ Then type `/project-intelligence:ask <what you want done>`.
 
 **Any other tool (run in your project folder):**
 ```bash
-npx -y github:sahasbelbase/project-intelligence init     # Claude Code and Antigravity files
-npx -y github:sahasbelbase/project-intelligence ask "Redesign the settings page"
+npx -y @sahasbelbase/project-intelligence init     # Claude Code and Antigravity files
+npx -y @sahasbelbase/project-intelligence ask "Redesign the settings page"
 ```
 
 **GitHub Copilot CLI and other MCP clients:**
 ```bash
-copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp
+copilot mcp add project-intelligence -- npx -y @sahasbelbase/project-intelligence mcp
 ```
 
 Requires Node 18+ and Python 3.10+, with no other dependencies.
@@ -170,9 +170,9 @@ Every request goes through one planner, whichever tool you use. It asks the coun
 | Tool | How you ask | Set up |
 |---|---|---|
 | Claude Code | `/project-intelligence:ask <request>` (plugin) or `/orchestrator <request>` (after `init`) | `claude plugin install project-intelligence@sahasbelbase` |
-| GitHub Copilot CLI | Ask in chat; Copilot calls the `plan_task` MCP tool | `copilot mcp add project-intelligence -- npx -y github:sahasbelbase/project-intelligence mcp` |
-| Antigravity | Ask in chat; the orchestrator skill runs the planner | `npx -y github:sahasbelbase/project-intelligence init --client antigravity` |
-| Any terminal | `npx -y github:sahasbelbase/project-intelligence ask "<request>"` (add `--json` for JSON) | Nothing; npx fetches it |
+| GitHub Copilot CLI | Ask in chat; Copilot calls the `plan_task` MCP tool | `copilot mcp add project-intelligence -- npx -y @sahasbelbase/project-intelligence mcp` |
+| Antigravity | Ask in chat; the orchestrator skill runs the planner | `npx -y @sahasbelbase/project-intelligence init --client antigravity` |
+| Any terminal | `npx -y @sahasbelbase/project-intelligence ask "<request>"` (add `--json` for JSON) | Nothing; npx fetches it |
 
 Every plan reports a confidence level and the evidence behind it. Routing scores 80% on requests it was never tuned on (`validation/fixtures/routing/holdout.json`), so when confidence is low the agent confirms the route or re-plans with `--council`, `--persona` or `--include`.
 

@@ -5,9 +5,8 @@
  */
 const path = require('path');
 
-// The package as npx fetches it. Switch to '@sahasbelbase/project-intelligence'
-// once the npm package is published.
-const RUN_SPEC = 'github:sahasbelbase/project-intelligence';
+// The package as npx fetches it from the npm registry.
+const RUN_SPEC = '@sahasbelbase/project-intelligence';
 
 function isEphemeral(packageRoot) {
   return path.resolve(packageRoot).split(path.sep).includes('_npx');

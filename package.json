@@ -53,7 +53,9 @@
     "LICENSE",
     ".claude-plugin",
     "plugin-skills",
-    "CHANGELOG.md"
+    "CHANGELOG.md",
+    "!**/__pycache__/**",
+    "!**/*.pyc"
   ],
   "engines": {
     "node": ">=18.0.0"

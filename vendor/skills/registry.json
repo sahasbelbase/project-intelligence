@@ -1,0 +1,105 @@
+{
+  "$comment": "Third-party agent skills. 'vendored' entries are copied verbatim into vendor/skills/<id>/ with their upstream LICENSE and are installed alongside the framework skills. 'referenced' entries are not redistributed; install them from upstream with the listed command.",
+  "importedAt": "2026-10-08",
+  "vendored": [
+    {
+      "id": "fixing-accessibility",
+      "name": "Fixing Accessibility",
+      "source": "ibelick/ui-skills",
+      "repository": "https://github.com/ibelick/ui-skills",
+      "upstreamPath": "skills/fixing-accessibility/SKILL.md",
+      "commit": "587ea305b948ad34f0c2d5c2ea4211d428f66ed8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Julien Thibeaut",
+      "files": ["SKILL.md", "LICENSE"],
+      "summary": "Audit and fix accessible names, keyboard access, focus and dialogs, semantics, form errors, announcements and contrast. Reports violations with a minimal code fix.",
+      "usedBy": ["accessibility-specialist", "frontend-design-engineer"]
+    },
+    {
+      "id": "fixing-motion-performance",
+      "name": "Fixing Motion Performance",
+      "source": "ibelick/ui-skills",
+      "repository": "https://github.com/ibelick/ui-skills",
+      "upstreamPath": "skills/fixing-motion-performance/SKILL.md",
+      "commit": "587ea305b948ad34f0c2d5c2ea4211d428f66ed8",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Julien Thibeaut",
+      "files": ["SKILL.md", "LICENSE"],
+      "summary": "Audit animation cost: compositor-only properties, layout thrashing, scroll-linked motion, blur and layer promotion.",
+      "usedBy": ["interaction-designer", "frontend-design-engineer"]
+    },
+    {
+      "id": "emil-design-eng",
+      "name": "Design Engineering (Emil Kowalski)",
+      "source": "emilkowalski/skills",
+      "repository": "https://github.com/emilkowalski/skills",
+      "upstreamPath": "skills/emil-design-eng/SKILL.md",
+      "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Emil Kowalski",
+      "files": ["SKILL.md", "LICENSE"],
+      "summary": "Animation decision framework (whether, why, easing, duration), component polish rules, transform and clip-path techniques, and a review format.",
+      "usedBy": ["interaction-designer", "visual-design-director"]
+    },
+    {
+      "id": "review-animations",
+      "name": "Review Animations (Emil Kowalski)",
+      "source": "emilkowalski/skills",
+      "repository": "https://github.com/emilkowalski/skills",
+      "upstreamPath": "skills/review-animations/",
+      "commit": "e8a175de22ae1e49370fc144c1f3bb9aeedf988d",
+      "license": "MIT",
+      "copyright": "Copyright (c) 2026 Emil Kowalski",
+      "files": ["SKILL.md", "STANDARDS.md", "LICENSE"],
+      "summary": "Strict review of motion code against a written standard. Flags by default; approval has to be earned.",
+      "usedBy": ["interaction-designer", "critical-design-reviewer"]
+    }
+  ],
+  "referenced": [
+    {
+      "id": "web-design-guidelines",
+      "name": "Web Interface Guidelines (Vercel)",
+      "repository": "https://github.com/vercel-labs/agent-skills",
+      "install": "npx skills add vercel-labs/agent-skills --skill web-design-guidelines",
+      "reasonNotVendored": "No license file detected in the upstream repository, so it is not redistributed.",
+      "summary": "Review UI code for accessibility, keyboard support, forms, animation and performance, reported as file:line findings.",
+      "usedBy": ["frontend-design-engineer", "accessibility-specialist"]
+    },
+    {
+      "id": "frontend-design",
+      "name": "Frontend Design (Anthropic)",
+      "repository": "https://github.com/anthropics/skills",
+      "install": "npx skills add https://github.com/anthropics/skills --skill frontend-design",
+      "reasonNotVendored": "No repository-level license detected; installed from upstream instead.",
+      "summary": "A design-thinking step before code: purpose, audience, a deliberate tone, and a list of generic defaults to avoid.",
+      "usedBy": ["visual-design-director"]
+    },
+    {
+      "id": "impeccable",
+      "name": "Impeccable (Paul Bakaus)",
+      "repository": "https://github.com/pbakaus/impeccable",
+      "install": "npx skills add pbakaus/impeccable",
+      "reasonNotVendored": "Apache-2.0, but the skill depends on many reference files and per-tool variants; installing upstream keeps it intact and current.",
+      "summary": "A command sequence for design work: audit, arrange, typeset, polish.",
+      "usedBy": ["visual-design-director", "typography-specialist"]
+    },
+    {
+      "id": "baseline-ui-upstream",
+      "name": "Baseline UI (ibelick, upstream)",
+      "repository": "https://github.com/ibelick/ui-skills",
+      "install": "npx skills add ibelick/ui-skills --skill baseline-ui",
+      "reasonNotVendored": "The framework ships its own skills/baseline-ui adapted to plain CSS tokens; the upstream version assumes Tailwind and motion/react.",
+      "summary": "Opinionated constraints against generic AI UI: no gradients or glows, one accent per view, compositor-only animation.",
+      "usedBy": ["design-systems-architect"]
+    },
+    {
+      "id": "antfu-skills",
+      "name": "Anthony Fu skills collection",
+      "repository": "https://github.com/antfu/skills",
+      "install": "pnpx skills add antfu/skills --skill='*'",
+      "reasonNotVendored": "Framework-specific (Vue, Nuxt, Vite, Vitest, UnoCSS). Install only in projects that use that stack.",
+      "summary": "Conventions for antfu, antfu-create-pr, nitro, nuxt, pinia, pnpm, unocss, vite, vitepress, vitest and vue.",
+      "usedBy": ["senior-application-developer"]
+    }
+  ]
+}

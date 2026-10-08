@@ -1,0 +1,98 @@
+{
+  "skillId": "business-case",
+  "name": "Commercial Business Case Formulation",
+  "purpose": "Formulate commercial business cases, quantify return on investment (ROI), articulate differentiated value propositions, model monetization options, and anticipate buyer objections for Sales, Commercial, and Finance Analysts.",
+  "whenToUse": [
+    "Evaluating commercial viability and investment justification during Gate G0 and G1",
+    "Developing pricing models, monetization strategies, and unit economics estimates",
+    "Constructing enterprise objection-handling playbooks and go-to-market battlecards",
+    "Quantifying customer total cost of ownership (TCO) and projected financial return"
+  ],
+  "prerequisites": [
+    "Project Mission Statement or draft Project Contract (contracts/project/contract.json)",
+    "Target customer profiles and preliminary product capabilities",
+    "Market pricing data or competitor benchmarking information"
+  ],
+  "inputs": [
+    {
+      "name": "projectContract",
+      "type": "object",
+      "description": "Approved or draft Project Contract specifying scope and strategic objectives"
+    },
+    {
+      "name": "targetAudienceData",
+      "type": "object",
+      "description": "Buyer personas, economic decision maker roles, and target market segments"
+    },
+    {
+      "name": "costAndRevenueParameters",
+      "type": "object",
+      "description": "Estimated engineering costs, operational expenses, and target pricing models"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Target Audience & Buyer Persona Profiling",
+      "action": "Profile the economic buyer, technical evaluation lead, and end-user personas with their respective pain points and success metrics."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Value Proposition Canvas Mapping",
+      "action": "Map proposed product features to direct customer gains and pain relievers to establish differentiated value pillars."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Customer Objection Anticipation & Defense Playbook",
+      "action": "Systematically catalog anticipated objections across security, pricing, migration cost, and vendor risk, pairing each with evidence-backed rebuttals."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Quantitative ROI & TCO Financial Modeling",
+      "action": "Construct a financial model showing customer cost baseline, savings from solution adoption, payback period, and 3-year ROI."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Pricing & Monetization Strategy Formulation",
+      "action": "Model recommended pricing structures (per-seat, usage-based, tiered) and align them with customer value realization."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Commercial Risk Assessment & Go-to-Market Brief Synthesis",
+      "action": "Compile commercial risks, regulatory constraints, and sales cycle friction into an executive Commercial Business Case."
+    }
+  ],
+  "expectedOutputs": [
+    "Comprehensive Commercial Business Case and Financial ROI Model",
+    "Value Proposition Matrix and Customer Messaging Framework",
+    "Enterprise Objection Handling Playbook and Risk Register"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G3"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Unsubstantiated ROI figures based on speculative efficiency gains",
+      "Ignoring enterprise procurement objections (security, compliance, data lock-in)",
+      "Pricing models misaligned with customer budget and value consumption"
+    ],
+    "recoveryStrategy": "Require transparent formulas with conservative baseline parameters. Solicit input from security and legal stakeholders to address compliance objections. Benchmark pricing against established market alternatives."
+  },
+  "verificationCriteria": [
+    "ROI calculations include explicit formulas and stated assumptions",
+    "Every listed customer objection includes a concrete, factual rebuttal strategy",
+    "Target buyer personas clearly identify the economic decision-maker with budget authority"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeLifecycleGate",
+      "executionState.activeCommercialLedger"
+    ]
+  }
+}

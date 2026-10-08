@@ -1,0 +1,91 @@
+{
+  "platform": "antigravity",
+  "skillFormat": "SKILL.md",
+  "skillsRoot": ".agents/skills/",
+  "mappings": [
+    {
+      "canonicalSkillId": "orchestrator",
+      "platformSkillPath": ".agents/skills/orchestrator/SKILL.md",
+      "invocationTrigger": "orchestrator, project intelligence, govern gates, lifecycle status, next action",
+      "requiredParameters": ["activeGate"]
+    },
+    {
+      "canonicalSkillId": "project-discovery",
+      "platformSkillPath": ".agents/skills/project-discovery/SKILL.md",
+      "invocationTrigger": "discovery, init project, inspect environment, gate G0",
+      "requiredParameters": ["repositoryRoot"]
+    },
+    {
+      "canonicalSkillId": "requirements-analysis",
+      "platformSkillPath": ".agents/skills/requirements-analysis/SKILL.md",
+      "invocationTrigger": "requirements, user stories, acceptance criteria, gate G1",
+      "requiredParameters": ["projectCharter"]
+    },
+    {
+      "canonicalSkillId": "existing-project-analysis",
+      "platformSkillPath": ".agents/skills/existing-project-analysis/SKILL.md",
+      "invocationTrigger": "analyze codebase, extract conventions, brownfield inspection",
+      "requiredParameters": ["targetDirectory"]
+    },
+    {
+      "canonicalSkillId": "design-discovery",
+      "platformSkillPath": ".agents/skills/design-discovery/SKILL.md",
+      "invocationTrigger": "visual requirements, design tokens, gate G2",
+      "requiredParameters": ["requirementsContract"]
+    },
+    {
+      "canonicalSkillId": "design-system-engineering",
+      "platformSkillPath": ".agents/skills/design-system-engineering/SKILL.md",
+      "invocationTrigger": "design system, component states, accessibility audit, WCAG",
+      "requiredParameters": ["designTokens"]
+    },
+    {
+      "canonicalSkillId": "architecture-and-contracts",
+      "platformSkillPath": ".agents/skills/architecture-and-contracts/SKILL.md",
+      "invocationTrigger": "architect system, draft ADR, interface contracts, gate G3",
+      "requiredParameters": ["requirementsContract"]
+    },
+    {
+      "canonicalSkillId": "phase-planning",
+      "platformSkillPath": ".agents/skills/phase-planning/SKILL.md",
+      "invocationTrigger": "plan phases, task decomposition, file ownership, WBS",
+      "requiredParameters": ["architectureContract"]
+    },
+    {
+      "canonicalSkillId": "controlled-implementation",
+      "platformSkillPath": ".agents/skills/controlled-implementation/SKILL.md",
+      "invocationTrigger": "implement task, write code, bounded edit, gate G4",
+      "requiredParameters": ["taskId", "assignedPaths"]
+    },
+    {
+      "canonicalSkillId": "testing-and-verification",
+      "platformSkillPath": ".agents/skills/testing-and-verification/SKILL.md",
+      "invocationTrigger": "run tests, verify implementation, collect evidence, linter",
+      "requiredParameters": ["testCommands"]
+    },
+    {
+      "canonicalSkillId": "independent-review",
+      "platformSkillPath": ".agents/skills/independent-review/SKILL.md",
+      "invocationTrigger": "independent review, code audit, anti-slop check, gate G5",
+      "requiredParameters": ["gitDiff", "evidenceLog"]
+    },
+    {
+      "canonicalSkillId": "failure-recovery-and-improvement",
+      "platformSkillPath": ".agents/skills/failure-recovery-and-improvement/SKILL.md",
+      "invocationTrigger": "test failure, fix defect, task retry, recovery",
+      "requiredParameters": ["defectReport"]
+    },
+    {
+      "canonicalSkillId": "cross-platform-adaptation",
+      "platformSkillPath": ".agents/skills/cross-platform-adaptation/SKILL.md",
+      "invocationTrigger": "adapt platform, compile GEMINI.md, compile CLAUDE.md",
+      "requiredParameters": ["targetPlatform"]
+    },
+    {
+      "canonicalSkillId": "documentation-and-handoff",
+      "platformSkillPath": ".agents/skills/documentation-and-handoff/SKILL.md",
+      "invocationTrigger": "generate release notes, sync memory, gate G6 handoff",
+      "requiredParameters": ["releaseVersion"]
+    }
+  ]
+}

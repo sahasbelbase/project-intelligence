@@ -1,0 +1,101 @@
+{
+  "skillId": "project-planning",
+  "name": "Project Planning & Critical Path Decomposition",
+  "purpose": "Construct work breakdown structures, identify critical execution paths, map task dependencies, level resource allocations, and establish disjoint file boundaries for Project Managers and Coordinators.",
+  "whenToUse": [
+    "Decomposing approved architecture and requirements into phased execution schedules",
+    "Constructing task dependency graphs (DAG) and calculating project critical paths",
+    "Assigning mutually exclusive file ownership boundaries to prevent concurrent subagent collisions",
+    "Authoring or updating the canonical Implementation Contract for Gate G4 (contracts/implementation/contract.json)"
+  ],
+  "prerequisites": [
+    "Approved Architecture Contract (contracts/architecture/contract.json)",
+    "Approved Requirements Contract (contracts/requirements/contract.json)",
+    "Access to core/schemas/implementation-contract.schema.json"
+  ],
+  "inputs": [
+    {
+      "name": "architectureContract",
+      "type": "object",
+      "description": "System components, interfaces, and technical dependencies"
+    },
+    {
+      "name": "requirementsContract",
+      "type": "object",
+      "description": "Functional requirements and acceptance criteria"
+    },
+    {
+      "name": "resourceConstraints",
+      "type": "object",
+      "description": "Available agent roles, concurrency limits, and milestone deadlines"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Phased Work Breakdown Structure (WBS) Formulation",
+      "action": "Decompose system deliverables into sequential execution phases (Foundations, Core Engines, Adapters, Verification)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Atomic Task Definition & Boundary Assignment",
+      "action": "Define atomic tasks with clear objectives, prerequisites, target files, and verification commands."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Disjoint File Ownership Mapping",
+      "action": "Assign non-overlapping directory and file paths to each task to guarantee zero write collisions during parallel execution."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Dependency Graph Modeling & Critical Path Analysis",
+      "action": "Model task dependencies as a Directed Acyclic Graph (DAG) and compute the critical delivery path."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Verification Criteria Attachment",
+      "action": "Attach concrete validation commands (test runner commands, linters, exit code 0) as mandatory completion criteria."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Implementation Contract Assembly",
+      "action": "Compile tasks, phases, and ownership maps into contracts/implementation/contract.json conforming to schema."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/implementation/contract.json conforming to core/schemas/implementation-contract.schema.json",
+    "Task dependency graph and critical path schedule",
+    "Disjoint file ownership matrix and workstream ledger"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G3",
+    "G4"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Circular dependencies in task prerequisite graph",
+      "Overlapping file paths assigned to concurrent tasks causing write collisions",
+      "Tasks defined too broadly leading to model context exhaustion"
+    ],
+    "recoveryStrategy": "Run topological sort to detect and break dependency cycles. Partition contested files into separate modules or serialize task execution. Break mega-tasks into subtasks owning no more than 3 files each."
+  },
+  "verificationCriteria": [
+    "contracts/implementation/contract.json passes validation against core/schemas/implementation-contract.schema.json",
+    "Dependency graph is strictly acyclic (valid topological sort)",
+    "Zero file path overlaps between concurrently executable tasks",
+    "Every task specifies non-empty verificationCriteria with executable commands"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/implementation/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activePhase",
+      "executionState.activeTasks",
+      "executionState.activeWorkstreamLedger"
+    ]
+  }
+}

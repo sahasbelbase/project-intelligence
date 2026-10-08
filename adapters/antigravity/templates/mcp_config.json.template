@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "project-intelligence": {
+      "command": "python3",
+      "args": [
+        "{{MCP_SERVER_PATH}}"
+      ],
+      "env": {
+        "PYTHONUNBUFFERED": "1"
+      }
+    }
+  }
+}

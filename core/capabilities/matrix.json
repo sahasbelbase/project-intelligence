@@ -32,7 +32,10 @@
       "localFileAccess": true
     },
     "antigravity": {
-      "standingInstructionsFile": "system_prompt_rules",
+      "adapterManifest": "adapters/antigravity/adapter.json",
+      "adapterConfig": "adapters/antigravity/adapter.json",
+      "standingInstructionsFile": "GEMINI.md",
+      "rulesFile": ".agents/rules/AGENTS.md",
       "supportsSkills": true,
       "skillsFormat": "SKILL.md",
       "supportsHooks": true,

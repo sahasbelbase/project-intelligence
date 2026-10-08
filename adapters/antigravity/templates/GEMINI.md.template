@@ -1,0 +1,56 @@
+<!-- BEGIN PROJECT-INTELLIGENCE -->
+# Project Intelligence — Google Antigravity Standing Rules
+
+## Project Context
+- **Project**: {{PROJECT_NAME}}
+- **Mission**: {{PROJECT_MISSION}}
+- **Active Lifecycle Gate**: {{ACTIVE_GATE}} ({{GATE_NAME}})
+- **Target Contract**: `{{ACTIVE_CONTRACT_PATH}}`
+- **Active Quality Profile**: {{ACTIVE_PROFILE}}
+
+---
+
+## Non-Negotiable Operational Rules (Anti-Slop Guardrails)
+1. **Evidence-Based Progress**: Never declare completion without executing real validation commands and observing exit code 0. Textual claims of "it works" without verbatim stdout/stderr logs are invalid.
+2. **Zero AI Slop**:
+   - NO decorative non-functional emojis in code, commits, or documentation.
+   - NO stub implementations (`pass`, `return null`, empty braces, or `// TODO`).
+   - NO fake mock data in production codepaths.
+   - NO unexplained workarounds or commented-out dead code.
+3. **Strict Gate Transitions**: Follow `core/lifecycle/lifecycle-fsm.json`. Never skip gates. Non-visual projects must record formal exemption rationale in Gate G2 (`contracts/design/contract.json`).
+4. **Preserve User Code & Conventions**: Never modify or overwrite uncommitted user changes found during session start. Preserve existing indentation, naming, and typing conventions.
+
+---
+
+## Tool Execution & Safety Boundaries
+- **Command Prefix Allowlist**: `git`, `python`, `pytest`, `npm`, `node`
+- **Forbidden Commands**: `rm -rf /`, `git push --force`, `drop table`, `curl | bash`
+- **Allowed Mutable Paths**: `memory/`, `contracts/`, `skills/`
+
+---
+
+## Available Skills & Triggers
+When encountering specific engineering workflows, invoke the matching skill from `.agents/skills/`:
+- `.agents/skills/orchestrator/`: Lead Project Orchestrator governing lifecycle gates G0-G6.
+- `.agents/skills/project-discovery/`: Project initialization and environment inspection (`discovery`, `init`, Gate G0).
+- `.agents/skills/requirements-analysis/`: Requirements specification and criteria formulation (`requirements`, Gate G1).
+- `.agents/skills/existing-project-analysis/`: Brownfield codebase analysis and convention extraction.
+- `.agents/skills/design-discovery/`: Design tokens, UI specifications, and accessibility (Gate G2).
+- `.agents/skills/design-system-engineering/`: Design system tokens and component state auditing.
+- `.agents/skills/architecture-and-contracts/`: System modeling, ADR drafting, interface contracts (Gate G3).
+- `.agents/skills/phase-planning/`: Work breakdown structure, task scheduling, file ownership (WBS).
+- `.agents/skills/controlled-implementation/`: Production code authoring within bounded file paths (Gate G4).
+- `.agents/skills/testing-and-verification/`: Automated test execution, evidence capture, linter auditing.
+- `.agents/skills/independent-review/`: Adversarial review of diffs, anti-slop verification (Gate G5).
+- `.agents/skills/failure-recovery-and-improvement/`: Test failure diagnosis and regression fixing.
+- `.agents/skills/cross-platform-adaptation/`: Platform compilation and instruction synchronization.
+- `.agents/skills/documentation-and-handoff/`: 3-tier memory reconciliation, release notes, handoff (Gate G6).
+
+---
+
+## Subagent Delegation Protocol
+When executing subagent workflows:
+1. Maintain separate, isolated processes and context per subagent.
+2. Assign disjoint, non-overlapping file ownership boundaries.
+3. Subagents write execution results directly to contract JSON files and structured logs.
+<!-- END PROJECT-INTELLIGENCE -->

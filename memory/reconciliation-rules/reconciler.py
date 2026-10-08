@@ -149,7 +149,7 @@ def run_git(args: List[str], cwd: pathlib.Path) -> Tuple[int, str, str]:
             errors="replace",
             timeout=30,
         )
-        return proc.returncode, proc.stdout.strip(), proc.stderr.strip()
+        return proc.returncode, proc.stdout.rstrip("\r\n"), proc.stderr.strip()
     except FileNotFoundError:
         return 127, "", "git executable not found in PATH"
     except subprocess.TimeoutExpired:

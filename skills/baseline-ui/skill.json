@@ -1,0 +1,90 @@
+{
+  "skillId": "baseline-ui",
+  "name": "Baseline UI Craftsmanship & Anti-Slop Layout Standards",
+  "purpose": "Enforce world-class visual craftsmanship, 4px/8px geometric spacing cadence, strict design token discipline, WCAG 2.1 AA mathematical contrast, and motion bounds to eliminate sloppy UI.",
+  "whenToUse": [
+    "Building or refactoring user interfaces, web components, dashboards, and layouts",
+    "Auditing CSS, Tailwind classes, or styling code during Gate G2 and Gate G5",
+    "Eliminating arbitrary pixel values, ungrounded shadows, and decorative slop",
+    "Verifying keyboard navigation, visible focus rings, and color contrast ratios"
+  ],
+  "prerequisites": [
+    "Target web interface or UI components rendered in browser or codebase",
+    "Design tokens or theme definitions established in CSS/Tailwind",
+    "Access to WCAG 2.1 AA contrast requirements"
+  ],
+  "inputs": [
+    {
+      "name": "uiSourceFiles",
+      "type": "array",
+      "description": "Paths to CSS, HTML, TSX/JSX, or template files under evaluation"
+    },
+    {
+      "name": "designTokens",
+      "type": "object",
+      "description": "Declared semantic color tokens, typography scales, and spacing units"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Geometric Spacing Cadence Audit",
+      "action": "Audit all margins, paddings, gaps, and widths. Enforce 4px/8px grid scale (4, 8, 12, 16, 20, 24, 32, 48, 64px). Flag and eliminate all arbitrary pixel nudges (e.g., 7px, 11px, 13px, 19px)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Design Token Adherence & Palette Economy",
+      "action": "Scan for hardcoded hex or RGB colors outside root token definitions. Mandate semantic tokens (e.g., var(--bg-surface), var(--text-primary)) across all components."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Mathematical Contrast & Typography Hierarchy",
+      "action": "Calculate color contrast ratios. Enforce >= 4.5:1 for body copy and >= 3:1 for large text and interactive components. Constrain font sizes to modular scales and limit active weights."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Interaction, Focus & Motion Discipline",
+      "action": "Verify interactive states (:hover, :active, :focus-visible). Require explicit 2px focus-visible offset ring. Cap transition durations at <= 200ms with snappy easing curves."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Visual Surface Deslopping",
+      "action": "Strip meaningless gradient borders, ungrounded floating cards, blurry multi-colored glow effects, and non-functional decorative widgets."
+    }
+  ],
+  "expectedOutputs": [
+    "Baseline UI Craftsmanship Audit Report detailing spacing adherence, contrast ratios, and token usage",
+    "Remediated CSS/styling code adhering strictly to the 4px/8px geometric scale",
+    "Zero accessibility contrast defects"
+  ],
+  "applicableApprovalGates": [
+    "G2",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Arbitrary pixel spacing values detected in component styling",
+      "Hardcoded hex colors bypassing semantic token system",
+      "Text contrast ratio below WCAG 2.1 AA 4.5:1 threshold",
+      "Focus outlines suppressed with outline: none without replacement"
+    ],
+    "recoveryStrategy": "Reject Gate G2/G5. Output exact line references and mathematical token replacements. Map arbitrary values to the nearest 4px/8px step."
+  },
+  "verificationCriteria": [
+    "100% of spacing declarations adhere to 4px/8px scale",
+    "Zero raw hex colors in component declaration blocks",
+    "WCAG 2.1 AA contrast passed across all text elements",
+    "Explicit focus-visible indicator present on all interactive controls",
+    "Motion transitions capped at <= 200ms with prefers-reduced-motion fallback"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/design/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeTasks",
+      "durableKnowledge.architecturalDecisions"
+    ]
+  }
+}

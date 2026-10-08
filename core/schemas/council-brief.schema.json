@@ -1,0 +1,261 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/council-brief.schema.json",
+  "title": "CouncilDecisionBrief",
+  "description": "JSON Schema Draft-07 defining the Council Decision Brief matching Section 12 of the Universal Role-Aware Intelligence Framework.",
+  "type": "object",
+  "required": [
+    "decisionId",
+    "topic",
+    "participatingPersonas",
+    "recommendation",
+    "strongestArgumentsFor",
+    "strongestArgumentsAgainst",
+    "evidence",
+    "assumptions",
+    "unknowns",
+    "tradeOffs",
+    "risks",
+    "mitigations",
+    "mvpScope",
+    "excludedScope",
+    "validationExperiments",
+    "owners",
+    "successMetrics",
+    "dependencies",
+    "conditionsToChange",
+    "dissent",
+    "confidenceLevel"
+  ],
+  "properties": {
+    "decisionId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique identifier for this council decision."
+    },
+    "topic": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Subject, decision statement, or problem under deliberation."
+    },
+    "participatingPersonas": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "List of persona IDs that took part in the council."
+    },
+    "recommendation": {
+      "type": "string",
+      "enum": [
+        "Build",
+        "Test further",
+        "Pilot",
+        "Pivot",
+        "Defer",
+        "Stop"
+      ],
+      "description": "The synthesized council recommendation outcome."
+    },
+    "strongestArgumentsFor": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "The primary affirmative arguments supporting the recommendation."
+    },
+    "strongestArgumentsAgainst": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "The strongest counter-arguments, concerns, and objections raised during deliberation."
+    },
+    "evidence": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["category", "statement"],
+            "properties": {
+              "category": {
+                "type": "string",
+                "enum": [
+                  "VERIFIED_FACT",
+                  "ASSUMPTION",
+                  "ESTIMATE",
+                  "UNKNOWN",
+                  "RECOMMENDATION",
+                  "RISK"
+                ]
+              },
+              "statement": { "type": "string" },
+              "source": { "type": "string" },
+              "confidence": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+              "basis": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Empirical evidence items supporting the deliberation."
+    },
+    "assumptions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit assumptions upon which the recommendation is predicated."
+    },
+    "unknowns": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Unresolved unknowns, data gaps, and uncertainties."
+    },
+    "tradeOffs": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["aspect", "chosen", "sacrificed"],
+            "properties": {
+              "aspect": { "type": "string" },
+              "chosen": { "type": "string" },
+              "sacrificed": { "type": "string" },
+              "rationale": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Explicit trade-offs accepted by the recommendation."
+    },
+    "risks": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["riskId", "description", "severity"],
+            "properties": {
+              "riskId": { "type": "string" },
+              "description": { "type": "string" },
+              "severity": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH", "CRITICAL"] },
+              "probability": { "type": "string", "enum": ["LOW", "MEDIUM", "HIGH"] }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Identified operational, technical, or strategic risks."
+    },
+    "mitigations": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["riskRef", "strategy"],
+            "properties": {
+              "riskRef": { "type": "string" },
+              "strategy": { "type": "string" },
+              "owner": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Planned mitigation strategies addressing the identified risks."
+    },
+    "mvpScope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Minimal viable scope necessary to execute or validate the recommendation."
+    },
+    "excludedScope": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Work items and features explicitly deferred or excluded."
+    },
+    "validationExperiments": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["hypothesis", "experiment", "passMetric"],
+            "properties": {
+              "hypothesis": { "type": "string" },
+              "experiment": { "type": "string" },
+              "passMetric": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Empirical experiments or tests to validate critical assumptions."
+    },
+    "owners": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Designated owners responsible for executing parts of the recommendation."
+    },
+    "successMetrics": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["metric", "target"],
+            "properties": {
+              "metric": { "type": "string" },
+              "target": { "type": "string" },
+              "timeframe": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Measurable, verifiable metrics determining success."
+    },
+    "dependencies": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Hard technical, team, or external dependencies."
+    },
+    "conditionsToChange": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Explicit trigger conditions or tripwires that mandate reopening or pivoting the decision."
+    },
+    "dissent": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["personaId", "objection", "rationale"],
+            "properties": {
+              "personaId": { "type": "string" },
+              "objection": { "type": "string" },
+              "rationale": { "type": "string" },
+              "suggestedAlternative": { "type": "string" }
+            },
+            "additionalProperties": false
+          }
+        ]
+      },
+      "description": "Preserved dissenting opinions and minority reports from participating personas."
+    },
+    "confidenceLevel": {
+      "type": "string",
+      "enum": ["HIGH", "MEDIUM", "LOW"],
+      "description": "Confidence level in the synthesized recommendation."
+    }
+  },
+  "additionalProperties": false
+}

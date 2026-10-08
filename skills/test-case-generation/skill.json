@@ -1,0 +1,100 @@
+{
+  "skillId": "test-case-generation",
+  "name": "Test Case Generation & Verification Suite Design",
+  "purpose": "Design, formalize, and generate comprehensive positive, negative, boundary, regression, and security test cases with 100% requirements traceability for QA Analysts.",
+  "whenToUse": [
+    "Transforming Given-When-Then acceptance criteria into executable test cases",
+    "Designing adversarial test suites targeting security vulnerabilities, auth bypass, and injection",
+    "Constructing boundary value analysis and equivalence partition matrices for inputs",
+    "Building regression suites and assembling the Quality Contract for Gate G4 and G5"
+  ],
+  "prerequisites": [
+    "Approved Requirements Contract (contracts/requirements/contract.json)",
+    "Architecture component interfaces or API definitions",
+    "Active Quality Profile in core/quality/profiles.json"
+  ],
+  "inputs": [
+    {
+      "name": "requirementsContract",
+      "type": "object",
+      "description": "Approved Requirements Contract containing functional requirements and acceptance criteria"
+    },
+    {
+      "name": "architectureContract",
+      "type": "object",
+      "description": "Architecture Contract defining component interfaces, data models, and dependencies"
+    },
+    {
+      "name": "qualityProfile",
+      "type": "object",
+      "description": "Active quality standards, anti-slop rules, and testing coverage mandates"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Acceptance Criteria Parsing & Extraction",
+      "action": "Parse all acceptance criteria from the Requirements Contract to establish the verification baseline."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Positive & Happy-Path Test Case Generation",
+      "action": "Generate deterministic positive test scenarios verifying expected behavior under normal, valid operating conditions."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Equivalence Partitioning & Boundary Value Analysis",
+      "action": "Identify input domain partitions and generate test cases targeting exact boundary thresholds (min, max, min-1, max+1, null, empty)."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Negative & Adversarial Scenario Formulation",
+      "action": "Design negative test cases exercising invalid types, malformed payloads, rate limit exhaustion, and service outage simulations."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Security & Authorization Scenario Mapping",
+      "action": "Formulate targeted security scenarios verifying authentication enforcement, role isolation, tenant segregation, and input sanitization."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Traceability Matrix & Verification Suite Synthesis",
+      "action": "Compile test catalog into a structured test suite linking every requirement to concrete tests in contracts/quality/contract.json."
+    }
+  ],
+  "expectedOutputs": [
+    "Comprehensive Test Case Catalog (Positive, Negative, Boundary, Security, Regression)",
+    "Requirements-to-Test Traceability Matrix (RTM)",
+    "Quality Contract payload for contracts/quality/contract.json"
+  ],
+  "applicableApprovalGates": [
+    "G1",
+    "G3",
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Missing requirement coverage leaving critical acceptance criteria untested",
+      "Ambiguous test assertions that pass trivially without verifying payload state",
+      "Flaky test definitions reliant on unseeded random numbers or uncontrolled race conditions"
+    ],
+    "recoveryStrategy": "Run automated RTM coverage audit to flag untested requirement IDs. Require exact assert invariants rather than status-code only checks. Enforce deterministic test fixtures and mock external clock dependencies."
+  },
+  "verificationCriteria": [
+    "100% of functional requirements link to at least one positive and one negative test case",
+    "Every test case declares unambiguous Preconditions, Inputs, Execution Steps, and Expected Assertions",
+    "Security test cases cover OWASP injection, broken access control, and data leakage risks"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/requirements/contract.json",
+      "contracts/architecture/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeLifecycleGate",
+      "executionState.activeTestLedger"
+    ]
+  }
+}

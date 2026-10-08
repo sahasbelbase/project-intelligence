@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://sahasbelbase.github.io/project-intelligence/sitemap.xml

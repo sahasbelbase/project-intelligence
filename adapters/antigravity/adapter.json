@@ -1,0 +1,34 @@
+{
+  "name": "antigravity",
+  "displayName": "Google Antigravity Platform Adapter",
+  "version": "1.0.0",
+  "targetPlatform": "antigravity",
+  "standingInstructionsFile": "GEMINI.md",
+  "rulesFile": ".agents/rules/AGENTS.md",
+  "mcpConfigurationFile": ".agents/mcp_config.json",
+  "skillsFormat": "SKILL.md",
+  "skillsDirectory": ".agents/skills/",
+  "supportedCapabilities": {
+    "standingInstructions": true,
+    "rules": true,
+    "hooks": true,
+    "subagents": true,
+    "skills": true,
+    "toolDenial": true,
+    "contextIsolation": true,
+    "localFileAccess": true,
+    "mcpTools": true
+  },
+  "hookCadences": [
+    "SessionStart",
+    "PreToolUse",
+    "PostToolUse"
+  ],
+  "degradationLevel": "NONE",
+  "adapterFiles": {
+    "manifest": "adapters/antigravity/adapter.json",
+    "geminiMdTemplate": "adapters/antigravity/templates/GEMINI.md.template",
+    "mcpConfigTemplate": "adapters/antigravity/templates/mcp_config.json.template",
+    "skillMappingManifest": "adapters/antigravity/skill-mapping.json"
+  }
+}

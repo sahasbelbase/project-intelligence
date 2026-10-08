@@ -23,7 +23,6 @@ def run_all_tests():
     print("=" * 80)
 
     # Discover and load test cases
-    loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
     test_dirs = [
@@ -33,7 +32,9 @@ def run_all_tests():
         validation_dir / "memory-tests",
         validation_dir / "adapter-conformance",
         validation_dir / "mcp-tests",
-        validation_dir / "regression-tests"
+        validation_dir / "regression-tests",
+        validation_dir / "universal-tests",
+        validation_dir / "installer-tests"
     ]
 
     discovered_suites = {}
@@ -41,7 +42,9 @@ def run_all_tests():
 
     for t_dir in test_dirs:
         if t_dir.exists():
-            discovered = loader.discover(str(t_dir), pattern="test_*.py")
+            # A fresh loader per directory: TestLoader.discover() pins the first
+            # start dir as top-level, which breaks discovery of sibling suites.
+            discovered = unittest.TestLoader().discover(str(t_dir), pattern="test_*.py", top_level_dir=str(t_dir))
             suite.addTest(discovered)
             count = discovered.countTestCases()
             discovered_suites[t_dir.name] = count

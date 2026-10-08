@@ -3,9 +3,18 @@ Project Intelligence — Quality Profile Evaluator Engine
 Evaluates contract deliverables against the Mandatory Engineering Baseline and active Quality Profiles.
 """
 
-from typing import Dict, List, Any, Tuple
+from typing import Dict, List, Any, Tuple, Optional
 import json
+import sys
 from pathlib import Path
+
+try:
+    from core.quality.thermo_nuclear_reviewer import ThermoNuclearReviewer, ThermoNuclearReport
+except ImportError:
+    _quality_dir = str(Path(__file__).parent)
+    if _quality_dir not in sys.path:
+        sys.path.insert(0, _quality_dir)
+    from thermo_nuclear_reviewer import ThermoNuclearReviewer, ThermoNuclearReport
 
 
 class QualityError(Exception):
@@ -68,13 +77,13 @@ class QualityEvaluator:
         # Full astral + BMP emoji pattern (emoticons, pictographs, symbols, Dingbats, transport)
         import re
         emoji_pattern = re.compile(
-            "[\u2600-\u27BF"          # Miscellaneous Symbols & Dingbats (⚠️, ✨, ⚙️, ✅, ❌, etc.)
+            "[\u2600-\u27BF"          # Miscellaneous Symbols & Dingbats
             "\U0001F300-\U0001FAFF]"  # Astral plane emojis & supplemental symbols
         )
 
         # In markdown documents, allow standard callout/alert badges while flagging gratuitous decorations
         if is_markdown:
-            # Strip markdown callout headers (> ⚠️, > [!NOTE], etc.) before scanning
+            # Strip markdown callout headers (> [!NOTE], etc.) before scanning
             stripped = re.sub(r">.*", "", content_sample)
             # In docs, only flag clusters of celebratory/decorative emojis
             excessive_emoji = re.compile(r"[\U0001F600-\U0001F64F\U0001F300-\U0001F5FF]{2,}")
@@ -129,6 +138,11 @@ class QualityEvaluator:
 
         return len(issues) == 0, issues
 
+    def evaluate_thermo_nuclear(self, target_path: Path) -> ThermoNuclearReport:
+        """Runs the adversarial Thermo-Nuclear & Code Judo audit."""
+        reviewer = ThermoNuclearReviewer()
+        return reviewer.review_path(target_path)
+
 
 def scan_target_path(evaluator: QualityEvaluator, target_path: Path) -> List[Tuple[Path, List[str]]]:
     """Scans code files under target_path for anti-slop violations, ignoring tests and fixtures."""
@@ -141,7 +155,7 @@ def scan_target_path(evaluator: QualityEvaluator, target_path: Path) -> List[Tup
         for ext in ["*.py", "*.js", "*.ts", "*.json", "*.sh"]:
             files_to_scan.extend(target_path.rglob(ext))
 
-    ignore_patterns = ["validation/fixtures", "__pycache__", ".git", "test_quality.py", "evaluator.py"]
+    ignore_patterns = ["validation/fixtures", "__pycache__", ".git", "test_quality.py", "evaluator.py", "thermo_nuclear_reviewer.py"]
 
     for f in sorted(files_to_scan):
         path_str = str(f).replace("\\", "/")
@@ -158,6 +172,35 @@ def scan_target_path(evaluator: QualityEvaluator, target_path: Path) -> List[Tup
             pass
 
     return all_violations
+
+
+def _display_report(report) -> None:
+    print("=" * 70)
+    print("PROJECT INTELLIGENCE — THERMO-NUCLEAR CODE QUALITY REVIEW")
+    print("=" * 70)
+    print(f"Target Path           : {report.target_path}")
+    print(f"Gate G5 Verdict       : [{report.verdict}]")
+    print(f"Overall Quality Score : {report.overall_score:.1f} / 100.0")
+    print(f"Code Judo Score       : {report.code_judo_score:.1f} / 100.0")
+    print(f"Baseline UI Score     : {report.baseline_ui_score:.1f} / 100.0")
+    print(f"Scanned Files         : {report.stats.get('scannedFiles')}")
+    print(f"Blocking Defects      : {report.stats.get('blockingDefects')}")
+    print(f"Major Defects         : {report.stats.get('majorDefects')}")
+    print(f"Minor / Opportunities : {report.stats.get('minorDefects')}")
+    print("-" * 70)
+    if not report.findings:
+        print("[PASSED] Zero structural or UI craftsmanship defects detected.")
+        print("=" * 70)
+        return
+    print("FINDINGS & CODE JUDO MOVES:")
+    for idx, f in enumerate(report.findings, start=1):
+        sev_badge = f"[{f.severity}]"
+        line_info = f":{f.line_number}" if f.line_number else ""
+        print(f"{idx}. {sev_badge} {f.rule_id} in {f.file_path}{line_info}")
+        print(f"   Issue: {f.message}")
+        if f.judo_recommendation:
+            print(f"   Judo Move: {f.judo_recommendation}")
+    print("=" * 70)
 
 
 def main():
@@ -184,6 +227,11 @@ def main():
         "--anti-slop",
         action="store_true",
         help="Run anti-slop scanner across all source files in target path."
+    )
+    parser.add_argument(
+        "--thermo-nuclear",
+        action="store_true",
+        help="Execute adversarial Thermo-Nuclear & Code Judo audit (nesting depth, trivial wrappers, baseline UI)."
     )
     parser.add_argument(
         "--selftest",
@@ -217,6 +265,12 @@ def main():
     print("-" * 70)
 
     target_path = Path(args.target).resolve()
+
+    if args.thermo_nuclear:
+        report = evaluator.evaluate_thermo_nuclear(target_path)
+        _display_report(report)
+        sys.exit(0 if report.is_approved() else 1)
+
     findings = scan_target_path(evaluator, target_path)
 
     if findings:
@@ -224,7 +278,7 @@ def main():
         for f_path, violations in findings:
             print(f"\nFile: {f_path}")
             for v in violations:
-                print(f"  ✖ {v}")
+                print(f"  * {v}")
         print("=" * 70)
         sys.exit(1)
     else:

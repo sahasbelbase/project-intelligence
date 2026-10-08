@@ -4,10 +4,22 @@
   "skillsRoot": "skills/",
   "mappings": [
     {
+      "canonicalSkillId": "orchestrator",
+      "platformSkillPath": "skills/orchestrator/SKILL.md",
+      "invocationTrigger": "orchestrator, project intelligence, govern gates, lifecycle status, next action",
+      "requiredParameters": ["activeGate"]
+    },
+    {
       "canonicalSkillId": "project-discovery",
       "platformSkillPath": "skills/project-discovery/SKILL.md",
       "invocationTrigger": "discovery, init project, inspect environment, gate G0",
       "requiredParameters": ["repositoryRoot"]
+    },
+    {
+      "canonicalSkillId": "requirements-analysis",
+      "platformSkillPath": "skills/requirements-analysis/SKILL.md",
+      "invocationTrigger": "requirements, user stories, acceptance criteria, gate G1",
+      "requiredParameters": ["projectCharter"]
     },
     {
       "canonicalSkillId": "existing-project-analysis",

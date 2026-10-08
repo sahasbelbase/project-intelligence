@@ -1,7 +1,7 @@
 {
   "schemaVersion": "1.0.0",
-  "lastReconciledCommit": "d9af64cb5860100c691a522efc9241a77bbca0ff",
-  "lastReconciledAt": "2026-10-07T14:10:30.382118+00:00",
+  "lastReconciledCommit": "f3ec517a3c199e8e546b28b04e4ffa137b4057d3",
+  "lastReconciledAt": "2026-10-07T16:27:02.352953+00:00",
   "currentBranch": "main",
   "currentGate": "G0",
   "activePhase": 0,
@@ -16,16 +16,268 @@
   "activeWorkstreamLedger": "docs/decisions/0001-work-ledger.md",
   "uncommittedChanges": [
     {
-      "file": "emory/execution-state.json",
-      "statusCode": "M ",
-      "isStaged": true,
+      "file": "adapters/claude-code/skill-mapping.json",
+      "statusCode": " M",
+      "isStaged": false,
       "isMemoryFile": false
     },
     {
-      "file": "memory/state.json",
+      "file": "adapters/claude-code/skill-mapping.md",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "adapters/mcp/tools.py",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "contracts/quality/contract.json",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/capabilities/matrix.json",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "docs/validation/independent-review-report.md",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "memory/reconciliation-rules/reconciler.py",
       "statusCode": " M",
       "isStaged": false,
       "isMemoryFile": true
+    },
+    {
+      "file": "validation/mcp-tests/test_mcp_readonly_tools.py",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/adapter_test_results.log",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/lifecycle_test_results.log",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/master_validation_report.json",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/memory_test_results.log",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/quality_test_results.log",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/reports/schema_test_results.log",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/test_runner.py",
+      "statusCode": " M",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "adapters/antigravity/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "agents/business/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "agents/commercial/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "agents/quality/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "agents/strategy/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "bin/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/council/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/decision/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/orchestrator/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/schemas/council-brief.schema.json",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "core/schemas/persona-definition.schema.json",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "installer/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/council-protocol.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/decision-framework.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/deliverable-standards.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/evidence-and-assumptions.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/memory-and-context.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/permissions-and-approval.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "instructions/universal/task-routing.md",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "package.json",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/business-case/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/council-review/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/feature-prioritization/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/orchestrator/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/project-planning/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/requirements-analysis/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "skills/test-case-generation/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/installer-tests/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
+    },
+    {
+      "file": "validation/universal-tests/",
+      "statusCode": "??",
+      "isStaged": false,
+      "isMemoryFile": false
     }
   ],
   "driftDetected": false,

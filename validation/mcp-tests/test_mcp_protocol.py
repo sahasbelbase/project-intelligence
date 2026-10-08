@@ -104,7 +104,7 @@ class TestMCPProtocolSmoke(unittest.TestCase):
         list_req = {"jsonrpc": "2.0", "id": 3, "method": "tools/list", "params": {}}
         list_resp = self._send_and_receive(list_req)
         tools = list_resp.get("result", {}).get("tools", [])
-        self.assertEqual(len(tools), 10, f"Expected 10 tools, got {len(tools)}")
+        self.assertEqual(len(tools), 11, f"Expected 11 tools, got {len(tools)}")
         tool_names = [t["name"] for t in tools]
         self.assertIn("project_status", tool_names)
         self.assertIn("run_project_checks", tool_names)
@@ -123,7 +123,9 @@ class TestMCPProtocolSmoke(unittest.TestCase):
         content = call_result.get("content", [])
         self.assertTrue(len(content) > 0)
         parsed_status = json.loads(content[0]["text"])
-        self.assertEqual(parsed_status["lifecycle"]["currentGate"], "G0")
+        with open(project_root / "memory" / "execution-state.json", "r", encoding="utf-8") as f:
+            live_gate = json.load(f)["currentGate"]
+        self.assertEqual(parsed_status["lifecycle"]["currentGate"], live_gate)
 
         # 6. Tools call: unknown tool -> Method/Tool Not Found Error (-32601)
         bad_tool_req = {

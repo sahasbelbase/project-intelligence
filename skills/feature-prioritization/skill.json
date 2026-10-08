@@ -1,0 +1,99 @@
+{
+  "skillId": "feature-prioritization",
+  "name": "Feature Prioritization & MVP Scoping",
+  "purpose": "Score, prioritize, and partition product features using Value vs Risk vs Complexity frameworks, establish strict MVP scope boundaries, and enforce explicit exclusion lists for Product Managers.",
+  "whenToUse": [
+    "Prioritizing candidate features during product discovery and Gate G1 scope formulation",
+    "Defining the lean Minimum Viable Product (MVP) boundary and phasing future capabilities",
+    "Resolving stakeholder scope contention and preventing creeping feature expansion",
+    "Constructing an explicit Out-of-Scope Exclusions ledger to protect engineering focus"
+  ],
+  "prerequisites": [
+    "Raw feature list or candidate user stories from Requirements Analysis",
+    "Strategic opportunity parameters from Strategy Analyst or Project Contract",
+    "High-level technical complexity estimates from engineering architecture"
+  ],
+  "inputs": [
+    {
+      "name": "candidateFeatures",
+      "type": "array",
+      "description": "List of proposed capabilities, user stories, or feature ideas"
+    },
+    {
+      "name": "strategicObjectives",
+      "type": "object",
+      "description": "Organizational goals, target user metrics, and North Star criteria"
+    },
+    {
+      "name": "engineeringConstraints",
+      "type": "object",
+      "description": "Timeline constraints, technical complexity indices, and team capacity"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Candidate Feature Inventory & Normalization",
+      "action": "Catalog all proposed features with standardized descriptions, target user personas, and intended outcomes."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Customer & Business Value Scoring",
+      "action": "Score each feature on User Value (1-5) and Business Value (1-5) based on frequency, reach, and user impact."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Technical Complexity & Execution Risk Assessment",
+      "action": "Score each feature on Technical Complexity (1-5) and Implementation/Security Risk (1-5)."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Value vs Risk vs Complexity Matrix Mapping",
+      "action": "Plot features into quadrant tiers: Quick Wins (High Value, Low Complexity), Strategic Bets (High Value, High Complexity), Nice-to-Haves (Low Value, Low Complexity), and Time Sinks (Low Value, High Complexity)."
+    },
+    {
+      "stepNumber": 5,
+      "title": "MVP Scope Boundary Demarcation",
+      "action": "Select the minimal cohesive set of Quick Wins and essential Strategic Bets required to deliver end-to-end user value in Phase 1."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Explicit Out-of-Scope Exclusion Ledger Formulation",
+      "action": "Document every omitted feature in an explicit Exclusions List with documented rationale and future phase targets."
+    }
+  ],
+  "expectedOutputs": [
+    "Quantitative Feature Prioritization Matrix with quadrant classifications",
+    "Minimal Viable Product (MVP) Scope Definition Manifest",
+    "Explicit Out-of-Scope Exclusions Ledger with justification notes"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G2",
+    "G3"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Subjective scoring driven by executive preference rather than customer evidence",
+      "Overly broad MVP scope that attempts to deliver 100% of wish-list items in Phase 1",
+      "Ambiguity in scope exclusions leading to stealth feature creep during development"
+    ],
+    "recoveryStrategy": "Enforce weighted multi-variable scoring algorithms (Value / (Complexity * Risk)). Mandate that MVP scope constitutes no more than 40% of proposed feature volume. Require explicit written sign-off on excluded features."
+  },
+  "verificationCriteria": [
+    "Every candidate feature is scored across Value, Risk, and Complexity dimensions",
+    "MVP scope contains a coherent, end-to-end user journey without broken workflow dependencies",
+    "The Out-of-Scope Exclusions list is non-empty and provides explicit rationale for each deferred item"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeLifecycleGate",
+      "executionState.activeProductLedger"
+    ]
+  }
+}

@@ -34,7 +34,7 @@ The MCP adapter is designed as a **thin, zero-trust reference monitor** around t
                             ▼
 ┌────────────────────────────────────────────────────────┐
 │             adapters/mcp/tools.py                      │
-│     (10 Canonical Project Intelligence Tools)          │
+│     (11 Canonical Project Intelligence Tools)          │
 └───────────┬───────────────┬────────────────┬───────────┘
             │               │                │
             ▼               ▼                ▼
@@ -45,7 +45,7 @@ The MCP adapter is designed as a **thin, zero-trust reference monitor** around t
 
 ## 2. Supported Tools and Permissions
 
-The server registers 10 canonical tools categorized into **6 Read-Only Tools** and **4 Proposed-Action Tools**:
+The server registers 11 canonical tools categorized into **7 Read-Only Tools** and **4 Proposed-Action Tools**:
 
 | Tool Name | Type | Description | Disk / Git Side Effects |
 |---|---|---|---|
@@ -59,6 +59,7 @@ The server registers 10 canonical tools categorized into **6 Read-Only Tools** a
 | `advance_lifecycle_gate` | **Proposed-Action** | Requests FSM gate advance; validates contract prerequisites and human approvals; atomic update to `memory/execution-state.json` when `dry_run=False`. | Atomic update to `memory/execution-state.json` |
 | `reconcile_project_memory`| **Proposed-Action** | Inspects Git status/log and reconciles execution state; preview mode when `update_mode=False`, atomic write preserving human edits when `update_mode=True`. | Atomic update to `memory/execution-state.json` |
 | `run_project_checks` | **Proposed-Action** | Executes allowlisted verification checks (`all_tests`, `schemas`, `lifecycle`, `quality`, `memory`, `adapters`, `reconciler`) with timeouts. | Executes test suite subprocess |
+| `plan_task` | **Read-Only** | Plans how the orchestrator handles a request: tier, specialist or councils, convened personas, skills and next commands. | **None** |
 
 ---
 
@@ -100,7 +101,7 @@ python3 adapters/mcp/server.py --test-smoke
 ```
 Expected output:
 ```
-Smoke test PASSED! Verified 10 tools registered.
+Smoke test PASSED! Verified 11 tools registered.
 ```
 
 ### Running the Server

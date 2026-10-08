@@ -20,13 +20,23 @@ if str(project_root) not in sys.path:
 from adapters.mcp.tools import ProjectIntelligenceTools
 
 
-def _create_temp_workspace() -> Path:
-    """Clones canonical core, contracts, and memory into an ephemeral test workspace."""
+def _create_temp_workspace(pin_gate: str = "G0") -> Path:
+    """Clones canonical core, contracts, and memory into an ephemeral test workspace.
+
+    The copied execution state is pinned to `pin_gate` so transition tests do not
+    depend on whichever gate the live repository memory currently records.
+    """
     temp_dir = Path(tempfile.mkdtemp(prefix="pi_mcp_test_"))
     for d in ["core", "contracts", "memory", "instructions", "validation", "adapters"]:
         src = project_root / d
         if src.exists():
             shutil.copytree(src, temp_dir / d)
+    state_file = temp_dir / "memory" / "execution-state.json"
+    if state_file.exists():
+        state = json.loads(state_file.read_text(encoding="utf-8"))
+        state["currentGate"] = pin_gate
+        state["activePhase"] = int(pin_gate[1:])
+        state_file.write_text(json.dumps(state, indent=2) + "\n", encoding="utf-8")
     return temp_dir
 
 
@@ -163,11 +173,14 @@ class TestMCPProposedActions(unittest.TestCase):
 
     def test_advance_lifecycle_gate_transitions_and_approvals(self):
         """Ensure advance_lifecycle_gate validates FSM transitions and human approval."""
-        # Current repo is at G0, and contracts/project/contract.json is APPROVED.
+        # Workspace pinned at G0, and contracts/project/contract.json is APPROVED.
         # Transition G0 -> G1 via G0_APPROVED requires human approval.
+        temp_ws = _create_temp_workspace()
+        self.addCleanup(shutil.rmtree, temp_ws, ignore_errors=True)
+        tools = ProjectIntelligenceTools(workspace_root=temp_ws)
 
         # 1. Missing approval fails
-        res_no_appr = self.tools.advance_lifecycle_gate(
+        res_no_appr = tools.advance_lifecycle_gate(
             target_gate="G1",
             condition="G0_APPROVED",
             approved_by="",
@@ -177,7 +190,7 @@ class TestMCPProposedActions(unittest.TestCase):
         self.assertIn("explicit human approval", res_no_appr["error"].lower())
 
         # 2. With human approval passes in dry_run
-        res_ok = self.tools.advance_lifecycle_gate(
+        res_ok = tools.advance_lifecycle_gate(
             target_gate="G1",
             condition="G0_APPROVED",
             approved_by="Lead Architect",
@@ -188,7 +201,7 @@ class TestMCPProposedActions(unittest.TestCase):
         self.assertEqual(res_ok["proposedGate"], "G1")
 
         # 3. Illegal gate skipping is blocked (G0 -> G4)
-        res_skip = self.tools.advance_lifecycle_gate(
+        res_skip = tools.advance_lifecycle_gate(
             target_gate="G4",
             condition="G0_APPROVED",
             approved_by="Lead Architect",

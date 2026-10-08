@@ -36,6 +36,8 @@ def _load_reconciler_module(workspace_root: pathlib.Path):
     if "reconciler" in sys.modules:
         return sys.modules["reconciler"]
     reconciler_path = workspace_root / "memory" / "reconciliation-rules" / "reconciler.py"
+    if not reconciler_path.exists():
+        reconciler_path = pathlib.Path(__file__).resolve().parents[2] / "memory" / "reconciliation-rules" / "reconciler.py"
     spec = importlib.util.spec_from_file_location("reconciler", reconciler_path)
     if not spec or not spec.loader:
         raise ImportError(f"Cannot load reconciler from {reconciler_path}")
@@ -46,7 +48,7 @@ def _load_reconciler_module(workspace_root: pathlib.Path):
 
 
 class ProjectIntelligenceTools:
-    """Core adapter hosting the 10 Project Intelligence MCP tools."""
+    """Core adapter hosting the 11 Project Intelligence MCP tools."""
 
     def __init__(self, workspace_root: Optional[pathlib.Path] = None):
         if workspace_root is None:
@@ -71,6 +73,25 @@ class ProjectIntelligenceTools:
         self.reconciler_mod = _load_reconciler_module(self.workspace_root)
 
     # ========================================================================
+    # READ-ONLY TOOL: plan_task (orchestrator entry point for MCP clients)
+    # ========================================================================
+    def plan_task(self, task: str) -> Dict[str, Any]:
+        """
+        Plan how the orchestrator handles a request: tier, specialist or councils,
+        convened personas, their skills, and the next commands. Reads framework
+        files only; writes nothing.
+        """
+        if not isinstance(task, str) or not task.strip():
+            raise ValueError("task must be a non-empty description of what you want done")
+        if len(task) > 2000:
+            raise ValueError("task is limited to 2000 characters")
+        from core.orchestrator.dispatch import dispatch, render_text
+
+        result = dispatch(task, self.workspace_root)
+        result["summary"] = render_text(result)
+        return result
+
+    # ========================================================================
     # 1. READ-ONLY TOOL: project_status
     # ========================================================================
     def project_status(self) -> Dict[str, Any]:
@@ -88,8 +109,13 @@ class ProjectIntelligenceTools:
         current_gate_id = state_data.get("currentGate", "G0")
         gate_info = self.lifecycle_engine.get_gate(current_gate_id)
 
-        # Inspect Git environment
-        git_info = self.reconciler_mod.inspect_git_repository(self.workspace_root)
+        # Compute live reconciliation alignment using canonical StateReconciler (read-only)
+        reconciler = self.reconciler_mod.StateReconciler(
+            repo_root=self.workspace_root,
+            state_file=state_file,
+            template_file=template_file,
+        )
+        rec_report = reconciler.reconcile(update_mode=False)
 
         # Contract for current gate
         req_contract_type = gate_info.get("requiredContractType", "project")
@@ -138,13 +164,13 @@ class ProjectIntelligenceTools:
                 "blockedTasks": state_data.get("blockedTasks", []),
             },
             "gitAlignment": {
-                "isGitRepo": git_info["is_git_repo"],
-                "currentBranch": git_info["current_branch"],
-                "currentHead": git_info["current_head"][:8] if git_info["current_head"] else "00000000",
-                "lastReconciledCommit": state_data.get("lastReconciledCommit", "00000000")[:8],
-                "driftDetected": state_data.get("driftDetected", False),
-                "reconciliationStatus": state_data.get("reconciliationStatus", "CLEAN"),
-                "uncommittedChangesCount": len(git_info.get("uncommitted_files", [])),
+                "isGitRepo": rec_report.is_git_repo,
+                "currentBranch": rec_report.current_branch,
+                "currentHead": rec_report.current_head[:8] if rec_report.current_head else "00000000",
+                "lastReconciledCommit": rec_report.last_reconciled_commit[:8] if rec_report.last_reconciled_commit else "00000000",
+                "driftDetected": rec_report.drift_detected,
+                "reconciliationStatus": rec_report.reconciliation_status.value,
+                "uncommittedChangesCount": len(rec_report.uncommitted_files),
             },
             "initializedFromTemplate": initialized_from_template,
             "stateLoadError": load_err,

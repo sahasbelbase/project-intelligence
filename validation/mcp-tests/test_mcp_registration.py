@@ -33,9 +33,10 @@ class TestMCPRegistration(unittest.TestCase):
             "advance_lifecycle_gate",
             "reconcile_project_memory",
             "run_project_checks",
+            "plan_task",
         ]
         registered = list(self.server.tools_registry.keys())
-        self.assertEqual(len(registered), 10, f"Expected 10 tools, got: {registered}")
+        self.assertEqual(len(registered), 11, f"Expected 11 tools, got: {registered}")
         for t in expected_tools:
             self.assertIn(t, self.server.tools_registry, f"Missing tool: '{t}'")
 

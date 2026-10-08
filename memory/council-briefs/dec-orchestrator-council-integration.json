@@ -1,0 +1,371 @@
+{
+  "record": "council-session",
+  "schemaVersion": "1.0.0",
+  "mode": "deliberated",
+  "sessionId": "development-connect-the-council-referee-to-t",
+  "councilId": "development",
+  "councilTitle": "Development council",
+  "task": "Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way",
+  "createdAt": "2026-10-08T14:21:34Z",
+  "convened": [
+    {
+      "personaId": "software-architect",
+      "title": "Software Architect",
+      "role": "chair",
+      "skills": [
+        "architecture-and-contracts",
+        "existing-project-analysis"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "maintainability-reviewer",
+      "title": "Maintainability and Tech-Debt Reviewer",
+      "role": "critic",
+      "skills": [
+        "thermo-nuclear-review",
+        "independent-review"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "api-integration-specialist",
+      "title": "API and Integration Specialist",
+      "role": "specialist",
+      "skills": [
+        "architecture-and-contracts",
+        "cross-platform-adaptation"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "developer-experience-specialist",
+      "title": "Developer Experience Specialist",
+      "role": "specialist",
+      "skills": [
+        "documentation-and-handoff"
+      ],
+      "matchedKeywords": [
+        "cli"
+      ]
+    },
+    {
+      "personaId": "security-engineer",
+      "title": "Security Engineer",
+      "role": "specialist",
+      "skills": [
+        "independent-review"
+      ],
+      "matchedKeywords": []
+    }
+  ],
+  "rounds": {
+    "independent": [
+      {
+        "personaId": "software-architect",
+        "recommendation": "Build",
+        "stance": "One dispatch module, three thin entry points.",
+        "keyArguments": [
+          "The old router sends nearly every request to the implementation agent (VERIFIED_FACT: route_request output for three sample tasks).",
+          "The referee already classifies tiers and convenes personas, so a dispatch module only needs to combine it with lifecycle state."
+        ],
+        "risks": [
+          "Two routing systems could disagree."
+        ],
+        "assumptions": [
+          "The referee's tier is good enough to be authoritative (ASSUMPTION)."
+        ],
+        "evidence": [
+          "core/orchestrator/router.py",
+          "core/council/referee.py"
+        ]
+      },
+      {
+        "personaId": "maintainability-reviewer",
+        "recommendation": "Pilot",
+        "stance": "Do not build a second router; reuse the one that works.",
+        "keyArguments": [
+          "Keeping both routers fully active doubles the rules to maintain.",
+          "Each client should call the same Python code rather than re-implement routing in JavaScript."
+        ],
+        "risks": [
+          "Copy-pasted routing logic in the website or installer would drift."
+        ],
+        "assumptions": [
+          "Python 3.10 is available wherever the CLI runs (ASSUMPTION)."
+        ],
+        "evidence": [
+          "installer/cli.js"
+        ]
+      },
+      {
+        "personaId": "api-integration-specialist",
+        "recommendation": "Build",
+        "stance": "Expose planning as a read-only MCP tool.",
+        "keyArguments": [
+          "Copilot CLI and other clients add stdio MCP servers with `copilot mcp add`, so an MCP tool reaches them without a custom adapter (VERIFIED_FACT: GitHub Copilot CLI docs).",
+          "A read-only tool needs no new permission model."
+        ],
+        "risks": [
+          "Tool-count assertions in the MCP tests will need updating."
+        ],
+        "assumptions": [
+          "Clients pass plain-text tasks under 2000 characters (ASSUMPTION)."
+        ],
+        "evidence": [
+          "docs.github.com: Adding MCP servers for GitHub Copilot CLI"
+        ]
+      },
+      {
+        "personaId": "developer-experience-specialist",
+        "recommendation": "Build",
+        "stance": "Give terminals a one-word command.",
+        "keyArguments": [
+          "`cli.js ask \"...\"` is easier to remember than a Python module path.",
+          "The installed /orchestrator command should contain the real path to the framework so it works from any project."
+        ],
+        "risks": [
+          "Users without python3 on PATH get a confusing error."
+        ],
+        "assumptions": [
+          "Most users install from a clone (VERIFIED_FACT: package is not on npm)."
+        ],
+        "evidence": [
+          "installer/cli.js printHelp"
+        ]
+      },
+      {
+        "personaId": "security-engineer",
+        "recommendation": "Build",
+        "stance": "Planning must stay read-only and bounded.",
+        "keyArguments": [
+          "The plan reads framework files only and writes nothing.",
+          "Task text goes to Python as an argument list, never through a shell."
+        ],
+        "risks": [
+          "A website endpoint that runs Python could be abused if exposed beyond localhost."
+        ],
+        "assumptions": [
+          "The site server is local only (ASSUMPTION)."
+        ],
+        "evidence": [
+          "web/server.js"
+        ]
+      }
+    ],
+    "challenges": [
+      {
+        "challengerId": "maintainability-reviewer",
+        "targetId": "software-architect",
+        "challengeType": "COMPETING_PRIORITY",
+        "severity": "MEDIUM",
+        "critique": "Keeping the old router as a peer creates two answers to the same question.",
+        "counterProposal": "Make the referee's tier authoritative and use the old router only as a fallback when no council matches."
+      },
+      {
+        "challengerId": "maintainability-reviewer",
+        "targetId": "developer-experience-specialist",
+        "challengeType": "SCOPE_CREEP",
+        "severity": "LOW",
+        "critique": "A separate JavaScript implementation of `ask` would duplicate the Python logic.",
+        "counterProposal": "Have `cli.js ask` spawn the Python dispatcher and print its output."
+      },
+      {
+        "challengerId": "security-engineer",
+        "targetId": "developer-experience-specialist",
+        "challengeType": "OVERLOOKED_RISK",
+        "severity": "MEDIUM",
+        "critique": "A website endpoint that runs the planner must not accept unbounded input.",
+        "counterProposal": "Cap task length and pass it as an argument, with no shell, from the local server only."
+      },
+      {
+        "challengerId": "api-integration-specialist",
+        "targetId": "maintainability-reviewer",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "LOW",
+        "critique": "Piloting first delays the Copilot CLI path, which needs nothing beyond the MCP tool.",
+        "counterProposal": "Ship the MCP tool and CLI together; they share the same dispatcher."
+      }
+    ],
+    "revisions": [
+      {
+        "personaId": "software-architect",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "The referee's tier is authoritative; the old router is a fallback."
+        ],
+        "whatRemainedUnchanged": [
+          "One dispatch module with three entry points."
+        ],
+        "responses": [
+          {
+            "challengerId": "maintainability-reviewer",
+            "response": "ACCEPTED",
+            "reason": "One answer per request is simpler to trust."
+          }
+        ]
+      },
+      {
+        "personaId": "maintainability-reviewer",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "Agrees to ship the MCP tool and CLI together because both call the same code."
+        ],
+        "whatRemainedUnchanged": [
+          "No routing logic outside Python."
+        ],
+        "responses": [
+          {
+            "challengerId": "api-integration-specialist",
+            "response": "ACCEPTED",
+            "reason": "No duplicated logic, so no reason to stage it."
+          }
+        ]
+      },
+      {
+        "personaId": "api-integration-specialist",
+        "revisedRecommendation": "Build",
+        "whatChanged": [],
+        "whatRemainedUnchanged": [
+          "Read-only plan_task MCP tool."
+        ],
+        "responses": []
+      },
+      {
+        "personaId": "developer-experience-specialist",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "`ask` spawns the Python dispatcher.",
+          "Task length is capped at 2000 characters for the website and MCP."
+        ],
+        "whatRemainedUnchanged": [
+          "Installed /orchestrator command uses the real path to the framework."
+        ],
+        "responses": [
+          {
+            "challengerId": "maintainability-reviewer",
+            "response": "ACCEPTED",
+            "reason": "Keeps one implementation."
+          },
+          {
+            "challengerId": "security-engineer",
+            "response": "ACCEPTED",
+            "reason": "Bounded input and no shell."
+          }
+        ]
+      },
+      {
+        "personaId": "security-engineer",
+        "revisedRecommendation": "Build",
+        "whatChanged": [],
+        "whatRemainedUnchanged": [
+          "Planning is read-only."
+        ],
+        "responses": []
+      }
+    ]
+  },
+  "brief": {
+    "decisionId": "dec-orchestrator-council-integration",
+    "recommendation": "Build",
+    "strongestArgumentsFor": [
+      "Every client gets the same plan from one dispatcher.",
+      "Copilot CLI and other MCP clients need only the read-only plan_task tool."
+    ],
+    "strongestArgumentsAgainst": [
+      "Requires python3 wherever the CLI runs."
+    ],
+    "evidence": [
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The old router assigned all three sample tasks to the implementation agent.",
+        "source": "core/orchestrator/router.py"
+      },
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "Copilot CLI adds stdio MCP servers with `copilot mcp add NAME -- COMMAND`.",
+        "source": "docs.github.com/en/copilot/how-tos/copilot-cli/customize-copilot/add-mcp-servers"
+      }
+    ],
+    "assumptions": [
+      "Python 3.10 or later is installed where the CLI runs."
+    ],
+    "unknowns": [
+      "How often the referee's keyword routing picks a weaker specialist than a person would."
+    ],
+    "tradeOffs": [
+      {
+        "aspect": "Routing",
+        "chosen": "Referee tier is authoritative",
+        "sacrificed": "The old router's persona choice for council-sized tasks"
+      },
+      {
+        "aspect": "CLI",
+        "chosen": "Spawn the Python dispatcher",
+        "sacrificed": "A pure JavaScript CLI with no Python requirement"
+      }
+    ],
+    "risks": [
+      {
+        "riskId": "R1",
+        "description": "Planner endpoint exposed beyond localhost",
+        "severity": "MEDIUM",
+        "probability": "LOW"
+      },
+      {
+        "riskId": "R2",
+        "description": "Keyword routing picks the wrong specialist",
+        "severity": "LOW",
+        "probability": "MEDIUM"
+      }
+    ],
+    "mitigations": [
+      "Cap task length, pass arguments without a shell, and document the server as local only.",
+      "Users can name a council or persona explicitly with the referee CLI."
+    ],
+    "mvpScope": [
+      "core/orchestrator/dispatch.py",
+      "cli.js ask and council commands",
+      "plan_task MCP tool",
+      "Installed /orchestrator command and skill call the dispatcher"
+    ],
+    "excludedScope": [
+      "Running persona rounds automatically without a model",
+      "Hosted planning service"
+    ],
+    "validationExperiments": [
+      {
+        "hypothesis": "Clients get identical plans",
+        "experiment": "Plan the same task through cli.js ask, plan_task over MCP stdio and the website endpoint",
+        "passMetric": "Same tier and convened personas in all three"
+      }
+    ],
+    "owners": [
+      "software-architect"
+    ],
+    "successMetrics": [
+      {
+        "metric": "Entry points sharing one dispatcher",
+        "target": "All of them"
+      }
+    ],
+    "dependencies": [
+      "core/council/referee.py",
+      "adapters/mcp/server.py",
+      "installer/cli.js"
+    ],
+    "conditionsToChange": [
+      "Routing mistakes become common enough to justify a model-based classifier."
+    ],
+    "dissent": [],
+    "confidenceLevel": "HIGH",
+    "topic": "Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way",
+    "participatingPersonas": [
+      "software-architect",
+      "maintainability-reviewer",
+      "api-integration-specialist",
+      "developer-experience-specialist",
+      "security-engineer"
+    ]
+  }
+}

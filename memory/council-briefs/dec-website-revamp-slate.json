@@ -1,0 +1,390 @@
+{
+  "record": "council-session",
+  "schemaVersion": "1.0.0",
+  "mode": "deliberated",
+  "sessionId": "design-rebuild-the-project-website-from",
+  "councilId": "design",
+  "councilTitle": "Design council",
+  "task": "Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only",
+  "createdAt": "2026-10-08T00:00:00Z",
+  "convened": [
+    {
+      "personaId": "visual-design-director",
+      "title": "Visual Design Director",
+      "role": "chair",
+      "skills": [
+        "design-discovery",
+        "ext:frontend-design",
+        "ext:impeccable"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "critical-design-reviewer",
+      "title": "Critical Design Reviewer",
+      "role": "critic",
+      "skills": [
+        "independent-review",
+        "vendor:review-animations"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "information-architect",
+      "title": "Information Architect",
+      "role": "specialist",
+      "skills": [
+        "design-discovery"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "accessibility-specialist",
+      "title": "Accessibility Specialist",
+      "role": "specialist",
+      "skills": [
+        "vendor:fixing-accessibility",
+        "ext:web-design-guidelines"
+      ],
+      "matchedKeywords": []
+    },
+    {
+      "personaId": "color-harmony-specialist",
+      "title": "Color and Harmony Specialist",
+      "role": "specialist",
+      "skills": [
+        "design-system-engineering"
+      ],
+      "matchedKeywords": [
+        "palette"
+      ]
+    }
+  ],
+  "rounds": {
+    "independent": [
+      {
+        "personaId": "visual-design-director",
+        "recommendation": "Build",
+        "stance": "Follow the mockup closely; its calm, rounded layout fixes the noise problem.",
+        "keyArguments": [
+          "The approved mockup replaces six competing accent colours with one accent and one secondary voice (VERIFIED_FACT: mockup source, Council Downloads.dc.html).",
+          "A skills-first home page answers the first question a visitor has: what do I get and how do I install it."
+        ],
+        "risks": [
+          "Mockup copy uses placeholder names and package commands that do not exist for this project."
+        ],
+        "assumptions": [
+          "Visitors are developers evaluating whether to install (ASSUMPTION)."
+        ],
+        "evidence": [
+          "Council Downloads.dc.html, turns 2-4"
+        ]
+      },
+      {
+        "personaId": "critical-design-reviewer",
+        "recommendation": "Pilot",
+        "stance": "Build it, but do not copy anything the project cannot back up.",
+        "keyArguments": [
+          "The mockup shows 'claude plugins install', an npm package, a 48-skill count and an 18 MB zip. None of these exist here (VERIFIED_FACT: package is not on npm, see installer/cli.js help text).",
+          "Download buttons must not appear unless a real file can be served."
+        ],
+        "risks": [
+          "Shipping invented install commands would break the anti-slop baseline (BL-002, BL-003)."
+        ],
+        "assumptions": [
+          "The local web server is how most people view the site (ASSUMPTION)."
+        ],
+        "evidence": [
+          "installer/cli.js printHelp",
+          "core/quality/profiles.json BL-002, BL-003"
+        ]
+      },
+      {
+        "personaId": "information-architect",
+        "recommendation": "Build",
+        "stance": "Five top-level destinations named by what people do.",
+        "keyArguments": [
+          "The old header exposed six system-named areas plus a status ribbon (VERIFIED_FACT: web/index.html before this change).",
+          "Skills, Councils, Agents, Gates and Install map to the questions visitors actually ask."
+        ],
+        "risks": [
+          "Moving the code reviewer into Gates may make it harder to find."
+        ],
+        "assumptions": [
+          "The council page is read-only; sessions are run from the agent, not the browser (VERIFIED_FACT: user decision, 2026-10-08)."
+        ],
+        "evidence": [
+          "Discovery report section 1, navigation finding"
+        ]
+      },
+      {
+        "personaId": "accessibility-specialist",
+        "recommendation": "Build",
+        "stance": "Adopt the mockup but keep text contrast at AA and add real semantics.",
+        "keyArguments": [
+          "The design system notes the accent-on-ground pair is tuned to 3:1, enough for large text and chrome but not body text (VERIFIED_FACT: _ds readme, Interaction states).",
+          "The old app had no ARIA roles or focus styles (VERIFIED_FACT: discovery audit)."
+        ],
+        "risks": [
+          "Muted text at 55% opacity can fall below 4.5:1 on the surface colour."
+        ],
+        "assumptions": [
+          "Most visitors use a pointer, but keyboard paths must still work (ASSUMPTION)."
+        ],
+        "evidence": [
+          "_ds/organic readme",
+          "WCAG 2.2 SC 1.4.3"
+        ]
+      },
+      {
+        "personaId": "color-harmony-specialist",
+        "recommendation": "Build",
+        "stance": "Use the Slate palette as generated, with ramp steps instead of ad-hoc mixes.",
+        "keyArguments": [
+          "Slate is generated in OKLCH from one lightness scale, so tints and text steps stay even (VERIFIED_FACT: mockup paletteCss function).",
+          "One violet accent plus a muted teal second voice is enough; status colours stay separate."
+        ],
+        "risks": [
+          "Low-chroma neutrals can look grey and flat at large sizes."
+        ],
+        "assumptions": [
+          "The user prefers a neutral palette over the warm Organic default (VERIFIED_FACT: user chose Slate, 2026-10-08)."
+        ],
+        "evidence": [
+          "Mockup PALETTES.Slate: bg hue 260, accent [275, .18], second [200, .08]"
+        ]
+      }
+    ],
+    "challenges": [
+      {
+        "challengerId": "critical-design-reviewer",
+        "targetId": "visual-design-director",
+        "challengeType": "UNEXAMINED_ASSUMPTION",
+        "severity": "HIGH",
+        "critique": "'Follow the mockup closely' would ship its placeholder install commands, counts and file sizes.",
+        "counterProposal": "Keep the layout; replace every command, count and size with values read from the repository at build time."
+      },
+      {
+        "challengerId": "critical-design-reviewer",
+        "targetId": "information-architect",
+        "challengeType": "SCOPE_CREEP",
+        "severity": "MEDIUM",
+        "critique": "Five destinations plus search plus a code checker is still a lot for a first release.",
+        "counterProposal": "Keep the code checker as one section inside Gates rather than its own page."
+      },
+      {
+        "challengerId": "accessibility-specialist",
+        "targetId": "color-harmony-specialist",
+        "challengeType": "OVERLOOKED_RISK",
+        "severity": "MEDIUM",
+        "critique": "Accent text on the light ground is only tuned for 3:1.",
+        "counterProposal": "Use the 700 accent step for links and small accent text; reserve the base accent for fills and large type."
+      },
+      {
+        "challengerId": "visual-design-director",
+        "targetId": "critical-design-reviewer",
+        "challengeType": "COMPETING_PRIORITY",
+        "severity": "LOW",
+        "critique": "Hiding all download buttons loses a useful part of the mockup.",
+        "counterProposal": "Show Download ZIP only when the local server confirms it can build the archive with git archive."
+      }
+    ],
+    "revisions": [
+      {
+        "personaId": "visual-design-director",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "All commands, counts and sizes come from repository data, not the mockup."
+        ],
+        "whatRemainedUnchanged": [
+          "Layout, type and shapes follow the mockup."
+        ],
+        "responses": [
+          {
+            "challengerId": "critical-design-reviewer",
+            "response": "ACCEPTED",
+            "reason": "Placeholder values would be false claims."
+          }
+        ]
+      },
+      {
+        "personaId": "critical-design-reviewer",
+        "revisedRecommendation": "Pilot",
+        "whatChanged": [
+          "Accepts server-built ZIP downloads."
+        ],
+        "whatRemainedUnchanged": [
+          "Would ship to the local site first and review real use before publishing it anywhere public."
+        ],
+        "responses": [
+          {
+            "challengerId": "visual-design-director",
+            "response": "PARTIALLY_ACCEPTED",
+            "reason": "Fine when the server can produce the file; the button must not appear otherwise."
+          }
+        ]
+      },
+      {
+        "personaId": "information-architect",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "Code checker moves into the Gates page as a section."
+        ],
+        "whatRemainedUnchanged": [
+          "Five destinations: Skills, Councils, Agents, Gates, Install."
+        ],
+        "responses": [
+          {
+            "challengerId": "critical-design-reviewer",
+            "response": "ACCEPTED",
+            "reason": "It belongs with quality gates anyway."
+          }
+        ]
+      },
+      {
+        "personaId": "accessibility-specialist",
+        "revisedRecommendation": "Build",
+        "whatChanged": [],
+        "whatRemainedUnchanged": [
+          "AA contrast for body text; visible focus on every control."
+        ],
+        "responses": []
+      },
+      {
+        "personaId": "color-harmony-specialist",
+        "revisedRecommendation": "Build",
+        "whatChanged": [
+          "Links and small accent text use accent-700."
+        ],
+        "whatRemainedUnchanged": [
+          "Slate palette as generated."
+        ],
+        "responses": [
+          {
+            "challengerId": "accessibility-specialist",
+            "response": "ACCEPTED",
+            "reason": "The 700 step keeps the hue and clears 4.5:1."
+          }
+        ]
+      }
+    ]
+  },
+  "brief": {
+    "decisionId": "dec-website-revamp-slate",
+    "topic": "Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only",
+    "recommendation": "Build",
+    "strongestArgumentsFor": [
+      "The mockup removes the visual noise found in the discovery audit.",
+      "A skills-first home and a plain install page answer what visitors need first."
+    ],
+    "strongestArgumentsAgainst": [
+      "The mockup's commands and numbers are placeholders that do not exist for this project."
+    ],
+    "evidence": [
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The package is not published to npm.",
+        "source": "installer/cli.js"
+      },
+      {
+        "category": "VERIFIED_FACT",
+        "statement": "The Slate palette is generated in OKLCH with accent hue 275.",
+        "source": "Council Downloads.dc.html"
+      },
+      {
+        "category": "ASSUMPTION",
+        "statement": "Most visitors are developers deciding whether to install."
+      }
+    ],
+    "assumptions": [
+      "Visitors are developers evaluating the framework.",
+      "The site is mostly viewed through the local server."
+    ],
+    "unknowns": [
+      "Whether the repository will become public, which would allow hosted downloads."
+    ],
+    "tradeOffs": [
+      {
+        "aspect": "Downloads",
+        "chosen": "ZIPs built locally with git archive",
+        "sacrificed": "Always-visible download buttons",
+        "rationale": "No hosted files exist."
+      },
+      {
+        "aspect": "Navigation",
+        "chosen": "Five destinations",
+        "sacrificed": "A separate code reviewer page"
+      }
+    ],
+    "risks": [
+      {
+        "riskId": "R1",
+        "description": "Data drift if the site stops reading from repository files",
+        "severity": "MEDIUM",
+        "probability": "LOW"
+      },
+      {
+        "riskId": "R2",
+        "description": "Muted text below AA contrast",
+        "severity": "MEDIUM",
+        "probability": "MEDIUM"
+      }
+    ],
+    "mitigations": [
+      "Build all counts and commands from repository data in web/build-data.js.",
+      "Contrast tests for text tokens in the validation suite."
+    ],
+    "mvpScope": [
+      "Skills, Councils, Agents, Gates and Install pages",
+      "Slate tokens with the Organic type and shapes",
+      "Read-only council sessions from memory/council-briefs"
+    ],
+    "excludedScope": [
+      "Running councils from the browser",
+      "Hosted downloads",
+      "Languages other than English"
+    ],
+    "validationExperiments": [
+      {
+        "hypothesis": "Visitors can install without reading the README",
+        "experiment": "Ask two developers to install from the Install page alone",
+        "passMetric": "Both succeed without help"
+      }
+    ],
+    "owners": [
+      "visual-design-director"
+    ],
+    "successMetrics": [
+      {
+        "metric": "Text contrast",
+        "target": "Every text token at or above 4.5:1 on its surface"
+      },
+      {
+        "metric": "Invented values on the site",
+        "target": "Zero"
+      }
+    ],
+    "dependencies": [
+      "core/council/referee.py",
+      "vendor/skills/registry.json"
+    ],
+    "conditionsToChange": [
+      "The repository becomes public, allowing hosted downloads and a real one-line installer."
+    ],
+    "dissent": [
+      {
+        "personaId": "critical-design-reviewer",
+        "objection": "Recommends 'Pilot' instead of 'Build'.",
+        "rationale": "Would ship to the local site first and review real use before publishing it anywhere public."
+      }
+    ],
+    "confidenceLevel": "HIGH",
+    "participatingPersonas": [
+      "visual-design-director",
+      "critical-design-reviewer",
+      "information-architect",
+      "accessibility-specialist",
+      "color-harmony-specialist"
+    ]
+  }
+}

@@ -1,0 +1,179 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://project-intelligence.dev/schemas/persona-definition.schema.json",
+  "title": "PersonaDefinition",
+  "description": "JSON Schema Draft-07 defining persona specification matching Section 4 of the Universal Role-Aware Intelligence Framework.",
+  "type": "object",
+  "required": [
+    "personaId",
+    "title",
+    "group",
+    "mission",
+    "expertise",
+    "responsibilities",
+    "typicalQuestions",
+    "inputs",
+    "outputs",
+    "boundaries",
+    "evidenceRequirements",
+    "failureModes",
+    "collaborationResponsibilities",
+    "whenToInvoke",
+    "whenNotToInvoke"
+  ],
+  "properties": {
+    "personaId": {
+      "type": "string",
+      "pattern": "^[a-z0-9-]+$",
+      "description": "Unique kebab-case identifier for the persona."
+    },
+    "title": {
+      "type": "string",
+      "minLength": 3,
+      "description": "Professional title or role designation of the persona."
+    },
+    "group": {
+      "type": "string",
+      "minLength": 2,
+      "description": "Discipline or functional group (e.g., engineering, architecture, design, quality, security, operations, product)."
+    },
+    "mission": {
+      "type": "string",
+      "minLength": 10,
+      "description": "Core purpose and guiding objective of this persona."
+    },
+    "expertise": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Specific areas of deep domain knowledge and specialization."
+    },
+    "responsibilities": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Core obligations, activities, and deliverables for which this persona is accountable."
+    },
+    "typicalQuestions": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Characteristic probing questions this persona raises during analysis and council deliberation."
+    },
+    "inputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Required input artifacts, contexts, contracts, or parameters needed for this persona to operate."
+    },
+    "outputs": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Deliverables, evaluation verdicts, artifacts, or contracts produced by this persona."
+    },
+    "boundaries": {
+      "description": "Operational constraints, out-of-scope boundaries, and strict non-goals.",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "prohibitions": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "delegations": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "scopeLimits": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "evidenceRequirements": {
+      "description": "Empirical evidence standards, verification thresholds, and acceptable proof sources required by this persona.",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "mandatoryEvidence": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "acceptableSources": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "minimumConfidence": {
+              "type": "number",
+              "minimum": 0.0,
+              "maximum": 1.0
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "failureModes": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Cognitive biases, blind spots, or over-optimization risks characteristic of this persona."
+    },
+    "collaborationResponsibilities": {
+      "description": "Engagement rules, handoff protocols, and partnership responsibilities with peer personas.",
+      "oneOf": [
+        {
+          "type": "array",
+          "items": { "type": "string" },
+          "minItems": 1
+        },
+        {
+          "type": "object",
+          "properties": {
+            "primaryPartners": {
+              "type": "array",
+              "items": { "type": "string" }
+            },
+            "challengeFocus": {
+              "type": "string"
+            },
+            "handoffProtocols": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "additionalProperties": false
+        }
+      ]
+    },
+    "whenToInvoke": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Trigger criteria, problem types, and lifecycle states that warrant activating this persona."
+    },
+    "whenNotToInvoke": {
+      "type": "array",
+      "items": { "type": "string" },
+      "minItems": 1,
+      "description": "Situations, trivial queries, or mismatched tasks where invoking this persona introduces wasteful overhead."
+    }
+  },
+  "additionalProperties": false
+}

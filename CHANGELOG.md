@@ -5,7 +5,36 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2026-10-08
+
+Summary: Councils with 37 personas, wired into the orchestrator for Claude Code, Copilot CLI and terminals, plus four imported design skills and a rebuilt website with a dark theme.
+
+### Added
+- **Orchestrator dispatch (`core/orchestrator/dispatch.py`)**: One planner for every client. Combines the referee's tier and convened personas with the current lifecycle gate and returns the next commands. Exposed as `cli.js ask "<request>"`, the read-only `plan_task` MCP tool (for Copilot CLI and other MCP clients), the installed Claude Code `/orchestrator` command and orchestrator skill, and the website's local `/api/plan` endpoint.
+- **SEO and reach**: A new `seo-specialist` agent (`agents/growth/`) on the product council, with two skills: `seo-audit` (titles, social previews, structured data, sitemaps, repository metadata) and `project-reach` (positioning, community launches and measuring results, with no fake reviews or vote rings).
+- **Site SEO**: Page metadata, Open Graph and Twitter cards, JSON-LD for the project and its author, a favicon, a social preview image, `robots.txt` and `sitemap.xml`.
+- **CLI**: `ask` and `council <plan|prompt|record|list|check>` commands. `council record` validates a finished session file and saves it.
+- **Website "How it works" page**: A flowchart of how requests reach skills, agents and councils, and a step-through demo in Claude Code, Copilot CLI and terminal styles, with council rounds from recorded sessions and a follow-up improvement.
+- **Dark theme**: Follows the system setting, with a header toggle that remembers the choice. Contrast tests cover both themes.
+- **Council referee (`core/council/referee.py`)**: Routes tasks to tiers 0–3, convenes a chair, a critic and up to three relevant specialists, builds persona prompts, validates every round (blinding, a challenge budget of two per persona, answers to every challenge) and assembles schema-valid decision briefs with dissent preserved. CLI: `python3 -m core.council.referee plan|prompt|list|check`.
+- **Persona registry (`core/council/personas/`, `core/council/councils.json`)**: Design (13), development (12) and product (12) councils. The product council reuses the existing product manager, business analyst, customer advocate, strategy analyst and SEO specialist agents.
+- **Council session records (`memory/council-briefs/`)**: Validated session records that the website displays read-only.
+- **Third-party skills (`vendor/skills/`)**: `fixing-accessibility` and `fixing-motion-performance` (ibelick/ui-skills, MIT), `emil-design-eng` and `review-animations` (emilkowalski/skills, MIT), copied verbatim with their licenses and installed alongside the framework skills. Recommended but not redistributed skills are listed in `vendor/skills/registry.json`.
+- **Schema checker (`core/council/schema_lite.py`)**: A small Draft-07 subset validator with no dependencies.
+
+### Changed
+- **Website (`web/`)**: Rebuilt from the approved mockup with Skills, Councils, Agents, Gates and Install pages. All counts, commands and records are read from repository files at build time. Removed hard-coded test counts, invented benchmarks and unmeasured savings figures.
+- **Council protocol**: Councils convene 3–5 personas by relevance instead of the full roster, and each persona raises at most two challenges.
+- **Installer**: Copies vendored skills, including their `LICENSE` files, for Claude Code and Antigravity. The installed orchestrator command and skill call this package's CLI by absolute path.
+- **MCP server**: 11 tools (adds `plan_task`).
+
+### Fixed
+- **CLI exit codes**: `bin/cli.js` now exits with the command's status; previously every command exited 0.
+- **Local server**: Binds to 127.0.0.1 by default (set `HOST` to change it).
+
 ## [1.0.0] - 2026-10-07
+
+Summary: First release: lifecycle gates, contracts, quality baseline, memory, skills, agents and adapters.
 
 ### Added
 - **Core Schemas (`core/schemas/`)**: 12 JSON Schema Draft-07 canonical schemas covering contract envelopes, project contracts, requirements contracts, design contracts, architecture contracts, implementation contracts, quality contracts, release contracts, memory, lifecycle, agent definitions, and skill definitions.

@@ -59,7 +59,7 @@ class MCPServer:
         self._register_canonical_tools()
 
     def _register_canonical_tools(self) -> None:
-        """Registers the 10 canonical tools with schemas and handler callbacks."""
+        """Registers the 11 canonical tools with schemas and handler callbacks."""
 
         # 1. project_status
         self.register_tool(
@@ -362,6 +362,26 @@ class MCPServer:
             },
             handler=lambda **kwargs: self.tools_handler.run_project_checks(**kwargs),
             is_read_only=False,
+        )
+
+        # 11. plan_task
+        self.register_tool(
+            name="plan_task",
+            description="Plan how Project Intelligence handles a request: answer directly, hand it to one specialist, or convene the design, development or product council. Returns the tier, convened personas, their skills and the next commands. Read-only.",
+            schema={
+                "type": "object",
+                "properties": {
+                    "task": {
+                        "type": "string",
+                        "description": "What you want done, in plain words",
+                        "maxLength": 2000,
+                    },
+                },
+                "required": ["task"],
+                "additionalProperties": False,
+            },
+            handler=lambda **kwargs: self.tools_handler.plan_task(**kwargs),
+            is_read_only=True,
         )
 
     def register_tool(

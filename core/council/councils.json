@@ -1,0 +1,535 @@
+{
+  "$comment": "Council definitions. Persona files live in core/council/personas/<council>/<personaId>.json; ids listed under 'agentPersonas' resolve to agents/**/agent.json instead. The referee reads this file to plan sessions; it never generates persona reasoning itself.",
+  "version": "2.0.0",
+  "limits": {
+    "defaultConveneSize": 4,
+    "maxConveneSize": 5,
+    "fullRosterRequiresOptIn": true,
+    "maxChallengesPerPersona": 2,
+    "criticMinChallenges": 1
+  },
+  "tiers": {
+    "0": {
+      "name": "Answer",
+      "description": "Direct answer. No personas convened."
+    },
+    "1": {
+      "name": "Specialist",
+      "description": "One persona with its audit skill."
+    },
+    "2": {
+      "name": "Council",
+      "description": "One council: chair, critic, and up to three specialists chosen by relevance."
+    },
+    "3": {
+      "name": "Cross-council",
+      "description": "Product, design and development councils in sequence, then quality review and a final synthesis."
+    }
+  },
+  "pipeline": [
+    "product",
+    "design",
+    "development",
+    "quality"
+  ],
+  "councils": {
+    "design": {
+      "title": "Design council",
+      "purpose": "Visual direction, interaction, information architecture and accessibility of anything users see.",
+      "chair": "visual-design-director",
+      "critic": "critical-design-reviewer",
+      "workOrder": [
+        "audit",
+        "arrange",
+        "typeset",
+        "polish"
+      ],
+      "roster": [
+        "visual-design-director",
+        "design-systems-architect",
+        "restraint-specialist",
+        "typography-specialist",
+        "color-harmony-specialist",
+        "interaction-designer",
+        "information-architect",
+        "accessibility-specialist",
+        "ux-researcher",
+        "data-visualization-specialist",
+        "frontend-design-engineer",
+        "responsive-design-specialist",
+        "critical-design-reviewer"
+      ],
+      "agentPersonas": [],
+      "routingKeywords": {
+        "design-systems-architect": [
+          "token",
+          "component",
+          "theme",
+          "design system",
+          "consistency",
+          "variant",
+          "spacing"
+        ],
+        "restraint-specialist": [
+          "clutter",
+          "crowded",
+          "busy",
+          "noise",
+          "simplify",
+          "minimal",
+          "too much"
+        ],
+        "typography-specialist": [
+          "font",
+          "type",
+          "typography",
+          "text",
+          "readability",
+          "heading"
+        ],
+        "color-harmony-specialist": [
+          "color",
+          "colour",
+          "palette",
+          "dark mode",
+          "light mode",
+          "gradient",
+          "theme"
+        ],
+        "interaction-designer": [
+          "animation",
+          "motion",
+          "transition",
+          "hover",
+          "interaction",
+          "feedback"
+        ],
+        "information-architect": [
+          "navigation",
+          "nav",
+          "menu",
+          "structure",
+          "information architecture",
+          "label",
+          "find",
+          "layout",
+          "page"
+        ],
+        "accessibility-specialist": [
+          "accessibility",
+          "a11y",
+          "wcag",
+          "keyboard",
+          "screen reader",
+          "focus",
+          "contrast"
+        ],
+        "ux-researcher": [
+          "user",
+          "usability",
+          "research",
+          "friction",
+          "confusing"
+        ],
+        "data-visualization-specialist": [
+          "dashboard",
+          "chart",
+          "graph",
+          "metric",
+          "data",
+          "status"
+        ],
+        "frontend-design-engineer": [
+          "css",
+          "implement",
+          "build",
+          "performance",
+          "frontend",
+          "html"
+        ],
+        "responsive-design-specialist": [
+          "mobile",
+          "responsive",
+          "tablet",
+          "phone",
+          "breakpoint"
+        ]
+      },
+      "skills": {
+        "visual-design-director": [
+          "design-discovery",
+          "ext:frontend-design",
+          "ext:impeccable"
+        ],
+        "design-systems-architect": [
+          "design-system-engineering",
+          "baseline-ui"
+        ],
+        "restraint-specialist": [
+          "baseline-ui"
+        ],
+        "typography-specialist": [
+          "design-system-engineering",
+          "ext:impeccable"
+        ],
+        "color-harmony-specialist": [
+          "design-system-engineering"
+        ],
+        "interaction-designer": [
+          "vendor:emil-design-eng",
+          "vendor:review-animations",
+          "vendor:fixing-motion-performance"
+        ],
+        "information-architect": [
+          "design-discovery"
+        ],
+        "accessibility-specialist": [
+          "vendor:fixing-accessibility",
+          "ext:web-design-guidelines"
+        ],
+        "ux-researcher": [
+          "design-discovery"
+        ],
+        "data-visualization-specialist": [
+          "design-system-engineering"
+        ],
+        "frontend-design-engineer": [
+          "baseline-ui",
+          "vendor:fixing-motion-performance",
+          "ext:web-design-guidelines"
+        ],
+        "responsive-design-specialist": [
+          "baseline-ui"
+        ],
+        "critical-design-reviewer": [
+          "independent-review",
+          "vendor:review-animations"
+        ]
+      }
+    },
+    "development": {
+      "title": "Development council",
+      "purpose": "Architecture, implementation approach, risk and validation for changes to the system.",
+      "chair": "software-architect",
+      "critic": "maintainability-reviewer",
+      "workOrder": [
+        "understand",
+        "trace",
+        "compare",
+        "risk",
+        "plan"
+      ],
+      "roster": [
+        "software-architect",
+        "system-design-specialist",
+        "senior-application-developer",
+        "database-architect",
+        "api-integration-specialist",
+        "security-engineer",
+        "performance-scalability-engineer",
+        "test-quality-engineer",
+        "devops-engineer",
+        "reliability-engineer",
+        "maintainability-reviewer",
+        "developer-experience-specialist"
+      ],
+      "agentPersonas": [],
+      "routingKeywords": {
+        "system-design-specialist": [
+          "system",
+          "end-to-end",
+          "flow",
+          "integration",
+          "cross",
+          "architecture"
+        ],
+        "senior-application-developer": [
+          "implement",
+          "code",
+          "feature",
+          "bug",
+          "refactor",
+          "build"
+        ],
+        "database-architect": [
+          "database",
+          "schema",
+          "migration",
+          "sql",
+          "query",
+          "storage",
+          "data model"
+        ],
+        "api-integration-specialist": [
+          "api",
+          "endpoint",
+          "contract",
+          "integration",
+          "webhook",
+          "mcp"
+        ],
+        "security-engineer": [
+          "security",
+          "auth",
+          "permission",
+          "secret",
+          "token",
+          "credential",
+          "injection",
+          "sandbox"
+        ],
+        "performance-scalability-engineer": [
+          "performance",
+          "slow",
+          "latency",
+          "scale",
+          "cache",
+          "load"
+        ],
+        "test-quality-engineer": [
+          "test",
+          "regression",
+          "verify",
+          "quality",
+          "acceptance"
+        ],
+        "devops-engineer": [
+          "deploy",
+          "release",
+          "ci",
+          "pipeline",
+          "install",
+          "config",
+          "package"
+        ],
+        "reliability-engineer": [
+          "failure",
+          "outage",
+          "monitor",
+          "logging",
+          "retry",
+          "incident"
+        ],
+        "developer-experience-specialist": [
+          "cli",
+          "docs",
+          "onboarding",
+          "installer",
+          "contributor",
+          "developer experience"
+        ]
+      },
+      "skills": {
+        "software-architect": [
+          "architecture-and-contracts",
+          "existing-project-analysis"
+        ],
+        "system-design-specialist": [
+          "architecture-and-contracts",
+          "existing-project-analysis"
+        ],
+        "senior-application-developer": [
+          "controlled-implementation",
+          "ext:antfu-skills"
+        ],
+        "database-architect": [
+          "architecture-and-contracts"
+        ],
+        "api-integration-specialist": [
+          "architecture-and-contracts",
+          "cross-platform-adaptation"
+        ],
+        "security-engineer": [
+          "independent-review"
+        ],
+        "performance-scalability-engineer": [
+          "testing-and-verification"
+        ],
+        "test-quality-engineer": [
+          "testing-and-verification",
+          "test-case-generation"
+        ],
+        "devops-engineer": [
+          "cross-platform-adaptation",
+          "documentation-and-handoff"
+        ],
+        "reliability-engineer": [
+          "failure-recovery-and-improvement"
+        ],
+        "maintainability-reviewer": [
+          "thermo-nuclear-review",
+          "independent-review"
+        ],
+        "developer-experience-specialist": [
+          "documentation-and-handoff"
+        ]
+      }
+    },
+    "product": {
+      "title": "Product council",
+      "purpose": "Problem framing, user value, options (including not building), prioritization and success measures.",
+      "chair": "product-manager",
+      "critic": "risk-feasibility-reviewer",
+      "workOrder": [
+        "frame",
+        "diverge",
+        "evaluate",
+        "prioritize",
+        "define"
+      ],
+      "roster": [
+        "product-manager",
+        "business-analyst",
+        "customer-advocate",
+        "strategy-analyst",
+        "market-researcher",
+        "business-model-analyst",
+        "customer-experience-specialist",
+        "ideation-specialist",
+        "product-operations-specialist",
+        "risk-feasibility-reviewer",
+        "growth-adoption-specialist",
+        "seo-specialist"
+      ],
+      "agentPersonas": [
+        "product-manager",
+        "business-analyst",
+        "customer-advocate",
+        "strategy-analyst",
+        "seo-specialist"
+      ],
+      "routingKeywords": {
+        "business-analyst": [
+          "requirement",
+          "acceptance criteria",
+          "user story",
+          "workflow",
+          "process"
+        ],
+        "customer-advocate": [
+          "user",
+          "customer",
+          "feedback",
+          "pain",
+          "complaint"
+        ],
+        "strategy-analyst": [
+          "strategy",
+          "roadmap",
+          "vision",
+          "opportunity",
+          "direction"
+        ],
+        "market-researcher": [
+          "market",
+          "competitor",
+          "competition",
+          "alternative",
+          "positioning"
+        ],
+        "business-model-analyst": [
+          "pricing",
+          "cost",
+          "revenue",
+          "business model",
+          "budget",
+          "roi"
+        ],
+        "customer-experience-specialist": [
+          "journey",
+          "onboarding",
+          "support",
+          "experience",
+          "first-time"
+        ],
+        "ideation-specialist": [
+          "idea",
+          "brainstorm",
+          "options",
+          "new feature",
+          "explore"
+        ],
+        "product-operations-specialist": [
+          "launch",
+          "metric",
+          "analytics",
+          "rollout",
+          "instrument"
+        ],
+        "growth-adoption-specialist": [
+          "adoption",
+          "growth",
+          "retention",
+          "activation",
+          "discover"
+        ],
+        "seo-specialist": [
+          "seo",
+          "search engine",
+          "search ranking",
+          "google",
+          "discoverability",
+          "reach",
+          "launch post",
+          "social preview",
+          "meta tag",
+          "sitemap",
+          "marketing",
+          "promote",
+          "visibility"
+        ]
+      },
+      "skills": {
+        "product-manager": [
+          "feature-prioritization",
+          "requirements-analysis"
+        ],
+        "business-analyst": [
+          "requirements-analysis",
+          "test-case-generation"
+        ],
+        "customer-advocate": [
+          "project-discovery"
+        ],
+        "strategy-analyst": [
+          "business-case"
+        ],
+        "market-researcher": [
+          "business-case"
+        ],
+        "business-model-analyst": [
+          "business-case"
+        ],
+        "customer-experience-specialist": [
+          "project-discovery"
+        ],
+        "ideation-specialist": [
+          "project-discovery"
+        ],
+        "product-operations-specialist": [
+          "project-planning"
+        ],
+        "risk-feasibility-reviewer": [
+          "council-review",
+          "business-case"
+        ],
+        "growth-adoption-specialist": [
+          "feature-prioritization",
+          "project-reach"
+        ],
+        "seo-specialist": [
+          "seo-audit",
+          "project-reach"
+        ]
+      }
+    }
+  },
+  "quality": {
+    "title": "Quality review",
+    "purpose": "Test scenarios, edge cases and acceptance criteria for the combined plan before synthesis.",
+    "personas": [
+      "qa-analyst",
+      "test-quality-engineer"
+    ]
+  }
+}

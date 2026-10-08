@@ -1,0 +1,108 @@
+{
+  "skillId": "orchestrator",
+  "name": "Universal Master Orchestrator",
+  "purpose": "Universal master orchestrator entry point. Parses intent, checks lifecycle state, dispatches to matching personas/skills or convenes council.",
+  "whenToUse": [
+    "Receiving any broad, ambiguous, or multi-faceted project request",
+    "Determining the active lifecycle gate and selecting matching specialized personas or skills",
+    "Convening a multi-persona council deliberation for high-stakes decisions",
+    "Enforcing lifecycle state transitions and quality gate sign-offs across Gates G0 through G6"
+  ],
+  "prerequisites": [
+    "Project Intelligence workspace initialized with core/lifecycle/lifecycle-fsm.json",
+    "Access to persona definitions in agents/ and universal skills in skills/",
+    "Valid execution state in memory/execution-state.json or memory/state.json"
+  ],
+  "inputs": [
+    {
+      "name": "userIntent",
+      "type": "string",
+      "description": "Raw or structured user prompt, goal, or directive"
+    },
+    {
+      "name": "lifecycleContext",
+      "type": "object",
+      "description": "Active lifecycle gate, approved contract states, and quality profile"
+    },
+    {
+      "name": "availablePersonas",
+      "type": "array",
+      "description": "List of available persona specifications for task delegation or council participation"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Intent & Context Parsing",
+      "action": "Parse incoming user prompt to extract intent category, scope boundaries, technical domains, and required decisions."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Lifecycle State & Contract Audit",
+      "action": "Read memory/execution-state.json and contracts/ to determine active gate (G0-G6) and verify that prerequisite contracts are approved."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Council Convening Assessment",
+      "action": "Determine if the decision complexity requires a multi-persona council (e.g., cross-discipline trade-offs, architecture choices, Gate G0/G3/G5 approvals). If required, invoke council-review skill."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Specialized Persona & Skill Selection",
+      "action": "Select the optimal persona (e.g. Business Analyst, QA Analyst, Product Manager) and skill matching the user intent."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Dispatch & Execution Oversight",
+      "action": "Dispatch task execution to the selected persona with explicit file ownership boundaries, contract inputs, and verification criteria."
+    },
+    {
+      "stepNumber": 6,
+      "title": "State Synchronization & Memory Reconciliation",
+      "action": "Synchronize deliverable outputs back to memory/execution-state.json and verify git alignment."
+    }
+  ],
+  "expectedOutputs": [
+    "Routing decision record detailing selected persona, invoked skill, and lifecycle gate",
+    "Executed deliverable or Council Decision Brief conforming to core/schemas/council-brief.schema.json",
+    "Updated memory/execution-state.json reflecting current phase and task states"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G2",
+    "G3",
+    "G4",
+    "G5",
+    "G6"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Ambiguous user intent preventing deterministic persona dispatch",
+      "Attempted lifecycle gate skip violating lifecycle-fsm.json transition rules",
+      "File write collision between concurrently executing subagents"
+    ],
+    "recoveryStrategy": "Solicit structured clarification using multiple-choice prompts. Reject gate skips and route to prerequisite gate deliverables. Enforce strict disjoint file boundaries across concurrent tasks."
+  },
+  "verificationCriteria": [
+    "Routing decision maps to an existing persona in agents/ and skill in skills/",
+    "Lifecycle transitions strictly comply with core/lifecycle/lifecycle-fsm.json",
+    "Execution state in memory/execution-state.json remains synchronized with git commit history"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/requirements/contract.json",
+      "contracts/architecture/contract.json",
+      "contracts/implementation/contract.json",
+      "contracts/quality/contract.json",
+      "contracts/release/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeLifecycleGate",
+      "executionState.activePhase",
+      "executionState.activeTasks",
+      "executionState.activeCouncil"
+    ]
+  }
+}

@@ -1,0 +1,104 @@
+{
+  "skillId": "requirements-analysis",
+  "name": "Requirements Analysis & Specification",
+  "purpose": "Elicit, structure, analyze, and formalize functional requirements, acceptance criteria, business rules, edge cases, and ambiguity logs for Business Analysts.",
+  "whenToUse": [
+    "Deconstructing high-level project goals and stakeholder concepts into testable requirements",
+    "Authoring or updating the canonical Requirements Contract for Gate G1 (contracts/requirements/contract.json)",
+    "Formulating Behavior-Driven Development (BDD) Given-When-Then acceptance criteria",
+    "Conducting gap analysis and identifying unstated assumptions or business rule contradictions"
+  ],
+  "prerequisites": [
+    "Gate G0 approved (contracts/project/contract.json in APPROVED or DRAFT status)",
+    "Access to core/schemas/requirements-contract.schema.json",
+    "Domain glossaries or stakeholder problem statements available"
+  ],
+  "inputs": [
+    {
+      "name": "projectContract",
+      "type": "object",
+      "description": "Approved Project Contract containing project mission, in-scope capabilities, and boundaries"
+    },
+    {
+      "name": "stakeholderBriefs",
+      "type": "array",
+      "description": "Raw stakeholder requirements, interview transcripts, or feature requests"
+    },
+    {
+      "name": "domainRules",
+      "type": "object",
+      "description": "Existing business policies, regulatory rules, or operational constraints"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Stakeholder Input & Goal Deconstruction",
+      "action": "Analyze raw inputs to extract atomic business objectives, target user roles, and core operational workflows."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Functional Requirements Specification",
+      "action": "Formulate atomic functional requirements (REQ-001, REQ-002, etc.) with explicit priority, description, and source."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Non-Functional Requirements Definition",
+      "action": "Define measurable non-functional requirements covering latency, throughput, availability, security, and accessibility."
+    },
+    {
+      "stepNumber": 4,
+      "title": "BDD Acceptance Criteria Authoring",
+      "action": "Write executable Given-When-Then acceptance scenarios covering primary success paths and edge cases."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Business Rules & Boundary Invariant Modeling",
+      "action": "Catalog explicit business rules, calculation invariants, permission matrices, and system constraint thresholds."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Gap Analysis & Ambiguity Resolution",
+      "action": "Log open questions, unresolved ambiguities, and missing specifications with designated resolution owners."
+    },
+    {
+      "stepNumber": 7,
+      "title": "Requirements Contract Synthesis",
+      "action": "Compile all sections into contracts/requirements/contract.json conforming to core/schemas/requirements-contract.schema.json."
+    }
+  ],
+  "expectedOutputs": [
+    "contracts/requirements/contract.json conforming to core/schemas/requirements-contract.schema.json",
+    "Requirements Traceability Matrix (RTM) initial schema",
+    "Business rules catalog and ambiguity log"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G2"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Vague or conflicting stakeholder requirements",
+      "Untestable or subjective acceptance criteria (e.g. 'system must be intuitive')",
+      "Missing error handling and boundary conditions"
+    ],
+    "recoveryStrategy": "Generate structured ambiguity clarification queries with multiple-choice options. Replace qualitative phrases with verifiable quantitative thresholds. Perform boundary value stress tests to surface missing error cases."
+  },
+  "verificationCriteria": [
+    "contracts/requirements/contract.json passes validation against core/schemas/requirements-contract.schema.json",
+    "Every functional requirement contains at least two Given-When-Then acceptance criteria",
+    "Zero unquantified adjectives in non-functional requirement specifications",
+    "All open questions have assigned owners and impact assessments"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "executionState.activeLifecycleGate",
+      "executionState.activeRequirementsLedger"
+    ]
+  }
+}

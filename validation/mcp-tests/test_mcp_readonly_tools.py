@@ -5,10 +5,14 @@ enforce strict read-only semantics, and never mutate filesystem or Git state.
 Uses Python standard library with zero external dependencies.
 """
 
-import unittest
-from pathlib import Path
-import sys
+import json
 import os
+from pathlib import Path
+import shutil
+import subprocess
+import sys
+import tempfile
+import unittest
 
 project_root = Path(__file__).resolve().parents[2]
 if str(project_root) not in sys.path:
@@ -33,6 +37,12 @@ def _take_fs_snapshot(directory: Path) -> dict:
     return snapshot
 
 
+def _live_execution_state() -> dict:
+    """Reads the repository's live execution state, which tools must report verbatim."""
+    with open(project_root / "memory" / "execution-state.json", "r", encoding="utf-8") as f:
+        return json.load(f)
+
+
 class TestMCPReadOnlyTools(unittest.TestCase):
     def setUp(self):
         self.tools = ProjectIntelligenceTools(workspace_root=project_root)
@@ -45,9 +55,11 @@ class TestMCPReadOnlyTools(unittest.TestCase):
         self.assertIn("gitAlignment", res)
 
         lifecycle = res["lifecycle"]
-        self.assertEqual(lifecycle["currentGate"], "G0")
-        self.assertEqual(lifecycle["gateName"], "Discovery")
-        self.assertEqual(lifecycle["requiredContractType"], "project")
+        live_gate = _live_execution_state()["currentGate"]
+        gate_info = self.tools.lifecycle_engine.get_gate(live_gate)
+        self.assertEqual(lifecycle["currentGate"], live_gate)
+        self.assertEqual(lifecycle["gateName"], gate_info["name"])
+        self.assertEqual(lifecycle["requiredContractType"], gate_info["requiredContractType"])
         self.assertEqual(lifecycle["contractStatus"], "APPROVED")
 
         tasks = res["tasks"]
@@ -80,7 +92,17 @@ class TestMCPReadOnlyTools(unittest.TestCase):
 
     def test_get_next_action_evaluates_fsm(self):
         """Ensure get_next_action identifies correct next step from lifecycle engine."""
-        res = self.tools.get_next_action()
+        # Pin a copy of the workspace at G0 so the expected G0 -> G1 candidate is stable.
+        temp_ws = Path(tempfile.mkdtemp(prefix="pi_mcp_next_"))
+        self.addCleanup(shutil.rmtree, temp_ws, ignore_errors=True)
+        for d in ["core", "contracts", "memory"]:
+            shutil.copytree(project_root / d, temp_ws / d)
+        state_file = temp_ws / "memory" / "execution-state.json"
+        state = json.loads(state_file.read_text(encoding="utf-8"))
+        state["currentGate"], state["activePhase"] = "G0", 0
+        state_file.write_text(json.dumps(state, indent=2), encoding="utf-8")
+
+        res = ProjectIntelligenceTools(workspace_root=temp_ws).get_next_action()
         self.assertEqual(res["currentGate"], "G0")
         self.assertIn("nextAction", res)
         self.assertIn("candidateTransitions", res)
@@ -177,7 +199,7 @@ class TestMCPReadOnlyTools(unittest.TestCase):
         # Execution state
         exec_state = self.tools.get_project_memory(section="execution_state")
         self.assertIn("executionState", exec_state)
-        self.assertEqual(exec_state["executionState"]["currentGate"], "G0")
+        self.assertEqual(exec_state["executionState"]["currentGate"], _live_execution_state()["currentGate"])
 
         # Backlog
         backlog = self.tools.get_project_memory(section="backlog")
@@ -202,6 +224,121 @@ class TestMCPReadOnlyTools(unittest.TestCase):
             after_snapshot,
             "Read-only tools must not modify, add, or delete any files in the workspace",
         )
+
+    def test_project_status_matches_reconciler_live_drift(self):
+        """Ensure project_status gitAlignment dynamically matches reconcile_project_memory on live repo."""
+        status_res = self.tools.project_status()
+        reconcile_res = self.tools.reconcile_project_memory(update_mode=False)
+
+        git_align = status_res["gitAlignment"]
+        self.assertEqual(
+            git_align["driftDetected"],
+            reconcile_res["drift_detected"],
+            "driftDetected must match reconcile_project_memory.drift_detected",
+        )
+        self.assertEqual(
+            git_align["reconciliationStatus"],
+            reconcile_res["reconciliation_status"],
+            "reconciliationStatus must match reconcile_project_memory.reconciliation_status",
+        )
+        self.assertEqual(
+            git_align["currentHead"],
+            reconcile_res["current_head"][:8] if reconcile_res["current_head"] else "00000000",
+            "currentHead must match first 8 chars of current_head",
+        )
+        self.assertEqual(
+            git_align["lastReconciledCommit"],
+            reconcile_res["last_reconciled_commit"][:8] if reconcile_res["last_reconciled_commit"] else "00000000",
+            "lastReconciledCommit must match first 8 chars of last_reconciled_commit",
+        )
+        self.assertEqual(
+            git_align["uncommittedChangesCount"],
+            len(reconcile_res["uncommitted_files"]),
+            "uncommittedChangesCount must match len(uncommitted_files)",
+        )
+
+    def test_project_status_read_only_invariance(self):
+        """Ensure invoking project_status does not modify memory/execution-state.json or any persisted state."""
+        state_path = project_root / "memory" / "execution-state.json"
+        before_content = state_path.read_text(encoding="utf-8")
+        before_mtime = state_path.stat().st_mtime_ns
+
+        # Invoke project_status multiple times
+        self.tools.project_status()
+        self.tools.project_status()
+
+        after_content = state_path.read_text(encoding="utf-8")
+        after_mtime = state_path.stat().st_mtime_ns
+
+        self.assertEqual(before_content, after_content)
+        self.assertEqual(before_mtime, after_mtime)
+
+    def test_reconciliation_consistency_deterministic_scenarios(self):
+        """Verify project_status and reconciler consistency across clean, commit drift, and uncommitted changes in isolated fixture."""
+        with tempfile.TemporaryDirectory() as tmp_dir_str:
+            tmp_root = Path(tmp_dir_str)
+
+            # Copy essential framework configuration
+            for sub in ["core/lifecycle", "core/quality", "contracts/project", "memory/templates"]:
+                (tmp_root / sub).mkdir(parents=True, exist_ok=True)
+            shutil.copy(project_root / "core/lifecycle/lifecycle-fsm.json", tmp_root / "core/lifecycle/lifecycle-fsm.json")
+            shutil.copy(project_root / "core/quality/profiles.json", tmp_root / "core/quality/profiles.json")
+            shutil.copy(project_root / "contracts/project/contract.json", tmp_root / "contracts/project/contract.json")
+            shutil.copy(project_root / "memory/templates/execution-state.template.json", tmp_root / "memory/templates/execution-state.template.json")
+
+            # Init Git repo in fixture
+            def _run_git(args):
+                subprocess.run(["git"] + args, cwd=tmp_root, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+            _run_git(["init"])
+            _run_git(["config", "user.name", "Test Runner"])
+            _run_git(["config", "user.email", "test@example.com"])
+            _run_git(["add", "."])
+            _run_git(["commit", "-m", "commit 1"])
+
+            c1 = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=tmp_root, text=True).strip()
+            branch = subprocess.check_output(["git", "rev-parse", "--abbrev-ref", "HEAD"], cwd=tmp_root, text=True).strip()
+
+            fixture_tools = ProjectIntelligenceTools(workspace_root=tmp_root)
+
+            # Scenario 1 Check: Clean & Reconciled
+            # Reconcile in update mode to establish an initial synchronized baseline
+            fixture_tools.reconcile_project_memory(update_mode=True)
+
+            s1_status = fixture_tools.project_status()
+            s1_rec = fixture_tools.reconcile_project_memory(update_mode=False)
+            self.assertFalse(s1_status["gitAlignment"]["driftDetected"])
+            self.assertEqual(s1_status["gitAlignment"]["reconciliationStatus"], "CLEAN")
+            self.assertEqual(s1_status["gitAlignment"]["driftDetected"], s1_rec["drift_detected"])
+            self.assertEqual(s1_status["gitAlignment"]["reconciliationStatus"], s1_rec["reconciliation_status"])
+
+            # Scenario 2 Check: Newer commit than stored anchor (Commit Drift)
+            dummy_file = tmp_root / "new_feature.txt"
+            dummy_file.write_text("hello world")
+            _run_git(["add", "new_feature.txt"])
+            _run_git(["commit", "-m", "commit 2 (ahead of state anchor)"])
+
+            s2_status = fixture_tools.project_status()
+            s2_rec = fixture_tools.reconcile_project_memory(update_mode=False)
+            self.assertTrue(s2_status["gitAlignment"]["driftDetected"])
+            self.assertEqual(s2_status["gitAlignment"]["reconciliationStatus"], "COMMIT_DRIFT")
+            self.assertEqual(s2_status["gitAlignment"]["driftDetected"], s2_rec["drift_detected"])
+            self.assertEqual(s2_status["gitAlignment"]["reconciliationStatus"], s2_rec["reconciliation_status"])
+            self.assertEqual(s2_status["gitAlignment"]["currentHead"], s2_rec["current_head"][:8])
+
+            # Scenario 3 Check: Working tree modifications (Uncommitted Changes)
+            # Fast-forward anchor in memory state to match commit 2
+            fixture_tools.reconcile_project_memory(update_mode=True)
+
+            # Modify a developer file without committing
+            dummy_file.write_text("uncommitted developer modifications")
+
+            s3_status = fixture_tools.project_status()
+            s3_rec = fixture_tools.reconcile_project_memory(update_mode=False)
+            self.assertTrue(s3_status["gitAlignment"]["driftDetected"])
+            self.assertEqual(s3_status["gitAlignment"]["driftDetected"], s3_rec["drift_detected"])
+            self.assertEqual(s3_status["gitAlignment"]["reconciliationStatus"], s3_rec["reconciliation_status"])
+            self.assertGreaterEqual(s3_status["gitAlignment"]["uncommittedChangesCount"], 1)
 
 
 if __name__ == "__main__":

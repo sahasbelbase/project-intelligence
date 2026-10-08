@@ -59,7 +59,9 @@ When Claude Code detects these natural language patterns in user queries or orch
 
 | Canonical Skill ID | Claude Code Trigger Phrases | Primary Invoking Role |
 |---|---|---|
+| `orchestrator` | `orchestrator`, `govern gates`, `lifecycle status`, `next action` | `orchestrator` |
 | `project-discovery` | `discovery`, `init project`, `inspect environment`, `gate G0` | `discovery` / `orchestrator` |
+| `requirements-analysis` | `requirements`, `user stories`, `acceptance criteria`, `gate G1` | `orchestrator` |
 | `existing-project-analysis` | `analyze codebase`, `extract conventions`, `brownfield` | `discovery` |
 | `design-discovery` | `visual requirements`, `design tokens`, `gate G2` | `design` |
 | `design-system-engineering`| `design system`, `component states`, `accessibility audit`, `WCAG` | `design` |

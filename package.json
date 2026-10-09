@@ -34,6 +34,7 @@
   "scripts": {
     "site": "node web/server.js",
     "serve": "node web/server.js",
+    "test": "python3 validation/test_runner.py",
     "build:data": "node web/build-data.js",
     "build:plugin": "node installer/build-plugin.js"
   },

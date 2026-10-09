@@ -232,6 +232,38 @@ function handleApiRequest(req, res, parsedUrl) {
     return;
   }
 
+  if (pathname === '/api/advisor' && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => {
+      body += chunk;
+      if (body.length > 10000) req.destroy();
+    });
+    req.on('end', () => {
+      let query;
+      try {
+        query = JSON.parse(body || '{}').query;
+      } catch {
+        query = null;
+      }
+      if (typeof query !== 'string' || !query.trim() || query.length > 2000) {
+        res.writeHead(400, { 'Content-Type': 'application/json' });
+        res.end(JSON.stringify({ error: 'Send {"query": "..."} with 1 to 2000 characters.' }));
+        return;
+      }
+      execFile(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', query.trim(), '--json'],
+        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: 'project-intelligence' } }, (err, stdout) => {
+          if (err) {
+            res.writeHead(500, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'The advisor service could not run. Is python3 installed?' }));
+            return;
+          }
+          res.writeHead(200, { 'Content-Type': 'application/json' });
+          res.end(stdout);
+        });
+    });
+    return;
+  }
+
   const download = pathname.match(/^\/api\/download\/([a-z-]+)\.zip$/);
   if (download && req.method === 'GET') {
     const bundle = BUNDLES.find((b) => b.id === download[1]);

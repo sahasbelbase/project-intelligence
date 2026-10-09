@@ -52,6 +52,60 @@ class TestTaskRouting(unittest.TestCase):
         self.assertIn("architecture", res_arch["targetPersonas"])
         self.assertEqual(res_arch["domain"], "architecture")
 
+        # 4. Legacy codebase knowledge base generation
+        res_legacy = parse_user_intent("Scan legacy code and generate knowledge base of domain entities and conventions")
+        self.assertEqual(res_legacy["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("legacy-analysis", res_legacy["targetPersonas"])
+        self.assertIn("legacy-codebase-knowledge-base", res_legacy["requiredSkills"])
+
+        # 5. Systems Modernization & Refactoring
+        res_mod = parse_user_intent("Modernize legacy module using strangler-fig pattern and characterization tests")
+        self.assertEqual(res_mod["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("modernization-architect", res_mod["targetPersonas"])
+        self.assertIn("safe-refactoring-and-migration", res_mod["requiredSkills"])
+
+        # 6. Security & Credential Hardening
+        res_sec = parse_user_intent("Scan codebase for leaked credentials and vulnerability CVEs")
+        self.assertEqual(res_sec["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("security-auditor", res_sec["targetPersonas"])
+        self.assertIn("security-audit-and-hardening", res_sec["requiredSkills"])
+
+        # 7. Database Migration
+        res_db = parse_user_intent("Generate reversible database migration script")
+        self.assertEqual(res_db["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("database-migration-specialist", res_db["targetPersonas"])
+        self.assertIn("database-migration-and-schema-evolution", res_db["requiredSkills"])
+
+        # 8. API Contract & OpenAPI
+        res_api = parse_user_intent("Generate OpenAPI 3.1 specification for user endpoints")
+        self.assertEqual(res_api["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("api-contract-engineer", res_api["targetPersonas"])
+        self.assertIn("api-contract-and-openapi-spec", res_api["requiredSkills"])
+
+        # 9. CI/CD & DevOps
+        res_ops = parse_user_intent("Set up GitHub Actions CI/CD workflow and container build")
+        self.assertEqual(res_ops["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("devops-automation-engineer", res_ops["targetPersonas"])
+        self.assertIn("ci-cd-pipeline-engineering", res_ops["requiredSkills"])
+
+        # 10. Performance Profiling
+        res_perf = parse_user_intent("Perform runtime profile and flamegraph analysis to fix latency budget")
+        self.assertEqual(res_perf["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("performance-engineer", res_perf["targetPersonas"])
+        self.assertIn("runtime-performance-profiling", res_perf["requiredSkills"])
+
+        # 11. Web Scraping & Online Intelligence
+        res_scrape = parse_user_intent("Scrape online docs and extract package registry metadata")
+        self.assertEqual(res_scrape["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("web-scraping-researcher", res_scrape["targetPersonas"])
+        self.assertIn("web-scraping-and-research", res_scrape["requiredSkills"])
+
+        # 12. Open Design & Rapid Prototyping
+        res_od = parse_user_intent("Author a DESIGN.md specification and build an interactive prototype")
+        self.assertEqual(res_od["intentCategory"], IntentCategory.SINGLE_PERSONA)
+        self.assertIn("open-design-architect", res_od["targetPersonas"])
+        self.assertIn("open-design-system-and-prototyping", res_od["requiredSkills"])
+
     def test_parse_verification_intent(self):
         """Automated test execution requests route to VERIFICATION."""
         res = parse_user_intent("Run the test suite and verify all exit codes are 0")

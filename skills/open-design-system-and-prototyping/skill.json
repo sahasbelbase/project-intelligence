@@ -1,0 +1,108 @@
+{
+  "skillId": "open-design-system-and-prototyping",
+  "name": "open-design-system-and-prototyping",
+  "purpose": "Author and enforce the Open Design DESIGN.md brand contract, generate interactive single-page HTML prototypes and dashboards, and refactor existing frontend codebases to strict design token alignment.",
+  "whenToUse": [
+    "Codifying a comprehensive DESIGN.md brand contract with OKLCH color ramps, typography scales, spacing grids, and motion curves",
+    "Generating interactive single-page HTML prototypes, live operational dashboards, and slide decks from a product brief",
+    "Refreshing brownfield frontend codebases (React, Vue, HTML/CSS) to bind directly to DESIGN.md tokens without behavioral regressions",
+    "Auditing UI components for accessibility compliance (WCAG 2.1 AA contrast ratios, touch targets, keyboard focus)",
+    "Establishing an agent-native, artifact-first design workflow across Claude Code, Antigravity, and Copilot"
+  ],
+  "prerequisites": [
+    "Product brief, user story, or existing design guidelines",
+    "Target DESIGN.md specification path",
+    "Frontend repository directory for component refactoring tasks"
+  ],
+  "inputs": [
+    {
+      "name": "designBrief",
+      "type": "string",
+      "description": "Product requirement, visual direction, or screen flow description"
+    },
+    {
+      "name": "brandContractPath",
+      "type": "string",
+      "description": "Path to DESIGN.md brand contract (default: DESIGN.md)"
+    },
+    {
+      "name": "artifactType",
+      "type": "string",
+      "description": "Type of artifact to generate: web-prototype, dashboard, slide-deck, or component-refresh"
+    },
+    {
+      "name": "stylingEngine",
+      "type": "string",
+      "description": "Target styling implementation: vanilla-css-variables, tailwind, or css-modules"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Brand Contract & DESIGN.md Parsing or Synthesis",
+      "action": "Formulate or parse DESIGN.md specifying OKLCH color ramps, typography scales, spacing units, border radii, and motion curves."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Interactive Blueprint & Template Selection",
+      "action": "Select the appropriate artifact archetype (web landing page, operational dashboard, presentation deck, or component library)."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Single-Page Self-Contained Artifact Generation",
+      "action": "Author a self-contained, responsive HTML/CSS/JS prototype with embedded tokens, interactive state toggles, and mock datasets."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Codebase Token Audit & Component Refresh",
+      "action": "Scan existing project components (.tsx, .vue, .html, .css), detect arbitrary hex codes and hardcoded margins, and refactor them to use semantic tokens."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Accessibility & Contrast Invariant Verification",
+      "action": "Verify that text tokens achieve WCAG AA contrast (>= 4.5:1), interactive targets exceed 44x44px, and focus rings are distinct."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Design Contract Synchronization & Memory Update",
+      "action": "Update contracts/design/contract.json at Gate G2 and record design decisions in project memory."
+    }
+  ],
+  "expectedOutputs": [
+    "Canonical DESIGN.md brand contract document",
+    "Self-contained interactive HTML prototype or dashboard artifact in docs/prototypes/",
+    "Refactored codebase components adhering to CSS custom property tokens",
+    "Synchronized contracts/design/contract.json for Gate G2 compliance"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G2",
+    "G3",
+    "G4"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Hardcoded styles conflict with external component libraries",
+      "Color tokens fail WCAG AA contrast against dark/light surface variants",
+      "Component refactoring introduces layout shifts or breaks existing interactive behavior"
+    ],
+    "recoveryStrategy": "Isolate conflicting third-party components behind CSS variable wrapper scopes. Run automated contrast calculation scripts and adjust OKLCH lightness/chroma until >= 4.5:1 is achieved. Keep backup characterization tests before refactoring component JSX."
+  },
+  "verificationCriteria": [
+    "Every color, spacing unit, and font size in generated artifacts binds to a declared DESIGN.md token",
+    "Generated HTML prototype is fully self-contained, responsive across breakpoints, and opens cleanly in any browser",
+    "100% of text tokens meet or exceed WCAG 2.1 AA 4.5:1 contrast in both light and dark themes",
+    "No regressions in existing component test suites after codebase design refresh"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/design/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.domainVocabulary"
+    ]
+  }
+}

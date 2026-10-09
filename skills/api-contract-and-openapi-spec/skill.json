@@ -1,0 +1,94 @@
+{
+  "skillId": "api-contract-and-openapi-spec",
+  "name": "api-contract-and-openapi-spec",
+  "purpose": "Author, validate, and enforce semver-compliant API contracts, OpenAPI 3.1 specifications, and mock interfaces to prevent integration drift between frontend and backend.",
+  "whenToUse": [
+    "Designing new REST, GraphQL, gRPC, or webhook API endpoints prior to implementation",
+    "Generating or synchronizing OpenAPI 3.1 / JSON Schema specs from application route handlers",
+    "Detecting breaking API changes between pull request branches and production baselines",
+    "Creating mock API servers to unblock frontend developers during backend development",
+    "Validating payload types, headers, status codes, and error response schemas"
+  ],
+  "prerequisites": [
+    "Read-only access to API routes, controllers, and data transfer object (DTO) models",
+    "Schema definition tools (OpenAPI 3.1 or JSON Schema Draft-07)"
+  ],
+  "inputs": [
+    {
+      "name": "apiProtocol",
+      "type": "string",
+      "description": "API type: REST, GraphQL, gRPC, or webhook (default: REST)"
+    },
+    {
+      "name": "endpointDescription",
+      "type": "string",
+      "description": "Natural language or technical specification of the endpoints and operations"
+    },
+    {
+      "name": "breakingChangeDetection",
+      "type": "boolean",
+      "description": "Whether to compare against baseline OpenAPI spec for breaking changes (default: true)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Endpoint Interface & Payload Modeling",
+      "action": "Enumerate endpoints, HTTP methods, route parameters, request payloads, response bodies, and standardized error schemas (RFC 7807 problem details)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "OpenAPI 3.1 Specification Generation",
+      "action": "Author canonical OpenAPI 3.1 YAML/JSON contract declarations with strict types, required field flags, format validators, and realistic payload examples."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Breaking Change & SemVer Audit",
+      "action": "Diff the proposed contract against the production specification to detect breaking changes (removed fields, widened requests, narrowed responses, changed types)."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Mock Server & Type Stub Generation",
+      "action": "Generate deterministic mock data generators and typed client SDK stubs (TypeScript interfaces, Python dataclasses, Go structs) from the contract."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Consumer Contract Validation Testing",
+      "action": "Formulate automated contract tests that validate actual server responses against the OpenAPI schema definitions."
+    }
+  ],
+  "expectedOutputs": [
+    "Valid OpenAPI 3.1 YAML or JSON contract specification",
+    "Breaking change report indicating backward-compatibility status",
+    "Typed SDK client interfaces and mock response fixtures"
+  ],
+  "applicableApprovalGates": [
+    "G1",
+    "G2",
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Breaking changes detected in active public API contracts",
+      "Drift between OpenAPI specification and actual server response implementations",
+      "Missing error schema definitions causing client crashes on 4xx/5xx responses"
+    ],
+    "recoveryStrategy": "If breaking changes are necessary, introduce a new versioned endpoint path (e.g. /v2/api) while maintaining the legacy endpoint. Enforce automated CI schema validation tests to prevent implementation drift."
+  },
+  "verificationCriteria": [
+    "The generated OpenAPI specification validates against OpenAPI 3.1 schema validators with 0 errors",
+    "All breaking changes are flagged with SemVer major bump or versioned route recommendations",
+    "All success (2xx) and failure (4xx, 5xx) response bodies are strictly typed"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/requirements/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.domainVocabulary"
+    ]
+  }
+}

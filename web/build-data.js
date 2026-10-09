@@ -59,6 +59,8 @@ const SKILL_GROUPS = [
       ['orchestrator', 'Reads your request, checks the current gate and hands work to the right skill or council.'],
       ['project-discovery', 'Inspects the repo and environment and writes the G0 project contract.'],
       ['existing-project-analysis', 'Maps an existing codebase: structure, build, conventions and drift.'],
+      ['legacy-codebase-knowledge-base', 'Reverse-engineers legacy code with lightweight sub-agents to extract domain entities, conventions, logging patterns and docs.'],
+      ['web-scraping-and-research', 'Scrapes official documentation, package registries and web intelligence into clean markdown and structured data.'],
       ['cross-platform-adaptation', 'Translates skills and rules into Claude Code, Antigravity and other clients.'],
     ],
   },
@@ -78,9 +80,12 @@ const SKILL_GROUPS = [
       ['requirements-analysis', 'Turns a request into requirements, acceptance criteria and open questions.'],
       ['design-discovery', 'Captures flows, visual direction and constraints, or records why design is exempt.'],
       ['architecture-and-contracts', 'Sets boundaries, schemas, API contracts and decision records.'],
+      ['api-contract-and-openapi-spec', 'Authors OpenAPI 3.1 contracts, detects breaking changes and generates mock fixtures and client SDK stubs.'],
+      ['database-migration-and-schema-evolution', 'Designs zero-downtime database migrations, backward-compatible schemas and reversible rollback scripts.'],
       ['phase-planning', 'Breaks the architecture into phases and tasks with clear file ownership.'],
       ['controlled-implementation', 'Builds one bounded task at a time, test-first, inside its files.'],
       ['testing-and-verification', 'Runs the checks and records real output as evidence.'],
+      ['ci-cd-pipeline-engineering', 'Authors secure CI/CD workflows, package caching, rootless multi-stage Docker builds and automated releases.'],
       ['documentation-and-handoff', 'Writes the changelog, guides and release contract, and updates memory.'],
     ],
   },
@@ -99,6 +104,7 @@ const SKILL_GROUPS = [
     sub: 'Tokens, layout, motion and accessibility for anything people see.',
     skills: [
       ['design-system-engineering', 'Turns design decisions into tokens, components and themes.'],
+      ['open-design-system-and-prototyping', 'Authors DESIGN.md brand contracts, builds interactive HTML prototypes and dashboards, and refactors codebases to brand tokens.'],
       ['baseline-ui', 'Checks spacing, tokens, contrast and motion against the baseline.'],
       ['ui-skills-routing', 'Picks the smallest set of UI skills a task needs.'],
       ['fixing-accessibility', 'Finds and fixes names, keyboard, focus and form problems.'],
@@ -113,6 +119,7 @@ const SKILL_GROUPS = [
     skills: [
       ['ponytail', 'Finds the smallest change that fully solves the task, and finishes every caller it breaks.'],
       ['tdd', 'Red, green, refactor at the highest useful seam; test behaviour, not internals.'],
+      ['safe-refactoring-and-migration', 'Modernizes legacy code incrementally behind typed seams using characterization tests and codemods.'],
       ['ponytail-review', 'Reviews a change: every finding has a concrete failing case and the smallest fix.'],
       ['ponytail-audit', 'Audits a whole repository for bugs, risk, missing tests and code to delete.'],
     ],
@@ -122,8 +129,10 @@ const SKILL_GROUPS = [
     sub: 'Review, tests and getting back on track.',
     skills: [
       ['independent-review', 'Reviews a change against its contract, the baseline rules and security policy.'],
+      ['security-audit-and-hardening', 'Audits repositories for secret leaks, dependency CVEs, injection vectors and insecure headers.'],
       ['thermo-nuclear-review', 'Pushes for simpler code: less nesting, fewer wrappers, smaller files.'],
       ['test-case-generation', 'Writes positive, negative, boundary and regression cases traced to requirements.'],
+      ['runtime-performance-profiling', 'Profiles CPU flamegraphs, eliminates N+1 database queries, plugs memory leaks and trims frontend bundles.'],
       ['failure-recovery-and-improvement', 'Diagnoses a failed gate or broken test and rolls back or repairs.'],
     ],
   },
@@ -418,6 +427,250 @@ const entryPoints = [
   { id: 'terminal', label: 'Any terminal', how: 'CLI command', example: `${RUN} ask "Redesign the settings page"`, setup: 'Nothing to install: npx fetches it on first run. Needs Node 18+ and Python 3.10+.' },
 ];
 
+// ---------------------------------------------------------------- advisor retrieval index (BM25)
+const ADVISOR_STOP_WORDS = new Set([
+  'a','about','above','after','again','against','all','am','an','and','any','are','as','at',
+  'be','because','been','before','being','below','between','both','but','by','can','could',
+  'did','do','does','doing','down','during','each','few','for','from','further','had','has',
+  'have','having','he','her','here','hers','herself','him','himself','his','how','i','if',
+  'in','into','is','it','its','itself','just','me','more','most','my','myself','no','nor',
+  'not','of','off','on','once','only','or','other','our','ours','ourselves','out','over',
+  'own','same','should','so','some','such','than','that','the','their','theirs','them',
+  'themselves','then','there','these','they','this','those','through','to','too','under',
+  'until','up','very','was','we','were','what','when','where','which','while','who','whom',
+  'why','with','would','you','your','yours','yourself','yourselves'
+]);
+
+function tokenizeAdvisorText(text) {
+  if (!text) return [];
+  return String(text)
+    .toLowerCase()
+    .replace(/[^a-z0-9_\-\s]/g, ' ')
+    .split(/\s+/)
+    .filter((t) => t.length > 1 && !ADVISOR_STOP_WORDS.has(t));
+}
+
+function buildAdvisorIndex() {
+  const docs = [];
+
+  // 1. Framework skills
+  skills.forEach((s) => {
+    const tf = {};
+    const addWeighted = (tokens, weight) => {
+      for (const t of tokens) {
+        tf[t] = Math.round(((tf[t] || 0) + weight) * 10) / 10;
+      }
+    };
+    addWeighted(tokenizeAdvisorText(`${s.id} ${s.name}`), 5.0);
+    addWeighted(tokenizeAdvisorText((s.whenToUse || []).join(' ')), 3.5);
+    addWeighted(tokenizeAdvisorText(s.purpose || ''), 2.5);
+    addWeighted(tokenizeAdvisorText((s.procedure || []).map((p) => `${p.title} ${p.action}`).join(' ')), 1.5);
+    addWeighted(tokenizeAdvisorText((s.outputs || []).join(' ')), 1.5);
+
+    let docLen = 0;
+    for (const k in tf) docLen += tf[k];
+
+    docs.push({
+      id: s.id,
+      kind: 'skill',
+      name: s.name,
+      summary: s.purpose,
+      gates: s.gates || [],
+      command: `/${s.id}`,
+      whenToUse: (s.whenToUse || []).slice(0, 3),
+      tf,
+      docLen: Math.round(docLen * 10) / 10,
+    });
+  });
+
+  // 2. Vendored skills
+  vendored.forEach((v) => {
+    const tf = {};
+    const addWeighted = (tokens, weight) => {
+      for (const t of tokens) {
+        tf[t] = Math.round(((tf[t] || 0) + weight) * 10) / 10;
+      }
+    };
+    addWeighted(tokenizeAdvisorText(`${v.id} ${v.name}`), 5.0);
+    addWeighted(tokenizeAdvisorText(v.summary || ''), 3.0);
+    addWeighted(tokenizeAdvisorText((v.usedBy || []).join(' ')), 2.0);
+
+    let docLen = 0;
+    for (const k in tf) docLen += tf[k];
+
+    docs.push({
+      id: v.id,
+      kind: 'vendored-skill',
+      name: v.name,
+      summary: v.summary,
+      gates: [],
+      command: `/${v.id}`,
+      whenToUse: [v.summary],
+      tf,
+      docLen: Math.round(docLen * 10) / 10,
+    });
+  });
+
+  // 3. Specialist agents
+  agents.forEach((a) => {
+    const tf = {};
+    const addWeighted = (tokens, weight) => {
+      for (const t of tokens) {
+        tf[t] = Math.round(((tf[t] || 0) + weight) * 10) / 10;
+      }
+    };
+    addWeighted(tokenizeAdvisorText(`${a.id} ${a.name}`), 4.5);
+    addWeighted(tokenizeAdvisorText(a.mission || ''), 3.0);
+    addWeighted(tokenizeAdvisorText(a.role || ''), 2.5);
+
+    let docLen = 0;
+    for (const k in tf) docLen += tf[k];
+
+    docs.push({
+      id: a.id,
+      kind: 'agent',
+      name: a.name,
+      summary: a.mission,
+      gates: [],
+      command: `agent:${a.id}`,
+      whenToUse: [a.mission],
+      tf,
+      docLen: Math.round(docLen * 10) / 10,
+    });
+  });
+
+  // 4. Councils
+  councils.forEach((c) => {
+    const tf = {};
+    const addWeighted = (tokens, weight) => {
+      for (const t of tokens) {
+        tf[t] = Math.round(((tf[t] || 0) + weight) * 10) / 10;
+      }
+    };
+    addWeighted(tokenizeAdvisorText(`${c.id} ${c.title}`), 4.0);
+    addWeighted(tokenizeAdvisorText(c.purpose || ''), 3.0);
+    addWeighted(tokenizeAdvisorText((c.members || []).map((m) => `${m.title} ${m.mission}`).join(' ')), 2.0);
+
+    let docLen = 0;
+    for (const k in tf) docLen += tf[k];
+
+    docs.push({
+      id: c.id,
+      kind: 'council',
+      name: c.title,
+      summary: c.purpose,
+      gates: [],
+      command: `council:${c.id}`,
+      whenToUse: [c.purpose],
+      tf,
+      docLen: Math.round(docLen * 10) / 10,
+    });
+  });
+
+  // 5. Lifecycle gates
+  gates.forEach((g) => {
+    const tf = {};
+    const addWeighted = (tokens, weight) => {
+      for (const t of tokens) {
+        tf[t] = Math.round(((tf[t] || 0) + weight) * 10) / 10;
+      }
+    };
+    addWeighted(tokenizeAdvisorText(`${g.id} ${g.name}`), 4.0);
+    addWeighted(tokenizeAdvisorText(g.description || ''), 3.0);
+
+    let docLen = 0;
+    for (const k in tf) docLen += tf[k];
+
+    docs.push({
+      id: g.id,
+      kind: 'gate',
+      name: `${g.id}: ${g.name}`,
+      summary: g.description,
+      gates: [g.id],
+      command: `gate:${g.id}`,
+      whenToUse: [g.description],
+      tf,
+      docLen: Math.round(docLen * 10) / 10,
+    });
+  });
+
+  // 6. Installation & Setup capability
+  const setupTf = {};
+  const addSetup = (tokens, weight) => {
+    for (const t of tokens) {
+      setupTf[t] = Math.round(((setupTf[t] || 0) + weight) * 10) / 10;
+    }
+  };
+  addSetup(tokenizeAdvisorText('setup install installation initialize configure start getting started doctor'), 5.0);
+  addSetup(tokenizeAdvisorText('how to install how to setup cli claude code copilot antigravity mcp'), 3.5);
+  addSetup(tokenizeAdvisorText('Install skills, councils, and lifecycle gates into Claude Code, GitHub Copilot CLI, Google Antigravity, or any MCP client.'), 2.5);
+  let setupDocLen = 0;
+  for (const k in setupTf) setupDocLen += setupTf[k];
+  docs.push({
+    id: 'setup',
+    kind: 'skill',
+    name: 'Framework Installation & Setup',
+    summary: 'Install Project Intelligence into Claude Code, GitHub Copilot CLI, Google Antigravity, or any MCP client with zero pip dependencies.',
+    gates: ['G0'],
+    command: 'npx -y @sahasbelbase/project-intelligence init',
+    whenToUse: [
+      'Setting up Project Intelligence in a new or existing repository',
+      'Configuring Claude Code, GitHub Copilot CLI, or Antigravity agents',
+      'Running doctor diagnostic checks to verify client environment health'
+    ],
+    tf: setupTf,
+    docLen: Math.round(setupDocLen * 10) / 10,
+  });
+
+  // 7. Lead Orchestrator capability
+  const orchTf = {};
+  const addOrch = (tokens, weight) => {
+    for (const t of tokens) {
+      orchTf[t] = Math.round(((orchTf[t] || 0) + weight) * 10) / 10;
+    }
+  };
+  addOrch(tokenizeAdvisorText('orchestrator orchestrate dispatch plan router referee tier council'), 5.0);
+  addOrch(tokenizeAdvisorText('general task planning route plain words request question'), 3.0);
+  addOrch(tokenizeAdvisorText('Lead Project Orchestrator plans every request, assigns tiers, and verifies gates.'), 2.0);
+  let orchDocLen = 0;
+  for (const k in orchTf) orchDocLen += orchTf[k];
+  docs.push({
+    id: 'orchestrator',
+    kind: 'skill',
+    name: 'Lead Project Orchestrator',
+    summary: 'Plan requests, enforce lifecycle gate contracts, and dispatch to specialist agents or convene councils.',
+    gates: ['G0', 'G1', 'G2', 'G3', 'G4', 'G5', 'G6'],
+    command: '/orchestrator',
+    whenToUse: [
+      'Dispatching requests across answer, specialist, and council tiers',
+      'Checking and enforcing lifecycle gate contracts before proceeding',
+      'Coordinating multi-persona council deliberations with recorded dissent'
+    ],
+    tf: orchTf,
+    docLen: Math.round(orchDocLen * 10) / 10,
+  });
+
+  // Compute DF across all docs
+  const df = {};
+  for (const doc of docs) {
+    for (const term in doc.tf) {
+      df[term] = (df[term] || 0) + 1;
+    }
+  }
+
+  const totalLen = docs.reduce((acc, d) => acc + d.docLen, 0);
+  const avgDocLen = Math.round((totalLen / (docs.length || 1)) * 10) / 10;
+
+  return {
+    docs,
+    df,
+    avgDocLen,
+    totalDocs: docs.length,
+  };
+}
+
+const advisorIndex = buildAdvisorIndex();
+
 const data = {
   meta: {
     name: 'Project Intelligence',
@@ -451,8 +704,9 @@ const data = {
   install,
   demo,
   entryPoints,
+  advisorIndex,
 };
 
 const out = `/* Generated by web/build-data.js from repository files. Do not edit by hand. */\nwindow.PROJECT_DATA = ${JSON.stringify(data, null, 2)};\n`;
 fs.writeFileSync(path.join(__dirname, 'data.js'), out, 'utf8');
-console.log(`web/data.js written: ${skills.length} skills, ${vendored.length} vendored, ${agents.length} agents, ${Object.keys(personaIndex).length} personas, ${sessions.length} council sessions (${out.length} bytes)`);
+console.log(`web/data.js written: ${skills.length} skills, ${vendored.length} vendored, ${agents.length} agents, ${Object.keys(personaIndex).length} personas, ${sessions.length} council sessions, ${advisorIndex.totalDocs} indexed advisor documents (${out.length} bytes)`);

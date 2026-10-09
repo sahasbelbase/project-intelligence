@@ -92,6 +92,25 @@ class TestPluginFiles(unittest.TestCase):
                 names.append(fm["name"])
         self.assertEqual(len(names), len(set(names)), "skill names must be unique across the plugin")
 
+    def test_frontmatter_has_no_unquoted_colon_values(self):
+        """A plain YAML value may not contain ': ' (it breaks the whole frontmatter, and
+        Claude Code then loads the skill with empty metadata). Quote such values."""
+        pair = re.compile(r"^\s*(?:-\s+)?[A-Za-z][\w-]*:\s+(.*)$")
+        bullet = re.compile(r"^\s*-\s+(.*)$")
+        for base in ("skills", "vendor/skills", "plugin-skills"):
+            for skill in (ROOT / base).glob("*/SKILL.md"):
+                text = skill.read_text(encoding="utf-8")
+                block = text[4:text.index("\n---", 4)]
+                for n, line in enumerate(block.splitlines(), 2):
+                    m = pair.match(line) or bullet.match(line)
+                    value = (m.group(1) if m else "").strip()
+                    if not value or value[0] in "\"'|>":
+                        continue
+                    if pair.match(line) is None and bullet.match(line) and re.match(r"^[A-Za-z][\w-]*:\s", value):
+                        continue  # "- key: value" inside a list of mappings
+                    with self.subTest(skill=str(skill.relative_to(ROOT)), line=n):
+                        self.assertNotIn(": ", value, f"quote this value: {line.strip()}")
+
     def test_ask_skill_calls_plugin_copy_of_cli(self):
         text = self.built["a"]
         self.assertIn("$ARGUMENTS", text)

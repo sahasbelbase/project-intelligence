@@ -5,6 +5,19 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2026-10-09
+
+Summary: Nine specialist agents and skills for legacy code, security, databases, APIs, CI/CD, performance, research and open design, an orchestrator harness, and an advisor on the website.
+
+### Added
+- **Agents**: legacy code analyst, modernization architect, security auditor, database migration specialist, API contract engineer, DevOps automation engineer, performance engineer, web-scraping researcher and open design architect, with router entries.
+- **Skills**: `api-contract-and-openapi-spec`, `ci-cd-pipeline-engineering`, `database-migration-and-schema-evolution`, `legacy-codebase-knowledge-base`, `open-design-system-and-prototyping`, `runtime-performance-profiling`, `safe-refactoring-and-migration`, `security-audit-and-hardening` and `web-scraping-and-research`.
+- **Orchestrator harness (`core/orchestrator/harness.py`)**: Step traces written to `memory/orchestrator-traces/`; step output is simulated.
+- **Website advisor**: A local `/api/advisor` endpoint and an index of advisor documents; new PNG favicons.
+
+### Fixed
+- **Skill frontmatter**: Quoted values containing ": " in seven new skills, which otherwise loaded in Claude Code with empty metadata; a new test rejects unquoted colon values in any skill.
+
 ## [1.4.1] - 2026-10-08
 
 Summary: Published to npm as @sahasbelbase/project-intelligence.

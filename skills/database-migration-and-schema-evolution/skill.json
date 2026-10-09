@@ -1,0 +1,94 @@
+{
+  "skillId": "database-migration-and-schema-evolution",
+  "name": "database-migration-and-schema-evolution",
+  "purpose": "Plan, generate, and verify zero-downtime database migrations, backward-compatible schema changes, indexing strategies, and reversible rollback scripts.",
+  "whenToUse": [
+    "Designing schema changes for relational (PostgreSQL, MySQL, SQLite) or NoSQL databases",
+    "Executing backward-compatible column renames, type conversions, or table splits without downtime",
+    "Generating reversible 'up' and 'down' migration scripts with rollback guarantees",
+    "Optimizing slow database queries with targeted indexing and EXPLAIN query plan analysis",
+    "Validating data integrity constraints, foreign keys, and default values across migrations"
+  ],
+  "prerequisites": [
+    "Access to existing database schema definitions or migration history files",
+    "Understanding of target database engine locking semantics (e.g. Postgres lock levels)"
+  ],
+  "inputs": [
+    {
+      "name": "databaseEngine",
+      "type": "string",
+      "description": "Database system: postgresql, mysql, sqlite, mongodb, etc."
+    },
+    {
+      "name": "desiredSchemaChange",
+      "type": "string",
+      "description": "Natural language or DDL description of the requested schema evolution"
+    },
+    {
+      "name": "zeroDowntimeRequired",
+      "type": "boolean",
+      "description": "Whether the migration must support active read/write traffic during execution (default: true)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Schema Diff & Backward-Compatibility Assessment",
+      "action": "Compare existing schema state with target state and classify the change: non-breaking (adding nullable column), multi-phase (renaming column), or breaking (dropping table)."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Multi-Phase Expand/Contract Planning",
+      "action": "For destructive changes, formulate an Expand-and-Contract roadmap: Phase 1 (add new column & dual write), Phase 2 (backfill historical data), Phase 3 (switch reads), Phase 4 (drop old column)."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Locking Impact & Index Optimization Analysis",
+      "action": "Audit migration DDL for table lock hazards (e.g., adding NOT NULL without DEFAULT, non-concurrent index builds) and enforce safe syntax like CREATE INDEX CONCURRENTLY."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Reversible Migration Script Authoring",
+      "action": "Generate deterministic 'up' (forward) and 'down' (rollback) migration scripts with idempotent guards and transactional safety."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Dry-Run Simulation & Query Plan Verification",
+      "action": "Simulate migration on a clean test schema, verify rollback execution returns the schema to pristine condition, and inspect critical EXPLAIN execution plans."
+    }
+  ],
+  "expectedOutputs": [
+    "Tested, reversible forward and rollback migration files",
+    "Zero-downtime multi-phase execution playbook for production deployment",
+    "Query plan optimization report for affected indexes"
+  ],
+  "applicableApprovalGates": [
+    "G2",
+    "G3",
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Migration acquires exclusive table lock during high production load",
+      "Backfill script saturates database CPU or replication lag",
+      "Rollback script fails due to data loss in forward migration"
+    ],
+    "recoveryStrategy": "Abort transaction immediately upon lock timeout. Break large backfill operations into batched chunks (e.g. 5,000 rows per batch with sleep intervals) and test rollback scripts against real data volume."
+  },
+  "verificationCriteria": [
+    "Every forward migration includes a tested, 100% reversible rollback script",
+    "No exclusive table-locking DDL operations are executed without non-blocking alternatives",
+    "All new foreign keys and frequent query filters have supporting indexes"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/implementation/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.domainVocabulary"
+    ]
+  }
+}

@@ -1,0 +1,93 @@
+{
+  "skillId": "ci-cd-pipeline-engineering",
+  "name": "ci-cd-pipeline-engineering",
+  "purpose": "Design, author, and optimize secure CI/CD pipelines, multi-stage container builds, caching strategies, and automated release workflows.",
+  "whenToUse": [
+    "Setting up GitHub Actions, GitLab CI, or local build pipelines for automated testing",
+    "Authoring minimal, rootless, multi-stage Dockerfiles and container configurations",
+    "Optimizing build and test execution speed with package manager caching and parallel jobs",
+    "Configuring automated semantic releases, changelog generation, and tag publication",
+    "Implementing deployment rollback triggers and health check verification scripts"
+  ],
+  "prerequisites": [
+    "Read-only access to repository root, build manifests, test scripts, and workflow directories",
+    "Familiarity with target CI platform syntax (GitHub Actions, GitLab CI, Makefile)"
+  ],
+  "inputs": [
+    {
+      "name": "ciPlatform",
+      "type": "string",
+      "description": "Target automation platform: github-actions, gitlab-ci, or local-docker (default: github-actions)"
+    },
+    {
+      "name": "targetEnvironments",
+      "type": "array",
+      "description": "Target runtime environments: node, python, rust, go, or multi-stage container"
+    },
+    {
+      "name": "cachingEnabled",
+      "type": "boolean",
+      "description": "Whether to configure dependency and build artifact caching (default: true)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Pipeline Requirements & Lifecycle Gate Mapping",
+      "action": "Map framework verification commands and test runners into deterministic CI stages: lint, typecheck, test, build, and security audit."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Dependency Caching & Performance Optimization",
+      "action": "Configure platform-specific caching layers (npm cache, pip wheels, cargo target) to minimize pipeline duration and network transfers."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Multi-Stage Rootless Dockerfile Construction",
+      "action": "Write optimized container manifests: separate build stages from lean runtime images, drop root privileges to an unprivileged user, and add explicit HEALTHCHECK instructions."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Security & Secret Least-Privilege Hardening",
+      "action": "Enforce minimum token permissions (GITHUB_TOKEN permissions: read-all), pin GitHub Action versions to full commit SHAs, and prevent secrets exposure in build logs."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Automated Release & Health Check Scripting",
+      "action": "Author semantic release workflows with automated changelog extraction, npm/container publication, and post-deployment canary health checks."
+    }
+  ],
+  "expectedOutputs": [
+    "Fully configured CI workflow YAML files (.github/workflows/ci.yml, release.yml)",
+    "Hardened, multi-stage Dockerfile and .dockerignore files",
+    "Pipeline execution summary documenting build stages and estimated run times"
+  ],
+  "applicableApprovalGates": [
+    "G2",
+    "G4",
+    "G5",
+    "G6"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Cache invalidation issues causing stale dependencies in CI",
+      "Flaky test runs in virtualized CI environments",
+      "Docker permission errors when switching to unprivileged users"
+    ],
+    "recoveryStrategy": "Use explicit lockfile hash keys for cache busting. Add retries to network-dependent steps, and verify user permissions on mounted volumes before container startup."
+  },
+  "verificationCriteria": [
+    "All CI workflow files pass schema validation for the target platform",
+    "Docker images build without warnings and run as an unprivileged user",
+    "Pipeline jobs fail fast with exit code non-zero upon any test or lint error"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/release/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions"
+    ]
+  }
+}

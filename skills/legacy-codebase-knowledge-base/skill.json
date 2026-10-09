@@ -1,0 +1,124 @@
+{
+  "skillId": "legacy-codebase-knowledge-base",
+  "name": "legacy-codebase-knowledge-base",
+  "purpose": "Perform deep, multi-agent reverse-engineering of brownfield and legacy codebases to extract naming conventions, architectural paces, domain entities, bug logging mechanisms, and full-stack structure recommendations into a structured docs/ knowledge base.",
+  "whenToUse": [
+    "Onboarding legacy or brownfield repositories with undocumented architecture",
+    "Reverse-engineering undocumented proprietary domain entities, business logic, and database models",
+    "Extracting codebase idioms, naming conventions, coding paces, and recurring design patterns",
+    "Auditing error handling and incident/bug logging telemetry across existing services",
+    "Restructuring monolithic full-stack repositories into clean client, server, and domain boundaries",
+    "Generating an authoritative, cross-linked docs/ knowledge base and root navigation index for developers and AI agents"
+  ],
+  "prerequisites": [
+    "Read-only filesystem access to repository source files",
+    "Git version control history access for commit pacing and churn analysis",
+    "Sub-agent dispatch capability configured for lightweight reading models (e.g., Flash, Haiku, GPT-4o-mini tier)"
+  ],
+  "inputs": [
+    {
+      "name": "targetDirectory",
+      "type": "string",
+      "description": "Root path of the repository or sub-tree to analyze (default: repository root)"
+    },
+    {
+      "name": "outputDocsDirectory",
+      "type": "string",
+      "description": "Target folder for generated documentation (default: docs/knowledge-base)"
+    },
+    {
+      "name": "concurrencyLimit",
+      "type": "integer",
+      "description": "Maximum number of parallel reading sub-agents to dispatch (default: 4)"
+    },
+    {
+      "name": "modelTier",
+      "type": "string",
+      "description": "Model tier for reading workers to optimize throughput and cost (default: low-tier/fast)"
+    },
+    {
+      "name": "excludeGlobs",
+      "type": "array",
+      "description": "File patterns and vendor paths to ignore (e.g., node_modules, dist, vendor, .git)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Directory Tree & Monolith Reconnaissance",
+      "action": "Traverse the repository filesystem, map file distributions across languages, identify build configurations, and detect whether client and server code are combined in monolithic or mixed full-stack folders."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Sub-Agent Task Partitioning with Lightweight Reading Models",
+      "action": "Decompose the codebase into bounded modules or directories and dispatch concurrent, read-only sub-agents using low-tier reading models (e.g., Flash, Haiku) to extract syntactic patterns, dependencies, and file relationships without context exhaustion."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Coding Style, Idioms & Paces Extraction",
+      "action": "Analyze code samples from sub-agent findings to synthesize naming conventions (casing, prefixing), asynchronous control flow idioms, module pacing, and recurring structural patterns."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Domain Entity & Business Boundary Isolation",
+      "action": "Identify core business objects, proprietary data models, entity relationships, and domain logic, separating business-critical rules from infrastructure and framework boilerplate."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Error Handling, Bug Logging & Telemetry Auditing",
+      "action": "Audit try/catch blocks, error hierarchies, logger configurations, error boundary triggers, and bug-reporting hooks to document how runtime failures and exceptions are logged and tracked."
+    },
+    {
+      "stepNumber": 6,
+      "title": "Full-Stack Architecture & Modernization Recommendations",
+      "action": "Evaluate the existing layout against modern clean-architecture standards. If a legacy full-stack or monolithic structure is detected, formulate concrete recommendations to separate frontend (client), backend (api/server), shared contracts, and domain models."
+    },
+    {
+      "stepNumber": 7,
+      "title": "Durable Knowledge Base Synthesis in docs/ and Root Index",
+      "action": "Author modular markdown documents in docs/ (architecture, domain entities, coding conventions, logging, modernization roadmap) and generate a comprehensive root docs/README.md navigation index that cross-links all components."
+    }
+  ],
+  "expectedOutputs": [
+    "Structured docs/knowledge-base/ directory containing comprehensive domain, architectural, and convention documentation",
+    "Root docs/README.md or main index cross-linking all knowledge base sections for humans and AI agents",
+    "Domain entity catalog documenting proprietary models, fields, and lifecycle state machines",
+    "Codebase style guide documenting naming rules, async patterns, and structural paces",
+    "Error logging and post-bug telemetry guide documenting logging levels and incident tracking",
+    "Full-stack modernization recommendations detailing target modular folder structure"
+  ],
+  "applicableApprovalGates": [
+    "G0",
+    "G1",
+    "G2"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Repository too large causing sub-agent timeout or context blowout",
+      "Conflicting or inconsistent coding styles across legacy sub-modules",
+      "Tightly coupled full-stack spaghetti where domain entities cannot be easily distinguished from UI code",
+      "Missing or inconsistent error logging mechanisms"
+    ],
+    "recoveryStrategy": "Partition large repositories by top-level package or domain boundaries. Where conventions clash, document both prevailing idioms by folder and recommend a canonical target standard. Where entities are intertwined with UI components, flag the anti-pattern as high-priority refactoring debt and isolate data contracts from view logic."
+  },
+  "verificationCriteria": [
+    "Every documented domain entity includes file paths where it is defined and consumed",
+    "All identified naming conventions and idioms cite verbatim code samples as evidence",
+    "Error logging documentation outlines exact log levels, destinations, and bug-reporting hooks",
+    "All generated documentation files exist under docs/ and are hyperlinked from a root index",
+    "Modernization recommendations provide a before-and-after directory layout comparison",
+    "No source files are modified during analysis (strictly non-destructive operation)"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/project/contract.json",
+      "contracts/architecture/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "durableKnowledge.codingConventions",
+      "durableKnowledge.domainVocabulary",
+      "backlogAndHistory.technicalDebt"
+    ]
+  }
+}

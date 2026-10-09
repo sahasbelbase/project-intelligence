@@ -71,6 +71,51 @@ class TaskRouter:
             "title": "Handoff & Memory Reconciliation Specialist",
             "group": "documentation",
             "skills": ["documentation-and-handoff"]
+        },
+        "legacy-analysis": {
+            "title": "Legacy Code & Knowledge Base Specialist",
+            "group": "analysis",
+            "skills": ["legacy-codebase-knowledge-base", "existing-project-analysis"]
+        },
+        "modernization-architect": {
+            "title": "Systems Modernization & Refactoring Specialist",
+            "group": "analysis",
+            "skills": ["safe-refactoring-and-migration", "controlled-implementation"]
+        },
+        "security-auditor": {
+            "title": "Application Security & Hardening Specialist",
+            "group": "security",
+            "skills": ["security-audit-and-hardening", "independent-review"]
+        },
+        "database-migration-specialist": {
+            "title": "Database Migration & Schema Evolution Specialist",
+            "group": "engineering",
+            "skills": ["database-migration-and-schema-evolution", "architecture-and-contracts"]
+        },
+        "api-contract-engineer": {
+            "title": "API Protocols & Contract Specialist",
+            "group": "architecture",
+            "skills": ["api-contract-and-openapi-spec", "architecture-and-contracts"]
+        },
+        "devops-automation-engineer": {
+            "title": "CI/CD & DevOps Automation Engineer",
+            "group": "operations",
+            "skills": ["ci-cd-pipeline-engineering", "testing-and-verification"]
+        },
+        "performance-engineer": {
+            "title": "Runtime Performance & Scalability Specialist",
+            "group": "quality",
+            "skills": ["runtime-performance-profiling", "testing-and-verification"]
+        },
+        "web-scraping-researcher": {
+            "title": "Web Scraping & Online Intelligence Specialist",
+            "group": "research",
+            "skills": ["web-scraping-and-research", "project-discovery"]
+        },
+        "open-design-architect": {
+            "title": "Open Design & Rapid Prototyping Architect",
+            "group": "design",
+            "skills": ["open-design-system-and-prototyping", "design-system-engineering"]
         }
     }
 
@@ -78,6 +123,15 @@ class TaskRouter:
     ALL_SKILLS: List[str] = [
         "project-discovery",
         "existing-project-analysis",
+        "legacy-codebase-knowledge-base",
+        "safe-refactoring-and-migration",
+        "security-audit-and-hardening",
+        "database-migration-and-schema-evolution",
+        "api-contract-and-openapi-spec",
+        "ci-cd-pipeline-engineering",
+        "runtime-performance-profiling",
+        "web-scraping-and-research",
+        "open-design-system-and-prototyping",
         "design-discovery",
         "design-system-engineering",
         "architecture-and-contracts",
@@ -118,6 +172,22 @@ class TaskRouter:
             domains.append("planning")
         if re.search(r"\b(requirements|scope|discovery|spec|problem statement|use case)\b", lower):
             domains.append("discovery")
+        if re.search(r"\b(knowledge base|knowledgebase|legacy code|old code|code archaeology|reverse engineer|codebase scan)\b", lower):
+            domains.append("legacy-analysis")
+        if re.search(r"\b(moderniz(e|ation)|strangler[- ]fig|safe refactor|codemod)\b", lower):
+            domains.append("modernization")
+        if re.search(r"\b(database migration|schema evolution|reversible migration|rollback script)\b", lower):
+            domains.append("database")
+        if re.search(r"\b(openapi|api contract|swagger|breaking api change)\b", lower):
+            domains.append("api-contract")
+        if re.search(r"\b(ci/cd|github actions|gitlab ci|container build)\b", lower):
+            domains.append("devops")
+        if re.search(r"\b(runtime profile|flamegraph|latency budget|n\+1 query|memory leak profiling)\b", lower):
+            domains.append("performance")
+        if re.search(r"\b(scrap(e|ing)|crawl(er|ing)?|web extract|online docs|fetch documentation|package registry|online intelligence)\b", lower):
+            domains.append("research")
+        if re.search(r"\b(open[- ]design|design\.md|interactive prototype|live dashboard|brand refresh|ui prototype)\b", lower):
+            domains.append("open-design")
         if re.search(r"\b(doc|documentation|memory|reconcile|git|changelog|readme|handoff)\b", lower):
             domains.append("documentation")
         if re.search(r"\b(code|implement|function|class|method|refactor|fix|bug|endpoint|algorithm)\b", lower):
@@ -230,6 +300,33 @@ class TaskRouter:
             elif primary_domain == "documentation":
                 target_personas = ["documentation-and-memory"]
                 required_skills = ["documentation-and-handoff"]
+            elif primary_domain == "legacy-analysis":
+                target_personas = ["legacy-analysis"]
+                required_skills = ["legacy-codebase-knowledge-base"]
+            elif primary_domain == "modernization":
+                target_personas = ["modernization-architect"]
+                required_skills = ["safe-refactoring-and-migration"]
+            elif primary_domain == "security":
+                target_personas = ["security-auditor"]
+                required_skills = ["security-audit-and-hardening"]
+            elif primary_domain == "database":
+                target_personas = ["database-migration-specialist"]
+                required_skills = ["database-migration-and-schema-evolution"]
+            elif primary_domain == "api-contract":
+                target_personas = ["api-contract-engineer"]
+                required_skills = ["api-contract-and-openapi-spec"]
+            elif primary_domain == "devops":
+                target_personas = ["devops-automation-engineer"]
+                required_skills = ["ci-cd-pipeline-engineering"]
+            elif primary_domain == "performance":
+                target_personas = ["performance-engineer"]
+                required_skills = ["runtime-performance-profiling"]
+            elif primary_domain == "research":
+                target_personas = ["web-scraping-researcher"]
+                required_skills = ["web-scraping-and-research"]
+            elif primary_domain == "open-design":
+                target_personas = ["open-design-architect"]
+                required_skills = ["open-design-system-and-prototyping"]
             else:
                 target_personas = ["implementation"]
                 required_skills = ["controlled-implementation"]

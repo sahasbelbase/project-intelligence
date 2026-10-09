@@ -1,0 +1,93 @@
+{
+  "skillId": "runtime-performance-profiling",
+  "name": "runtime-performance-profiling",
+  "purpose": "Profile application runtime performance, diagnose latency bottlenecks, identify memory leaks and N+1 query patterns, and audit bundle sizes against Core Web Vitals budgets.",
+  "whenToUse": [
+    "Diagnosing high latency, slow API response times, or low throughput",
+    "Identifying N+1 database queries and unindexed relational scans in backend services",
+    "Auditing client-side bundle size, code-splitting, and tree-shaking efficiency",
+    "Detecting memory leaks, unclosed streams, and unbounded object caches",
+    "Benchmarking algorithms or hot code paths against performance budgets"
+  ],
+  "prerequisites": [
+    "Access to application source code and runtime profiling or benchmark commands",
+    "Representative workload or test harness to simulate traffic"
+  ],
+  "inputs": [
+    {
+      "name": "targetScope",
+      "type": "string",
+      "description": "Profiling target: backend-api, frontend-bundle, memory-leak, or query-performance"
+    },
+    {
+      "name": "latencyBudgetMs",
+      "type": "integer",
+      "description": "Target p95 latency threshold in milliseconds (default: 200)"
+    },
+    {
+      "name": "benchmarkIterations",
+      "type": "integer",
+      "description": "Number of warmup and measured iterations for statistical stability (default: 100)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Baseline Profiling & Flamegraph Capture",
+      "action": "Execute representative benchmark workloads under profiling instrumentation (Node inspector, Python cProfile, pprof) to identify hot CPU and memory paths."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Database Query & I/O Bottleneck Inspection",
+      "action": "Trace database roundtrips, identify N+1 query loops within iterative logic, and audit batch fetching and connection pool saturation."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Frontend Bundle & Render Cost Analysis",
+      "action": "Audit bundle size visualizations for duplicate dependencies, analyze chunk splitting, and inspect DOM re-render cycles against Core Web Vitals (LCP, INP, CLS)."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Memory Retention & Garbage Collection Audit",
+      "action": "Capture heap snapshots before and after workload execution to identify uncollected event listeners, detached DOM trees, or growing caches."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Optimization Specification & Benchmark Verification",
+      "action": "Author targeted optimizations (batching, memoization, indexing, dynamic imports) and re-run benchmarks to prove statistical latency reduction."
+    }
+  ],
+  "expectedOutputs": [
+    "Comprehensive performance diagnostic report with flamegraph summaries and p50/p95/p99 latency charts",
+    "Optimization pull request specifications addressing identified bottlenecks",
+    "Bundle size comparison report showing byte reduction"
+  ],
+  "applicableApprovalGates": [
+    "G1",
+    "G2",
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Micro-optimizations that degrade code readability without measurable gains",
+      "Benchmark noise causing inconsistent latency measurements",
+      "Premature optimization prior to architectural stabilization"
+    ],
+    "recoveryStrategy": "Enforce Knuth's rule: measure with statistical significance before optimizing. Reject any optimization that yields less than a 15% verifiable throughput or latency improvement if it increases complexity."
+  },
+  "verificationCriteria": [
+    "Performance improvements are proven with before-and-after empirical benchmark metrics",
+    "Optimizations do not alter existing functional test suite pass rates",
+    "Critical API paths adhere to defined p95 latency budgets"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/requirements/contract.json",
+      "contracts/quality/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions"
+    ]
+  }
+}

@@ -1,0 +1,100 @@
+{
+  "skillId": "safe-refactoring-and-migration",
+  "name": "safe-refactoring-and-migration",
+  "purpose": "Plan and execute verified, incremental refactoring and migration of legacy systems using characterization tests, the strangler-fig pattern, and automated codemods with zero behavioral regressions.",
+  "whenToUse": [
+    "Modernizing legacy codebase modules after knowledge base analysis",
+    "Decoupling tightly coupled monolithic full-stack applications into clean layers",
+    "Migrating from legacy language idioms (callbacks, CommonJS) to modern standards (async/await, ESM, TypeScript)",
+    "Applying the Strangler-Fig pattern to incrementally replace deprecated services behind facades",
+    "Extracting reusable domain services from bloated controller or view components"
+  ],
+  "prerequisites": [
+    "Baseline test runner or characterization test harness to capture input/output behavior",
+    "Clean git working tree to allow atomic rollbacks between incremental steps",
+    "Documented domain vocabulary or knowledge base from legacy analysis"
+  ],
+  "inputs": [
+    {
+      "name": "targetModule",
+      "type": "string",
+      "description": "Path to legacy file or module targeted for refactoring"
+    },
+    {
+      "name": "migrationStrategy",
+      "type": "string",
+      "description": "Selected architectural approach: strangler-fig, facade-extraction, or modular-split"
+    },
+    {
+      "name": "codemodRule",
+      "type": "string",
+      "description": "Automated transformation pattern or typing migration rule"
+    },
+    {
+      "name": "safetyThreshold",
+      "type": "string",
+      "description": "Required regression verification baseline (default: 100% golden master pass)"
+    }
+  ],
+  "procedure": [
+    {
+      "stepNumber": 1,
+      "title": "Characterization & Golden Master Test Capture",
+      "action": "Wrap the legacy module with black-box characterization tests recording real inputs and outputs across edge cases before touching any production source code."
+    },
+    {
+      "stepNumber": 2,
+      "title": "Facade & Boundary Seam Construction",
+      "action": "Introduce a typed interface or facade seam separating callers from the legacy implementation, ensuring zero caller-side breaking changes."
+    },
+    {
+      "stepNumber": 3,
+      "title": "Incremental Slice Extraction & Codemod Application",
+      "action": "Extract one bounded sub-component or apply automated AST codemod transforms inside the newly isolated seam."
+    },
+    {
+      "stepNumber": 4,
+      "title": "Parallel Run & Parity Verification",
+      "action": "Execute the characterization test suite against the new implementation to prove exact behavioral parity and verify zero regressions."
+    },
+    {
+      "stepNumber": 5,
+      "title": "Caller Re-pointing & Deprecated Code Removal",
+      "action": "Route callers directly to the modernized component and cleanly delete superseded legacy code and temporary facade scaffolding."
+    }
+  ],
+  "expectedOutputs": [
+    "Modernized, decoupled source files adhering to prevailing project standards",
+    "Passing characterization test suite validating behavioral parity",
+    "Migration log recording deleted legacy lines, removed dependencies, and architectural debt reduced"
+  ],
+  "applicableApprovalGates": [
+    "G2",
+    "G3",
+    "G4",
+    "G5"
+  ],
+  "failureAndRecovery": {
+    "potentialFailures": [
+      "Characterization tests fail due to subtle legacy side-effects",
+      "Scope explosion where refactoring touches too many files simultaneously",
+      "Performance regression introduced by new abstraction layers"
+    ],
+    "recoveryStrategy": "Immediately git checkout to the previous atomic commit. Narrow the refactoring boundary to a smaller single function or class seam and re-run characterization tests."
+  },
+  "verificationCriteria": [
+    "100% of characterization tests pass without modifying test assertions",
+    "Changes are partitioned into atomic, independently reviewable commits",
+    "No deprecated APIs or unused dead code remains in the codebase"
+  ],
+  "relevantContractsAndMemory": {
+    "contracts": [
+      "contracts/architecture/contract.json",
+      "contracts/implementation/contract.json"
+    ],
+    "memoryRecords": [
+      "durableKnowledge.architecturalDecisions",
+      "backlogAndHistory.technicalDebt"
+    ]
+  }
+}

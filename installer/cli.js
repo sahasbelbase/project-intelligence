@@ -25,6 +25,7 @@ const PACKAGE_ROOT = path.resolve(__dirname, '..');
 const pkg = require(path.join(PACKAGE_ROOT, 'package.json'));
 const { spawnSync } = require('child_process');
 const { cliInvocation } = require('./invocation');
+const { findPython, PYTHON_HELP } = require('./python');
 
 function parseArgs(args) {
   const parsed = {
@@ -359,13 +360,17 @@ async function handleUninstall(options, targetDir) {
  * Python 3.10+ with no third-party packages is the only requirement.
  */
 function runPython(args) {
-  const python = process.env.PYTHON || 'python3';
+  const python = findPython();
+  if (!python) {
+    console.error(`[Project Intelligence] Python 3.10 or later was not found. ${PYTHON_HELP}`);
+    return 1;
+  }
   // Run in the user's folder (council records and the lifecycle gate live there) and
   // import the framework from the package root.
   const env = { ...process.env, PYTHONPATH: [PACKAGE_ROOT, process.env.PYTHONPATH].filter(Boolean).join(path.delimiter) };
-  const res = spawnSync(python, args, { cwd: process.cwd(), env, stdio: 'inherit' });
+  const res = spawnSync(python.cmd, [...python.args, ...args], { cwd: process.cwd(), env, stdio: 'inherit', windowsHide: true });
   if (res.error) {
-    console.error(`[Project Intelligence] Could not run ${python}: ${res.error.message}. Install Python 3.10 or later, or set PYTHON.`);
+    console.error(`[Project Intelligence] Could not run ${python.cmd}: ${res.error.message}. ${PYTHON_HELP}`);
     return 1;
   }
   return res.status === null ? 1 : res.status;

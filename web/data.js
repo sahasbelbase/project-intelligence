@@ -2,10 +2,10 @@
 window.PROJECT_DATA = {
   "meta": {
     "name": "Project Intelligence",
-    "version": "1.5.0",
+    "version": "1.5.1",
     "license": "Apache-2.0",
-    "commit": "15d6f44",
-    "generatedAt": "2026-10-09T01:30:56.468Z"
+    "commit": "adb890e",
+    "generatedAt": "2026-10-09T01:50:01.309Z"
   },
   "counts": {
     "skills": 34,
@@ -5475,14 +5475,19 @@ window.PROJECT_DATA = {
     }
   ],
   "validation": {
-    "timestamp": "2026-10-09T01:22:14Z",
-    "totalRun": 189,
-    "passed": 189,
+    "timestamp": "2026-10-09T01:43:15Z",
+    "totalRun": 191,
+    "passed": 191,
     "failed": 0,
     "skipped": 0,
-    "durationSeconds": 8.248
+    "durationSeconds": 7.88
   },
   "changelog": [
+    {
+      "version": "1.5.1",
+      "date": "2026-10-09",
+      "summary": "The advisor works like a chat and only states facts from the repository; every command on the website works; Windows support."
+    },
     {
       "version": "1.5.0",
       "date": "2026-10-09",
@@ -5576,7 +5581,7 @@ window.PROJECT_DATA = {
           "vendor/skills"
         ],
         "desc": "All 34 framework skills plus 10 third-party skills, with their licenses.",
-        "cmd": "cp -R project-intelligence/skills project-intelligence/vendor/skills .claude/"
+        "cmd": "npx -y @sahasbelbase/project-intelligence init --mcp false"
       },
       {
         "id": "councils",
@@ -5756,8 +5761,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"",
-              "project-intelligence council check"
+              "npx -y @sahasbelbase/project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"",
+              "npx -y @sahasbelbase/project-intelligence council check"
             ],
             "sessions": [
               {
@@ -5824,7 +5829,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\nRoute: tier 2 (Council) - The design council was requested.\nGate:  G6\n\n1. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Information Architect, Accessibility Specialist, Color and Harmony Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Information Architect  skills: design-discovery\n  - Accessibility Specialist  skills: fixing-accessibility, web-design-guidelines (install separately)\n  - Color and Harmony Specialist  skills: design-system-engineering\n\nNext:\n  project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"\n  project-intelligence council check"
+            "summary": "Task:  Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\nRoute: tier 2 (Council) - The design council was requested.\nGate:  G6\n\n1. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Information Architect, Accessibility Specialist, Color and Harmony Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Information Architect  skills: design-discovery\n  - Accessibility Specialist  skills: fixing-accessibility, web-design-guidelines (install separately)\n  - Color and Harmony Specialist  skills: design-system-engineering\n\nNext:\n  npx -y @sahasbelbase/project-intelligence council prompt design visual-design-director 1 \"Rebuild the project website from the approved mockup: Slate palette, skills-first home, install page, councils shown read-only\"\n  npx -y @sahasbelbase/project-intelligence council check"
           }
         },
         {
@@ -5940,8 +5945,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"",
-              "project-intelligence council check"
+              "npx -y @sahasbelbase/project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"",
+              "npx -y @sahasbelbase/project-intelligence council check"
             ],
             "sessions": [
               {
@@ -6010,7 +6015,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), API and Integration Specialist, Developer Experience Specialist, Security Engineer.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - API and Integration Specialist  skills: architecture-and-contracts, cross-platform-adaptation\n  - Developer Experience Specialist  skills: documentation-and-handoff\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  project-intelligence council check"
+            "summary": "Task:  Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), API and Integration Specialist, Developer Experience Specialist, Security Engineer.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - API and Integration Specialist  skills: architecture-and-contracts, cross-platform-adaptation\n  - Developer Experience Specialist  skills: documentation-and-handoff\n  - Security Engineer  skills: independent-review\n\nNext:\n  npx -y @sahasbelbase/project-intelligence council prompt development software-architect 1 \"Connect the council referee to the orchestrator so Claude Code, Copilot CLI and plain terminals all plan requests the same way\"\n  npx -y @sahasbelbase/project-intelligence council check"
           }
         }
       ]
@@ -6054,8 +6059,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"",
-              "project-intelligence council check"
+              "npx -y @sahasbelbase/project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"",
+              "npx -y @sahasbelbase/project-intelligence council check"
             ],
             "sessions": [
               {
@@ -6114,7 +6119,7 @@ window.PROJECT_DATA = {
                 ]
               }
             ],
-            "summary": "Task:  Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Test and Quality Engineer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Test and Quality Engineer  skills: testing-and-verification, test-case-generation, tdd\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"\n  project-intelligence council check"
+            "summary": "Task:  Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\nRoute: tier 2 (Council) - The development council was requested.\nGate:  G6\n\n1. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Test and Quality Engineer, Developer Experience Specialist.\n2. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n3. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Test and Quality Engineer  skills: testing-and-verification, test-case-generation, tdd\n  - Developer Experience Specialist  skills: documentation-and-handoff\n\nNext:\n  npx -y @sahasbelbase/project-intelligence council prompt development software-architect 1 \"Decide how the orchestrator should route requests: keep weighted keyword routing with confidence flags, or move to model-based classification\"\n  npx -y @sahasbelbase/project-intelligence council check"
           }
         }
       ]
@@ -6201,8 +6206,8 @@ window.PROJECT_DATA = {
               }
             ],
             "next": [
-              "project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"",
-              "project-intelligence council check"
+              "npx -y @sahasbelbase/project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"",
+              "npx -y @sahasbelbase/project-intelligence council check"
             ],
             "sessions": [
               {
@@ -6346,7 +6351,7 @@ window.PROJECT_DATA = {
               "qa-analyst",
               "test-quality-engineer"
             ],
-            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - A new capability that spans product, design and engineering.\nGate:  G6\nCheck: low confidence (security-engineer (permission), business-model-analyst (pricing), data-visualization-specialist (dashboard)). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: idea-to-prd, feature-prioritization, requirements-analysis, grilling\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Security Engineer  skills: independent-review\n\nNext:\n  project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  project-intelligence council check"
+            "summary": "Task:  Add a new feature: team workspaces with permissions, pricing and a new dashboard\nRoute: tier 3 (Cross-council) - A new capability that spans product, design and engineering.\nGate:  G6\nCheck: low confidence (security-engineer (permission), business-model-analyst (pricing), data-visualization-specialist (dashboard)). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.\n\n1. Product council convenes: Product Manager (chair), Risk and Feasibility Reviewer (critic), Business Model Analyst.\n2. Hands its decision brief to the design council.\n3. Design council convenes: Visual Design Director (chair), Critical Design Reviewer (critic), Data Visualization Specialist.\n4. Hands its decision brief to the development council.\n5. Development council convenes: Software Architect (chair), Maintainability and Tech-Debt Reviewer (critic), Security Engineer.\n6. Quality review adds test scenarios and acceptance criteria before the final synthesis.\n7. Each council runs four rounds: independent views, up to two challenges each, revisions, then the chair's decision with dissent kept.\n8. The referee validates the session and saves it to memory/council-briefs/ for review and the website.\n\nProduct council (frame -> diverge -> evaluate -> prioritize -> define)\n  - Product Manager [chair]  skills: idea-to-prd, feature-prioritization, requirements-analysis, grilling\n  - Risk and Feasibility Reviewer [critic]  skills: council-review, business-case\n  - Business Model Analyst  skills: business-case\n\nDesign council (audit -> arrange -> typeset -> polish)\n  - Visual Design Director [chair]  skills: design-discovery, frontend-design (install separately), impeccable (install separately)\n  - Critical Design Reviewer [critic]  skills: independent-review, review-animations\n  - Data Visualization Specialist  skills: design-system-engineering\n\nDevelopment council (understand -> trace -> compare -> risk -> plan)\n  - Software Architect [chair]  skills: architecture-and-contracts, existing-project-analysis, domain-modeling\n  - Maintainability and Tech-Debt Reviewer [critic]  skills: thermo-nuclear-review, independent-review, ponytail-audit\n  - Security Engineer  skills: independent-review\n\nNext:\n  npx -y @sahasbelbase/project-intelligence council prompt product product-manager 1 \"Add a new feature: team workspaces with permissions, pricing and a new dashboard\"\n  npx -y @sahasbelbase/project-intelligence council check"
           }
         }
       ]

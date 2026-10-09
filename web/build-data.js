@@ -287,7 +287,7 @@ const RUN = `npx -y ${require('../installer/invocation').RUN_SPEC}`;
 const BUNDLES = require('./bundles');
 const BUNDLE_TEXT = {
   framework: { desc: 'Skills, agents, councils, contracts, instructions, adapters and the installer.', cmd: `${RUN} init` },
-  skills: { desc: `All ${skills.length} framework skills plus ${vendored.length} third-party skills, with their licenses.`, cmd: `cp -R ${cloneDir}/skills ${cloneDir}/vendor/skills .claude/` },
+  skills: { desc: `All ${skills.length} framework skills plus ${vendored.length} third-party skills, with their licenses.`, cmd: `${RUN} init --mcp false` },
   councils: { desc: `${Object.keys(personaIndex).length} persona definitions, council rosters and the referee.`, cmd: `${RUN} council list` },
   mcp: { desc: `${mcpTools} tools for gates, contracts, quality checks and memory, with no pip dependencies.`, cmd: `${RUN} mcp` },
 };
@@ -323,8 +323,10 @@ function plan(task, council, include = []) {
   try {
     const args = ['-m', 'core.orchestrator.dispatch', task, '--json', ...(council ? ['--council', council] : []),
       ...include.flatMap((p) => ['--include', p])];
-    const out = execFileSync(process.env.PYTHON || 'python3', args,
-      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PI_CLI: 'project-intelligence' } });
+    const py = require('../installer/python').findPython();
+    if (!py) throw new Error('Python 3.10+ not found');
+    const out = execFileSync(py.cmd, [...py.args, ...args],
+      { cwd: root, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'], env: { ...process.env, PI_CLI: RUN } });
     return JSON.parse(out);
   } catch (err) {
     throw new Error(`build-data: could not run the dispatcher for "${task}": ${err.message}`);

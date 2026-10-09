@@ -140,6 +140,27 @@ class TestSiteData(unittest.TestCase):
         self.assertNotIn("npx project-intelligence", json.dumps(self.data["install"]))
 
 
+class TestAdvisorFacts(unittest.TestCase):
+    """The advisor must only state things that exist in the repository."""
+
+    def test_no_invented_paths_gates_or_placeholders(self):
+        src = (WEB / "app.js").read_text(encoding="utf-8")
+        for bad in ["contracts/${gId", "Next lifecycle gate", "G7", "contracts/g0/", "'$ /"]:
+            with self.subTest(pattern=bad):
+                self.assertNotIn(bad, src)
+
+    def test_every_gate_has_a_real_contract_path(self):
+        if shutil.which("node") is None:
+            self.skipTest("node is not installed")
+        subprocess.run(["node", str(WEB / "build-data.js")], check=True, capture_output=True)
+        text = (WEB / "data.js").read_text(encoding="utf-8")
+        data = json.loads(text[text.index("=") + 1:].rstrip().rstrip(";"))
+        for gate in data["gates"]:
+            with self.subTest(gate=gate["id"]):
+                self.assertIsNotNone(gate.get("contract"))
+                self.assertTrue((ROOT / gate["contract"]["path"]).exists(), gate["contract"]["path"])
+
+
 class TestNoHardcodedClaims(unittest.TestCase):
     def test_site_source_has_no_fixed_metrics_or_slogans(self):
         source = "\n".join((WEB / f).read_text(encoding="utf-8") for f in ("index.html", "app.js", "styles.css"))

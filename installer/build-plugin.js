@@ -64,8 +64,9 @@ const manifest = {
   agents: ['./plugin-agents/council-member.md'],
   mcpServers: {
     'project-intelligence': {
-      command: 'python3',
-      args: ['${CLAUDE_PLUGIN_ROOT}/adapters/mcp/server.py'],
+      // Through Node, which finds Python on macOS, Linux and Windows alike.
+      command: 'node',
+      args: ['${CLAUDE_PLUGIN_ROOT}/bin/cli.js', 'mcp'],
       env: { PYTHONUNBUFFERED: '1' },
     },
   },

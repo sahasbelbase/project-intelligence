@@ -1,6 +1,6 @@
 {
   "name": "@sahasbelbase/project-intelligence",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Skills, specialist agents, multi-persona councils and lifecycle gates for AI coding agents. Works with Claude Code, GitHub Copilot CLI, Antigravity and any MCP client.",
   "keywords": [
     "agent-skills",

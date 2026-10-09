@@ -5,6 +5,21 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2026-10-09
+
+Summary: The advisor works like a chat and only states facts from the repository; every command on the website works; Windows support.
+
+### Fixed
+- **Advisor facts**: Contract paths and gate names come from the real gate data (no invented `contracts/g0/...`, no "Next lifecycle gate" placeholder, no G7). Skills show as Claude Code slash commands (`/project-intelligence:<skill>`) instead of shell commands.
+- **Advisor answers**: Filler words no longer drive matches; each answer says why it matched and whether it is confident ("I'm not sure" otherwise). With the local server running, the orchestrator's plan is shown when it routes the work.
+- **Website commands**: The Councils page and demo "next" commands use `npx -y @sahasbelbase/project-intelligence ...`; the skills bundle uses `init --mcp false` instead of a Unix-only `cp`; the plugin install is two commands instead of `&&`, which older PowerShell rejects.
+- **Shortcuts**: Hints show the Command key on Apple devices and Ctrl elsewhere; Cmd/Ctrl+J focuses the advisor box when already on the page.
+
+### Changed
+- **Advisor layout**: Conversation first with the input pinned at the bottom, starter prompts only when empty, a thinking indicator, New conversation, Copy answer, "More detail" folded away, follow-up suggestions, and history kept for the browser session.
+- **Header**: The site name and nav no longer wrap; Advisor appears once.
+- **Windows**: Python is found as `py -3`, `python` or `python3` (or `PYTHON`); the MCP server starts through Node in the plugin and in `init`; the Stop hook no longer needs `python3`; the Install page explains Windows setup.
+
 ## [1.5.0] - 2026-10-09
 
 Summary: Nine specialist agents and skills for legacy code, security, databases, APIs, CI/CD, performance, research and open design, an orchestrator harness, and an advisor on the website.

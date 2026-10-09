@@ -1,7 +1,7 @@
 {
   "name": "project-intelligence",
   "displayName": "Project Intelligence",
-  "version": "1.5.0",
+  "version": "1.5.1",
   "description": "Plans every request: answers it, hands it to a specialist, or convenes a design, development or product council. Ships 44 skills, 38 council personas, lifecycle gates and an MCP server.",
   "author": {
     "name": "Sahas Belbase",
@@ -28,9 +28,10 @@
   ],
   "mcpServers": {
     "project-intelligence": {
-      "command": "python3",
+      "command": "node",
       "args": [
-        "${CLAUDE_PLUGIN_ROOT}/adapters/mcp/server.py"
+        "${CLAUDE_PLUGIN_ROOT}/bin/cli.js",
+        "mcp"
       ],
       "env": {
         "PYTHONUNBUFFERED": "1"

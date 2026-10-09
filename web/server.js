@@ -11,6 +11,8 @@ const path = require('path');
 const url = require('url');
 const { execFile, execFileSync } = require('child_process');
 const BUNDLES = require('./bundles');
+const { findPython } = require('../installer/python');
+const { RUN_SPEC } = require('../installer/invocation');
 
 const WEB_DIR = __dirname;
 const ROOT_DIR = path.resolve(__dirname, '..');
@@ -110,6 +112,16 @@ function evaluateAntiSlop(code) {
     violationsCount: violations.length,
     violations
   };
+}
+
+function pythonCmd() {
+  const py = findPython();
+  return py ? py.cmd : 'python3';
+}
+
+function pythonArgs() {
+  const py = findPython();
+  return py ? py.args : [];
 }
 
 function gitHead() {
@@ -218,8 +230,8 @@ function handleApiRequest(req, res, parsedUrl) {
         return;
       }
       // Arguments are passed as a list (no shell), so task text cannot inject commands.
-      execFile(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', task.trim(), '--json'],
-        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: 'project-intelligence' } }, (err, stdout) => {
+      execFile(pythonCmd(), [...pythonArgs(), '-m', 'core.orchestrator.dispatch', task.trim(), '--json'],
+        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: `npx -y ${RUN_SPEC}` } }, (err, stdout) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'The planner could not run. Is python3 installed?' }));
@@ -250,8 +262,8 @@ function handleApiRequest(req, res, parsedUrl) {
         res.end(JSON.stringify({ error: 'Send {"query": "..."} with 1 to 2000 characters.' }));
         return;
       }
-      execFile(process.env.PYTHON || 'python3', ['-m', 'core.orchestrator.dispatch', query.trim(), '--json'],
-        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: 'project-intelligence' } }, (err, stdout) => {
+      execFile(pythonCmd(), [...pythonArgs(), '-m', 'core.orchestrator.dispatch', query.trim(), '--json'],
+        { cwd: ROOT_DIR, timeout: 15000, maxBuffer: 1024 * 1024, env: { ...process.env, PI_CLI: `npx -y ${RUN_SPEC}` } }, (err, stdout) => {
           if (err) {
             res.writeHead(500, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify({ error: 'The advisor service could not run. Is python3 installed?' }));

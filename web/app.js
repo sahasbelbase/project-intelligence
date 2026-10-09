@@ -153,7 +153,7 @@
         </div>
         <div class="install-card">
           <span class="kicker">Plan a session from your terminal</span>
-          ${cmd('python3 -m core.council.referee plan "Redesign the settings page"')}
+          ${cmd(`${DATA.install.run} council plan "Redesign the settings page"`)}
           <p class="note">Sessions run inside your coding agent. This page shows the councils and the decisions they have recorded.</p>
         </div>
       </section>
@@ -331,7 +331,7 @@
             : html`<div class="stat"><div class="v">None</div><div class="k">No validation report yet</div></div>`}
           <div class="stat"><div class="v">${DATA.qualityRules.length}</div><div class="k">Baseline rules</div></div>
         </div>
-        ${v ? html`<p class="muted" style="margin-top:12px">From <code>validation/reports/master_validation_report.json</code>: ${v.failed} failed, ${v.skipped} skipped, ${v.durationSeconds}s. Re-run with <code>python3 validation/test_runner.py</code>.</p>` : ''}
+        ${v ? html`<p class="muted" style="margin-top:12px">From <code>validation/reports/master_validation_report.json</code>: ${v.failed} failed, ${v.skipped} skipped, ${v.durationSeconds}s. Re-run from a clone with <code>python3 validation/test_runner.py</code> (<code>py -3</code> on Windows).</p>` : ''}
       </section>
       <section class="section" aria-labelledby="lifecycle-title">
         <h2 id="lifecycle-title" style="margin-bottom:24px">The lifecycle</h2>
@@ -390,6 +390,11 @@
         <p class="soft" style="margin-top:16px">${canDownload()
           ? html`Prefer a file? <a href="/api/download/framework.zip" download>Download the framework as a ZIP</a> (last commit, ${state.server.commit}).`
           : html`Check your setup any time with <code>${inst.doctor}</code>.`}</p>
+      </section>
+
+      <section class="section" style="padding-top:0" aria-labelledby="os-title">
+        <h2 id="os-title" style="font-size:26px;margin-bottom:10px">Works on macOS, Linux and Windows</h2>
+        <p class="section-intro">The same commands work in Terminal, PowerShell and Command Prompt. You need Node 18 or later and Python 3.10 or later. On Windows, install Python from python.org and tick "Add python.exe to PATH"; the tool finds it as <code>py</code>, <code>python</code> or <code>python3</code>. If it is somewhere else, set <code>PYTHON</code>, for example <code>$env:PYTHON="py -3"</code> in PowerShell.</p>
       </section>
 
       <section class="section two-col" style="padding-top:24px" aria-label="What you get">
@@ -866,10 +871,19 @@
     m.run();
   }
 
-  // ------------------------------------------------------------------ advisor (local-first RAG)
-  const advisorState = {
-    messages: [],
-  };
+  // ------------------------------------------------------------------ advisor
+  // A chat that suggests skills, agents and gates for a question. It searches the
+  // repository's own skill, agent and gate text in the browser (BM25), says why each
+  // result matched and how sure it is, and, when the local server is running, also
+  // asks the real orchestrator planner. It never invents files, gates or commands.
+  const advisorState = { messages: [], busy: false };
+  try {
+    const saved = JSON.parse(sessionStorage.getItem('pi-advisor') || 'null');
+    if (saved && Array.isArray(saved.messages)) advisorState.messages = saved.messages.slice(-40);
+  } catch { /* Storage unavailable: start with an empty conversation. */ }
+  function saveAdvisor() {
+    try { sessionStorage.setItem('pi-advisor', JSON.stringify({ messages: advisorState.messages.slice(-40) })); } catch { /* ignore */ }
+  }
 
   const ADVISOR_STOP = new Set([
     'a','about','above','after','again','against','all','am','an','and','any','are','as','at',
@@ -883,371 +897,250 @@
     'until','up','very','was','we','were','what','when','where','which','while','who','whom',
     'why','with','would','you','your','yours','yourself','yourselves'
   ]);
+  // Filler verbs and nouns that appear in almost any request; matching on them alone
+  // produced confident but wrong answers ("add a pricing page" matched an SEO skill).
+  const ADVISOR_GENERIC = new Set(['add', 'adding', 'fix', 'fixing', 'make', 'making', 'want', 'need', 'needs',
+    'build', 'create', 'write', 'help', 'get', 'use', 'using', 'new', 'please', 'thing', 'things', 'stuff',
+    'work', 'working', 'project', 'app', 'code', 'best', 'way', 'good', 'better', 'start']);
 
   function tokenizeAdvisor(text) {
     if (!text) return [];
-    return String(text)
-      .toLowerCase()
-      .replace(/[^a-z0-9_\-\s]/g, ' ')
-      .split(/\s+/)
-      .filter((t) => t.length > 1 && !ADVISOR_STOP.has(t));
+    return String(text).toLowerCase().replace(/[^a-z0-9_\-\s]/g, ' ').split(/\s+/)
+      .filter((t) => t.length > 1 && !ADVISOR_STOP.has(t) && !ADVISOR_GENERIC.has(t));
   }
 
-  function bm25Retrieve(queryText, topK = 6) {
+  function bm25Retrieve(queryText, topK = 8) {
     const index = DATA.advisorIndex;
     if (!index || !index.docs) return [];
-    const qTokens = tokenizeAdvisor(queryText);
+    const qTokens = [...new Set(tokenizeAdvisor(queryText))];
     if (!qTokens.length) return [];
-
     const k1 = 1.2;
     const b = 0.75;
     const N = index.totalDocs;
     const avgdl = index.avgDocLen || 30;
-    const scores = [];
-
+    const scored = [];
     for (const doc of index.docs) {
       let score = 0;
+      const hits = [];
       for (const term of qTokens) {
-        if (doc.tf && doc.tf[term]) {
-          const termDf = (index.df && index.df[term]) || 1;
-          const idf = Math.log((N - termDf + 0.5) / (termDf + 0.5) + 1);
-          const f = doc.tf[term];
-          const num = f * (k1 + 1);
-          const denom = f + k1 * (1 - b + b * (doc.docLen / avgdl));
-          score += idf * (num / denom);
-        }
+        const f = doc.tf && doc.tf[term];
+        if (!f) continue;
+        hits.push(term);
+        const df = (index.df && index.df[term]) || 1;
+        const idf = Math.log((N - df + 0.5) / (df + 0.5) + 1);
+        score += idf * ((f * (k1 + 1)) / (f + k1 * (1 - b + b * (doc.docLen / avgdl))));
       }
-      if (score > 0) {
-        scores.push({ ...doc, score: Math.round(score * 100) / 100 });
-      }
+      if (score > 0) scored.push({ ...doc, score: Math.round(score * 10) / 10, hits });
     }
-
-    scores.sort((a, b) => b.score - a.score);
-    return scores.slice(0, topK);
+    return scored.sort((x, y) => y.score - x.score).slice(0, topK);
   }
 
-  function inferLifecycleGate(queryText, topSkills) {
-    const q = (queryText || '').toLowerCase();
-    if (/\b(setup|install|initializ|getting started|configur|start|download)\b/.test(q)) {
-      return { id: 'G0', name: 'Environment Setup', next: 'G1 (Requirements)', contract: 'contracts/project/contract.json' };
-    }
-    if (/\b(idea|prd|problem statement|scope|discovery|greenfield)\b/.test(q)) {
-      return { id: 'G0', name: 'Discovery', next: 'G1 (Requirements)', contract: 'contracts/project/contract.json' };
-    }
-    if (/\b(requirements?|acceptance criteria|user stories|specification)\b/.test(q)) {
-      return { id: 'G1', name: 'Requirements', next: 'G2 (Design) or G3 (Architecture)', contract: 'contracts/requirements/contract.json' };
-    }
-    if (/\b(ui|ux|design system|tokens?|typography|color|responsive|wcag|contrast)\b/.test(q)) {
-      return { id: 'G2', name: 'Design Approval', next: 'G3 (Architecture & Planning)', contract: 'contracts/design/contract.json' };
-    }
-    if (/\b(arch|architecture|schema|adr|interface|api contract|openapi|boundary)\b/.test(q)) {
-      return { id: 'G3', name: 'Architecture Approval', next: 'G4 (Controlled Implementation)', contract: 'contracts/architecture/contract.json' };
-    }
-    if (/\b(implement|code|build|refactor|migration|endpoint|function|class)\b/.test(q)) {
-      return { id: 'G4', name: 'Controlled Implementation', next: 'G5 (Verification & Review)', contract: 'contracts/implementation/contract.json' };
-    }
-    if (/\b(test|assert|audit|verify|verification|coverage|security|anti-slop|review)\b/.test(q)) {
-      return { id: 'G5', name: 'Independent Review', next: 'G6 (Release Sign-off)', contract: 'contracts/quality/contract.json' };
-    }
-    if (/\b(release|deploy|ship|version|changelog|handoff|sync)\b/.test(q)) {
-      return { id: 'G6', name: 'Release & Memory Sync', next: 'G7 (Retrospective)', contract: 'contracts/release/contract.json' };
-    }
-
-    if (topSkills && topSkills.length && topSkills[0].gates && topSkills[0].gates.length) {
-      const gId = topSkills[0].gates[0];
-      const gObj = (DATA.gates || []).find((g) => g.id === gId);
-      return { id: gId, name: gObj ? gObj.name : gId, next: 'Next lifecycle gate', contract: `contracts/${gId.toLowerCase()}/contract.json` };
-    }
-    return { id: 'G4', name: 'Controlled Implementation', next: 'G5 (Independent Review)', contract: 'contracts/implementation/contract.json' };
+  const isSkillDoc = (d) => d.kind === 'skill' || d.kind === 'vendored-skill';
+  const firstSentence = (t) => {
+    const s = String(t || '').split(/(?<=\.)\s/)[0];
+    return s.length > 170 ? s.slice(0, 167).replace(/\s+\S*$/, '') + '…' : s;
+  };
+  const gateById = (id) => (DATA.gates || []).find((g) => g.id === id);
+  function gateInfo(id) {
+    const gates = DATA.gates || [];
+    const i = gates.findIndex((g) => g.id === id);
+    if (i < 0) return null;
+    const g = gates[i];
+    const next = gates[i + 1];
+    return { id: g.id, name: g.name, contract: g.contract ? g.contract.path : null, next: next ? `${next.id} · ${next.name}` : null };
   }
 
-  function synthesizeGroundedAdvice(queryText, matches) {
-    const isSetup = /\b(setup|set up|install|installation|initialize|init|configure|configuration|start|get started|getting started|how to use|how do i use|how do i setup|how do i install)\b/i.test(queryText);
-    if (isSetup) {
-      return {
-        query: queryText,
-        isSetup: true,
-        gate: { id: 'G0', name: 'Environment Setup & Installation', next: 'G1 (Discovery & Requirements)', contract: 'contracts/project/contract.json' },
-        agentTitle: 'Environment Specialist',
-        matches,
-      };
-    }
-
-    const skills = matches.filter((m) => m.kind === 'skill' || m.kind === 'vendored-skill');
-    if (!skills.length) {
-      const gate = inferLifecycleGate(queryText, []);
-      return {
-        query: queryText,
-        isOrchestratorFallback: true,
-        gate,
-        agentTitle: 'Lead Project Orchestrator',
-        matches,
-      };
-    }
-
-    const primarySkill = skills[0];
-    const secondarySkills = skills.slice(1, 3);
-    const gate = inferLifecycleGate(queryText, skills);
-    const matchedAgent = matches.find((m) => m.kind === 'agent');
-    const agentTitle = matchedAgent ? matchedAgent.name : 'Controlled Implementation Specialist';
-
-    return {
-      query: queryText,
-      primarySkill,
-      secondarySkills,
-      gate,
-      agentTitle,
-      matches,
-    };
+  // Confidence: the best skill must score well on real topic words and clearly beat
+  // the next skill. Otherwise the answer says it is unsure and shows the closest matches.
+  function adviseFromSearch(query) {
+    const matches = bm25Retrieve(query);
+    const skills = matches.filter(isSkillDoc);
+    const agent = matches.find((m) => m.kind === 'agent');
+    const top = skills[0];
+    const next = skills[1];
+    const margin = top && next ? (top.score - next.score) / top.score : 1;
+    // Confident when the best skill scores well and clearly leads, or when it matches
+    // many distinct topic words and still leads.
+    const confident = !!top && top.score >= 8 && (margin >= 0.3 || (top.hits.length >= 4 && margin >= 0.1));
+    const gate = top && top.gates && top.gates.length ? gateInfo(top.gates[0]) : null;
+    return { query, confident, top, others: skills.slice(1, 3), agent, gate };
   }
 
-  function renderAdvisorMessage(item) {
-    if (item.role === 'user') {
-      return html`<div class="advisor-msg user"><p>${item.text}</p></div>`;
+  const SETUP_RX = /\b(set ?up|install(ation)?|initiali[sz]e|get(ting)? started|how (do i|to) (use|install|start))\b/i;
+  const STEPS_RX = /^(?:what are the )?steps for \/([a-z0-9-]+)\??$/i;
+  const NEXT_GATE_RX = /^what comes after (G[0-6])\??$/i;
+
+  async function handleAdvisorSubmit(text) {
+    const q = (text || '').trim();
+    if (!q || advisorState.busy) return;
+    advisorState.messages.push({ role: 'user', text: q });
+    let reply;
+    const steps = q.match(STEPS_RX);
+    const nextGate = q.match(NEXT_GATE_RX);
+    if (steps) reply = { kind: 'steps', skillId: steps[1].toLowerCase() };
+    else if (nextGate) reply = { kind: 'gate', gateId: nextGate[1].toUpperCase() };
+    else if (SETUP_RX.test(q)) reply = { kind: 'setup' };
+    else reply = { kind: 'advice', ...adviseFromSearch(q) };
+    advisorState.messages.push({ role: 'assistant', reply });
+    saveAdvisor();
+    if (currentRoute().page !== 'advisor') location.hash = '#/advisor';
+    if (reply.kind === 'advice' && state.server) {
+      advisorState.busy = true;
+      refreshAdvisor();
+      try {
+        const r = await fetch('/api/plan', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ task: q }) });
+        if (r.ok) reply.plan = await r.json();
+      } catch { /* The planner is optional; search results still stand. */ }
+      advisorState.busy = false;
+      saveAdvisor();
     }
+    refreshAdvisor();
+  }
 
-    const { primarySkill, secondarySkills, gate, agentTitle, isSetup, isOrchestratorFallback } = item.advice;
+  // Slash commands are typed into the coding agent, not a terminal, so they get their
+  // own style without a "$" prompt. The plugin namespaces them; `init` installs them bare.
+  function slashCommand(id) {
+    const text = `/project-intelligence:${id}`;
+    return html`<div class="slash"><span class="slash-label">Claude Code</span><code>${text}</code>
+      <button class="btn btn-secondary btn-sm" type="button" data-copy="${text}" aria-label="Copy ${text}">Copy</button></div>`;
+  }
 
-    if (isSetup) {
-      return html`
-        <div class="advisor-msg assistant">
-          <div class="advisor-badge-row">
-            <span class="tag tag-accent">G0 · Environment Setup</span>
-            <span class="tag tag-neutral">${agentTitle}</span>
-            <span class="tag tag-accent-2">Install &amp; Setup Guide</span>
-          </div>
+  function copyTextOf(reply) {
+    if (reply.kind !== 'advice') return '';
+    const lines = [];
+    if (reply.plan) lines.push(`Planner: tier ${reply.plan.tier} (${reply.plan.tierName}). ${reply.plan.steps.map((s) => s.text).join(' ')}`);
+    if (reply.top) lines.push(`${reply.confident ? 'Best match' : 'Closest match'}: /project-intelligence:${reply.top.id}. ${firstSentence(reply.top.summary)}`);
+    reply.others.forEach((o) => lines.push(`Also: /project-intelligence:${o.id}`));
+    if (reply.gate) lines.push(`Gate ${reply.gate.id} · ${reply.gate.name}${reply.gate.contract ? ` (${reply.gate.contract})` : ''}`);
+    lines.push(`Plan it: ${DATA.install.run} ask "${reply.query}"`);
+    return lines.join('\n');
+  }
 
-          <p class="advisor-summary">
-            To set up Project Intelligence in your project, choose your coding agent below and run the installation command. The installer configures skills, council personas, and lifecycle gate enforcement non-destructively:
-          </p>
+  function followUps(reply) {
+    const chips = [];
+    if (reply.top) chips.push(`Steps for /${reply.top.id}`);
+    if (reply.gate) chips.push(`What comes after ${reply.gate.id}?`);
+    return chips;
+  }
 
-          <div class="advisor-card-section">
-            <h4>Client Setup Commands</h4>
-            <div class="advisor-skill-card">
-              <div class="advisor-skill-card-head">
-                <strong>Claude Code</strong>
-                <span class="tag tag-neutral">Plugin</span>
-              </div>
-              <p>Add the marketplace source and install the Claude Code plugin:</p>
-              <div class="advisor-skill-card-actions">
-                ${cmd('claude plugin marketplace add sahasbelbase/project-intelligence && claude plugin install project-intelligence@sahasbelbase')}
-              </div>
-            </div>
-
-            <div class="advisor-skill-card">
-              <div class="advisor-skill-card-head">
-                <strong>Google Antigravity &amp; Generic CLI</strong>
-                <span class="tag tag-neutral">Direct Init</span>
-              </div>
-              <p>Initialize skills and council configurations directly in your project folder:</p>
-              <div class="advisor-skill-card-actions">
-                ${cmd('npx -y @sahasbelbase/project-intelligence init --client antigravity')}
-              </div>
-            </div>
-
-            <div class="advisor-skill-card">
-              <div class="advisor-skill-card-head">
-                <strong>GitHub Copilot CLI</strong>
-                <span class="tag tag-neutral">MCP Server</span>
-              </div>
-              <p>Register the local-first MCP server with Copilot CLI:</p>
-              <div class="advisor-skill-card-actions">
-                ${cmd('copilot mcp add project-intelligence -- npx -y @sahasbelbase/project-intelligence mcp')}
-              </div>
-            </div>
-
-            <div class="advisor-skill-card">
-              <div class="advisor-skill-card-head">
-                <strong>Environment Health Check</strong>
-                <span class="tag tag-neutral">Doctor</span>
-              </div>
-              <p>Verify that your installed skills, agent configs, and MCP tools are correctly configured:</p>
-              <div class="advisor-skill-card-actions">
-                ${cmd('npx -y @sahasbelbase/project-intelligence doctor')}
-              </div>
-            </div>
-          </div>
-
-          <div class="advisor-card-section">
-            <h4>Next Step</h4>
-            <p class="muted">
-              Visit the <a href="#/install">Install page</a> for copy-paste bundles or read <a href="#/how">How it works</a> to see requests routed through the orchestrator.
-            </p>
-          </div>
+  function renderAdvisorReply(reply, index) {
+    if (reply.kind === 'setup') {
+      return html`<p>Pick your tool and run its command once in your project folder.</p>
+        <div class="advisor-setup">
+          <div><strong>Claude Code</strong> (plugin)<div class="cmd-stack">${cmd(DATA.install.plugin.add)}${cmd(DATA.install.plugin.install)}</div></div>
+          <div><strong>GitHub Copilot CLI</strong> (MCP server)${cmd(`copilot mcp add project-intelligence -- ${DATA.install.run} mcp`)}</div>
+          <div><strong>Antigravity or any terminal</strong>${cmd(DATA.install.init)}</div>
         </div>
-      `;
+        <p class="muted">Check the setup any time with <code>${DATA.install.doctor}</code>. More on the <a href="#/install">Install page</a>.</p>`;
     }
-
-    if (isOrchestratorFallback) {
-      return html`
-        <div class="advisor-msg assistant">
-          <div class="advisor-badge-row">
-            <span class="tag tag-accent">Gate ${gate.id} · ${gate.name}</span>
-            <span class="tag tag-neutral">Lead Project Orchestrator</span>
-            <span class="tag tag-accent-2">General Request</span>
-          </div>
-
-          <p class="advisor-summary">
-            No single specialized skill directly matched your query with high confidence. For cross-cutting, general, or unclassified requests, activate the <strong>Lead Project Orchestrator</strong>. It plans the request, enforces Gate ${gate.id} criteria, and hands off to the right specialist or council:
-          </p>
-
-          <div class="advisor-card-section">
-            <h4>Recommended Orchestrator Entry Point</h4>
-            <div class="advisor-skill-card">
-              <div class="advisor-skill-card-head">
-                <strong>/orchestrator</strong>
-                <span class="tag tag-neutral">G0 through G6</span>
-              </div>
-              <p>Single entry point that plans every request: assigns the tier (Answer, Specialist, or Council), checks lifecycle gate contracts, and synthesizes the final output.</p>
-              <div class="advisor-skill-card-actions">
-                ${cmd(`npx -y @sahasbelbase/project-intelligence ask "${item.advice.query.slice(0, 100)}"`)}
-                <a class="btn btn-secondary btn-sm" href="#/how">See how it works</a>
-              </div>
-            </div>
-          </div>
-
-          <div class="advisor-card-section">
-            <h4>Lifecycle Checkpoint</h4>
-            <p class="muted">
-              Satisfy <code>${gate.contract}</code> criteria, then advance to <strong>${gate.next}</strong>.
-            </p>
-          </div>
-        </div>
-      `;
+    if (reply.kind === 'steps') {
+      const s = skillIndex[reply.skillId];
+      if (!s) return html`<p>There is no skill called <code>/${reply.skillId}</code>. Search the <a href="#/skills">Skills page</a>.</p>`;
+      const steps = s.procedure || [];
+      return html`<p><strong>/${s.id}</strong>: ${firstSentence(s.purpose)}</p>
+        ${steps.length ? html`<ol class="advisor-steps">${steps.map((p) => html`<li><strong>${p.title}.</strong> ${p.action}</li>`)}</ol>`
+          : html`<p class="muted">This third-party skill describes its steps in its own file. <button class="btn btn-ghost btn-sm" type="button" data-skill="${s.id}">Open it</button></p>`}
+        ${slashCommand(s.id)}`;
     }
-
+    if (reply.kind === 'gate') {
+      const g = gateInfo(reply.gateId);
+      if (!g) return html`<p>Gates run from G0 to G6.</p>`;
+      if (!g.next) return html`<p>${g.id} · ${g.name} is the last gate. After it, the work is released and handed off.</p>`;
+      const nextId = g.next.split(' ')[0];
+      const ng = gateById(nextId);
+      return html`<p>After <strong>${g.id} · ${g.name}</strong> comes <strong>${g.next}</strong>: ${ng ? ng.description : ''}</p>
+        ${ng && ng.contract ? html`<p class="muted">It needs an approved contract in <code>${ng.contract.path}</code>.</p>` : ''}`;
+    }
+    // Search-based advice, optionally led by the real planner.
+    const { top, others, agent, gate, confident, plan } = reply;
+    // Show the planner only when it routes the work somewhere (tier 1 or higher).
+    const planBlock = plan && plan.tier > 0 ? html`<div class="advisor-plan">
+        <span class="advisor-label">The orchestrator would</span>
+        <p>${plan.steps.length ? plan.steps[0].text : ''} <span class="muted">(tier ${plan.tier} · ${plan.tierName}${plan.confidence === 'low' ? ', low confidence: confirm before acting' : ''})</span></p>
+      </div>` : '';
+    if (!top) {
+      return html`${planBlock}<p>Nothing in the skills or agents clearly matches that. Try naming the area (for example database, API, design tokens, security, testing), or let the orchestrator plan it:</p>
+        ${cmd(`${DATA.install.run} ask "${reply.query.slice(0, 120)}"`)}`;
+    }
     return html`
-      <div class="advisor-msg assistant">
-        <div class="advisor-badge-row">
-          <span class="tag tag-accent">${gate.id} · ${gate.name}</span>
-          <span class="tag tag-neutral">${agentTitle}</span>
-          <span class="tag tag-accent-2">Matched: /${primarySkill.id}</span>
-        </div>
+      ${planBlock}
+      <p>${confident
+        ? html`<strong>Best match: /${top.id}.</strong> ${firstSentence(top.summary)}`
+        : html`<strong>I'm not sure.</strong> The closest match is <strong>/${top.id}</strong>: ${firstSentence(top.summary)}`}</p>
+      <p class="advisor-why">Matched on: ${top.hits.join(', ')}${confident ? '' : '. Add a detail or two for a clearer answer.'}</p>
+      ${slashCommand(top.id)}
+      ${(others.length || agent || gate) ? html`<details class="advisor-more"><summary>More detail</summary>
+        ${others.length ? html`<p><span class="advisor-label">Also relevant</span></p><ul>${others.map((o) => html`<li><button class="linklike" type="button" data-skill="${o.id}">/${o.id}</button>: ${firstSentence(o.summary)}</li>`)}</ul>` : ''}
+        ${agent ? html`<p><span class="advisor-label">Specialist</span> ${agent.name}</p>` : ''}
+        ${gate ? html`<p><span class="advisor-label">Lifecycle gate</span> ${gate.id} · ${gate.name}${gate.contract ? html`, contract <code>${gate.contract}</code>` : ''}${gate.next ? `. Next: ${gate.next}.` : '.'}</p>` : ''}
+        <p><span class="advisor-label">Plan it in a terminal</span></p>${cmd(`${DATA.install.run} ask "${reply.query.slice(0, 120)}"`)}
+      </details>` : ''}
+      <div class="advisor-actions">
+        ${followUps(reply).map((f) => html`<button class="chip" type="button" data-advisor-prompt="${f}">${f}</button>`)}
+        <button class="btn btn-ghost btn-sm" type="button" data-copy="${copyTextOf(reply)}">Copy answer</button>
+        <button class="btn btn-ghost btn-sm" type="button" data-skill="${top.id}">View steps</button>
+      </div>`;
+  }
 
-        <p class="advisor-summary">
-          For your context, the primary capability to activate is <strong>/${primarySkill.id}</strong>. 
-          This work aligns with <strong>Gate ${gate.id} (${gate.name})</strong>. Before proceeding, ensure that <code>${gate.contract}</code> criteria are satisfied without anti-slop violations.
-        </p>
+  function renderAdvisorMessage(m, i) {
+    if (m.role === 'user') return html`<div class="advisor-msg user"><p>${m.text}</p></div>`;
+    return html`<div class="advisor-msg assistant">${renderAdvisorReply(m.reply, i)}</div>`;
+  }
 
-        <div class="advisor-card-section">
-          <h4>Primary Recommended Skill</h4>
-          <div class="advisor-skill-card">
-            <div class="advisor-skill-card-head">
-              <strong>/${primarySkill.id}</strong>
-              ${primarySkill.gates && primarySkill.gates.length ? html`<span class="tag tag-neutral">${primarySkill.gates.join(', ')}</span>` : ''}
-            </div>
-            <p>${primarySkill.summary || primarySkill.purpose || ''}</p>
-            <div class="advisor-skill-card-actions">
-              ${cmd(primarySkill.command || `/${primarySkill.id}`)}
-              <button class="btn btn-secondary btn-sm" type="button" data-skill="${primarySkill.id}">View procedure</button>
-            </div>
-          </div>
-        </div>
+  const ADVISOR_STARTERS = [
+    ['Document a legacy codebase', 'We have an unmaintained legacy codebase with raw SQL and want to document the domain entities before modernizing.'],
+    ['Migrate a database safely', 'Migrate our database schema without downtime, with a rollback.'],
+    ['Design tokens and type scale', 'Set up design tokens, a typography scale and WCAG AA contrast for our UI.'],
+    ['Audit for secrets and injection', 'Security audit for hardcoded secrets and injection vulnerabilities.'],
+    ['Keep the API in sync', 'Keep our OpenAPI contract in sync with server routes and catch breaking changes.'],
+    ['Turn an idea into a PRD', 'We have a rough feature idea and need a PRD with user stories.'],
+    ['How do I install it?', 'How do I install it?'],
+  ];
 
-        ${secondarySkills.length ? html`
-          <div class="advisor-card-section">
-            <h4>Complementary Capabilities</h4>
-            ${secondarySkills.map((s) => html`
-              <div class="advisor-skill-card">
-                <div class="advisor-skill-card-head">
-                  <strong>/${s.id}</strong>
-                  ${s.gates && s.gates.length ? html`<span class="tag tag-neutral">${s.gates.join(', ')}</span>` : ''}
-                </div>
-                <p>${s.summary || s.purpose || ''}</p>
-                <div class="advisor-skill-card-actions">
-                  ${cmd(s.command || `/${s.id}`)}
-                  <button class="btn btn-secondary btn-sm" type="button" data-skill="${s.id}">View procedure</button>
-                </div>
-              </div>
-            `)}
-          </div>
-        ` : ''}
-
-        <div class="advisor-card-section">
-          <h4>Lifecycle Checkpoint</h4>
-          <p class="muted">
-            Satisfy <code>${gate.contract}</code> criteria, then advance to <strong>${gate.next}</strong>.
-          </p>
-        </div>
-      </div>
-    `;
+  function advisorConversation() {
+    if (!advisorState.messages.length) {
+      return html`<div class="advisor-empty">
+        <p><strong>Ask what to use for your project.</strong> Describe the problem or the area you are working in, and the advisor suggests the skill, specialist and lifecycle gate that fit.</p>
+        <div class="chips">${ADVISOR_STARTERS.map(([label, prompt]) => html`<button class="chip" type="button" data-advisor-prompt="${prompt}">${label}</button>`)}</div>
+      </div>`;
+    }
+    return html`${advisorState.messages.map(renderAdvisorMessage)}
+      ${advisorState.busy ? html`<div class="advisor-msg assistant typing" aria-label="Thinking"><span></span><span></span><span></span></div>` : ''}`;
   }
 
   function advisorPage() {
     return html`
-      <section class="hero hero-split" aria-labelledby="advisor-title">
-        <div>
-          <span class="tag tag-accent">Local-first RAG</span>
-          <h1 id="advisor-title">Skill &amp; Lifecycle Advisor</h1>
-          <p class="lede">Describe your project context, stack, or problem statement. The advisor performs in-browser BM25 retrieval over all ${DATA.skills.length} skills, ${DATA.agents.length} agents, and ${DATA.gates.length} lifecycle gates to recommend the exact capabilities, specialist personas, and CLI commands for your situation.</p>
-        </div>
-        <div class="install-card">
-          <span class="kicker">How it works</span>
-          <p class="soft" style="margin-top:6px">Runs 100% in your browser using a precomputed BM25 inverted index across repository contracts. Zero telemetry, zero cloud dependencies, instant results.</p>
-          <div style="margin-top:14px; display:flex; gap:8px; flex-wrap:wrap">
-            <span class="tag tag-neutral">${DATA.skills.length} Skills Indexed</span>
-            <span class="tag tag-neutral">${DATA.gates.length} Lifecycle Gates</span>
-            <span class="tag tag-neutral">${DATA.agents.length} Specialist Agents</span>
+      <section class="section advisor-page" aria-labelledby="advisor-title">
+        <div class="advisor-head">
+          <div>
+            <h1 id="advisor-title">Advisor</h1>
+            <p class="soft">Answers come from the ${DATA.skills.length + DATA.vendored.length} skills, ${DATA.agents.length} agents and ${DATA.gates.length} gates in this project, searched in your browser. ${state.server ? 'The local orchestrator also plans each question.' : 'Nothing you type leaves your browser.'}</p>
           </div>
+          ${advisorState.messages.length ? html`<button class="btn btn-secondary btn-sm" type="button" data-advisor-action="new">New conversation</button>` : ''}
         </div>
-      </section>
-
-      <section class="section" aria-labelledby="consultation-title" style="padding-top:0">
-        <div class="advisor-starters" style="margin-bottom: 24px;">
-          <p class="muted advisor-starters-label">Try a canonical project scenario or type your own below:</p>
-          <div class="chips">
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="We have an unmaintained legacy codebase with raw SQL and want to safely reverse engineer and document domain entities before modernizing.">Legacy Code Archaeology</button>
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="We need to migrate our database schema without downtime, preserving data integrity and supporting rollback.">Reversible DB Migration</button>
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="Build a design system with geometric tokens, typography scale, responsive layouts and WCAG AA contrast.">Design System &amp; Tokens</button>
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="We want to audit our repository for hardcoded secrets, injection vectors, and anti-slop violations.">Security &amp; Anti-Slop Audit</button>
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="Synchronize OpenAPI contracts with server routes and prevent breaking API changes in pull requests.">API Contract Synchronization</button>
-            <button class="tag tag-interactive" type="button" data-advisor-prompt="We have a raw feature idea and need to question assumptions and write a concrete PRD.">Idea to PRD Discovery</button>
-          </div>
-        </div>
-
-        <form class="advisor-form-main" id="advisor-form" style="margin-bottom: 24px;">
-          <div class="advisor-input-wrap">
-            <label class="visually-hidden" for="advisor-input">Your project context or question</label>
-            <textarea class="input advisor-input" id="advisor-input" rows="3" placeholder="Tell the advisor about your project stack, challenge, or what you are trying to build (e.g. 'We are building a new REST API and want to prevent frontend-backend drift')..." required></textarea>
-            <button class="btn btn-primary advisor-submit" id="advisor-submit" type="submit" aria-label="Advise on project context">
-              <span>Advise</span>
-              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-            </button>
-          </div>
+        <div class="advisor-messages" id="advisor-messages" role="log" aria-live="polite" aria-label="Conversation">${advisorConversation()}</div>
+        <form class="advisor-composer" id="advisor-form">
+          <label class="visually-hidden" for="advisor-input">Your question</label>
+          <textarea class="input advisor-input" id="advisor-input" rows="1" placeholder="Describe what you are working on…" required></textarea>
+          <button class="btn btn-primary" id="advisor-submit" type="submit" ${advisorState.busy ? raw('disabled') : ''}>Send</button>
+          <span class="advisor-hint muted">Enter to send, Shift+Enter for a new line</span>
         </form>
-
-        <div class="advisor-messages" id="advisor-messages" role="log" aria-live="polite">
-          ${advisorState.messages.length === 0 ? html`
-            <div class="advisor-msg assistant">
-              <p>
-                Hello. I am your <strong>Project Intelligence Advisor</strong>. Describe your project stack, technical challenge, or task above.
-              </p>
-              <p class="muted" style="margin-top:6px;">
-                I retrieve matching skills, specialist agents, and lifecycle gates directly from the repository index.
-              </p>
-            </div>
-          ` : advisorState.messages.map(renderAdvisorMessage)}
-        </div>
       </section>
     `;
   }
 
-  async function handleAdvisorSubmit(text) {
-    const q = (text || '').trim();
-    if (!q) return;
-
-    advisorState.messages.push({ role: 'user', text: q });
-    const matches = bm25Retrieve(q, 6);
-    const advice = synthesizeGroundedAdvice(q, matches);
-    advisorState.messages.push({ role: 'assistant', advice });
-
-    if (currentRoute().page === 'advisor') {
-      render();
-      const el = document.getElementById('advisor-messages');
-      if (el) el.scrollTop = el.scrollHeight;
-    } else {
-      location.hash = '#/advisor';
-    }
+  // Update only the conversation, keeping the text box and its focus.
+  function refreshAdvisor() {
+    const log = document.getElementById('advisor-messages');
+    if (!log) return;
+    log.innerHTML = fmt(advisorConversation());
+    const head = document.querySelector('.advisor-head');
+    if (head) head.outerHTML = fmt(html`<div class="advisor-head">${raw(head.firstElementChild.outerHTML)}
+      ${advisorState.messages.length ? html`<button class="btn btn-secondary btn-sm" type="button" data-advisor-action="new">New conversation</button>` : ''}</div>`);
+    const send = document.getElementById('advisor-submit');
+    if (send) send.disabled = advisorState.busy;
+    const last = log.lastElementChild;
+    if (last) last.scrollIntoView({ block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth' });
   }
 
   // ------------------------------------------------------------------ routing
@@ -1333,13 +1226,20 @@
   }
 
   document.addEventListener('click', (e) => {
-    const t = e.target.closest('[data-copy],[data-skill],[data-agent],[data-persona],[data-client],[data-agent-group],[data-scroll],[data-close],[data-result],[data-demo-action],[data-demo-scenario],[data-demo-client],[data-demo-jump],[data-advisor-prompt],#audit-run,#theme-toggle');
+    const t = e.target.closest('[data-copy],[data-skill],[data-agent],[data-persona],[data-client],[data-agent-group],[data-scroll],[data-close],[data-result],[data-demo-action],[data-demo-scenario],[data-demo-client],[data-demo-jump],[data-advisor-prompt],[data-advisor-action],#audit-run,#theme-toggle');
     if (!t) return;
     if (t.dataset.copy !== undefined) copyText(t, t.dataset.copy);
     else if (t.dataset.skill) showSkill(t.dataset.skill);
     else if (t.dataset.agent) showAgent(t.dataset.agent);
     else if (t.dataset.persona) showPersona(t.dataset.persona);
     else if (t.dataset.advisorPrompt) handleAdvisorSubmit(t.dataset.advisorPrompt);
+    else if (t.dataset.advisorAction === 'new') {
+      advisorState.messages = [];
+      saveAdvisor();
+      render();
+      const input = document.getElementById('advisor-input');
+      if (input) input.focus();
+    }
     else if (t.dataset.client) { state.client = t.dataset.client; render(); document.getElementById(`tab-${state.client}`).focus(); }
     else if (t.dataset.agentGroup) { state.agentGroup = t.dataset.agentGroup; render(); }
     else if (t.dataset.scroll) { e.preventDefault(); document.getElementById(t.dataset.scroll).scrollIntoView(); }
@@ -1372,8 +1272,15 @@
     }
   });
 
+  document.addEventListener('input', (e) => {
+    if (e.target && e.target.id === 'advisor-input') {
+      e.target.style.height = 'auto';
+      e.target.style.height = `${Math.min(e.target.scrollHeight, 200)}px`;
+    }
+  });
+
   document.addEventListener('keydown', (e) => {
-    if (e.target && e.target.id === 'advisor-input' && e.key === 'Enter' && !e.shiftKey) {
+    if (e.target && e.target.id === 'advisor-input' && e.key === 'Enter' && !e.shiftKey && !e.isComposing) {
       e.preventDefault();
       const text = e.target.value.trim();
       if (text) {
@@ -1432,13 +1339,26 @@
 
   [detail, searchDialog].filter(Boolean).forEach((d) => d.addEventListener('click', (e) => { if (e.target === d) d.close(); }));
 
+  // Shortcut hints match the visitor's OS: the Command key on Apple devices, Ctrl elsewhere.
+  const isApple = /mac|iphone|ipad/i.test((navigator.userAgentData && navigator.userAgentData.platform) || navigator.platform || navigator.userAgent || '');
+  document.querySelectorAll('kbd[data-shortcut]').forEach((k) => { k.textContent = `${isApple ? '⌘' : 'Ctrl '}${k.dataset.shortcut}`; });
+
+  function openAdvisor() {
+    if (currentRoute().page === 'advisor') {
+      const input = document.getElementById('advisor-input');
+      if (input) { input.focus(); input.scrollIntoView({ block: 'center' }); }
+    } else {
+      location.hash = '#/advisor';
+    }
+  }
+
   window.addEventListener('keydown', (e) => {
     if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
       e.preventDefault();
       if (searchDialog.open) searchDialog.close(); else openSearch();
     } else if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'j') {
       e.preventDefault();
-      location.hash = '#/advisor';
+      openAdvisor();
     }
   });
   document.getElementById('search-open').addEventListener('click', openSearch);
@@ -1446,7 +1366,7 @@
   if (advisorOpenBtn) {
     advisorOpenBtn.addEventListener('click', (e) => {
       e.preventDefault();
-      location.hash = '#/advisor';
+      openAdvisor();
     });
   }
 

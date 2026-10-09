@@ -173,7 +173,7 @@ function installClaude(targetDir, options, context) {
   });
 
   addHook('Stop', {
-    command: "python3 -c 'print(\"[Claude Hook] Session ended. Verify git status and pending contract transitions.\")'",
+    command: "echo '[Claude Hook] Session ended. Verify git status and pending contract transitions.'",
     description: 'Notifies user of session termination and reminds them of uncommitted state.',
   });
 

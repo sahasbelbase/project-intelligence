@@ -19,14 +19,15 @@ function cliInvocation(packageRoot) {
     : `node ${JSON.stringify(path.join(packageRoot, 'bin', 'cli.js'))}`;
 }
 
-/** MCP server entry for client config files. */
+/** MCP server entry for client config files. It starts through Node, which finds the
+ * right Python on every OS (python3 on macOS and Linux, py or python on Windows). */
 function mcpServerEntry(packageRoot, targetDir) {
   if (isEphemeral(packageRoot)) {
     return { command: 'npx', args: ['-y', RUN_SPEC, 'mcp'], env: { PYTHONUNBUFFERED: '1' } };
   }
   const local = targetDir && path.resolve(targetDir) === path.resolve(packageRoot);
-  const script = local ? 'adapters/mcp/server.py' : path.join(packageRoot, 'adapters', 'mcp', 'server.py');
-  return { command: 'python3', args: [script], env: { PYTHONUNBUFFERED: '1' } };
+  const cli = local ? 'bin/cli.js' : path.join(packageRoot, 'bin', 'cli.js');
+  return { command: 'node', args: [cli, 'mcp'], env: { PYTHONUNBUFFERED: '1' } };
 }
 
 module.exports = { RUN_SPEC, isEphemeral, cliInvocation, mcpServerEntry };

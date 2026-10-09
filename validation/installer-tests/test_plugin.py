@@ -73,8 +73,9 @@ class TestPluginFiles(unittest.TestCase):
         for rel in m["skills"]:
             self.assertTrue(rel.startswith("./"))
             self.assertTrue((ROOT / rel).is_dir(), rel)
-        args = m["mcpServers"]["project-intelligence"]["args"]
-        self.assertEqual(args[0], "${CLAUDE_PLUGIN_ROOT}/adapters/mcp/server.py")
+        server = m["mcpServers"]["project-intelligence"]
+        self.assertEqual(server["command"], "node", "start through Node so Python is found on every OS")
+        self.assertEqual(server["args"], ["${CLAUDE_PLUGIN_ROOT}/bin/cli.js", "mcp"])
         self.assertTrue((ROOT / "adapters" / "mcp" / "server.py").exists())
         self.assertEqual(self.built["k"]["plugins"][0]["source"], "./")
         self.assertEqual(self.built["k"]["plugins"][0]["name"], m["name"])
@@ -173,5 +174,19 @@ class TestInvocation(unittest.TestCase):
 
     def test_normal_install_uses_absolute_path(self):
         self.assertEqual(self._call("i.cliInvocation('/opt/pi')"), 'node "/opt/pi/bin/cli.js"')
-        self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/home/u/app')")["args"], ["/opt/pi/adapters/mcp/server.py"])
-        self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/opt/pi')")["args"], ["adapters/mcp/server.py"])
+        entry = self._call("i.mcpServerEntry('/opt/pi', '/home/u/app')")
+        self.assertEqual(entry["command"], "node")
+        self.assertEqual(entry["args"], ["/opt/pi/bin/cli.js", "mcp"])
+        self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/opt/pi')")["args"], ["bin/cli.js", "mcp"])
+
+    def test_python_discovery_prefers_windows_launchers(self):
+        src = (ROOT / "installer" / "python.js").read_text()
+        self.assertIn("['py', ['-3']]", src)
+        self.assertIn("process.env.PYTHON", src)
+        out = subprocess.run(["node", "-e", "const p=require('./installer/python').findPython();console.log(JSON.stringify(p))"],
+                             cwd=ROOT, capture_output=True, text=True, check=True).stdout
+        self.assertIsNotNone(json.loads(out), "no Python 3.10+ found on this machine")
+
+    def test_installed_hooks_do_not_require_python3(self):
+        text = (ROOT / "installer" / "adapters" / "claude.js").read_text()
+        self.assertNotIn("command: \"python3", text)

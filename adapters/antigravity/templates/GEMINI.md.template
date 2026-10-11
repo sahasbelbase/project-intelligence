@@ -17,7 +17,7 @@
    - NO stub implementations (`pass`, `return null`, empty braces, or `// TODO`).
    - NO fake mock data in production codepaths.
    - NO unexplained workarounds or commented-out dead code.
-3. **Strict Gate Transitions**: Follow `core/lifecycle/lifecycle-fsm.json`. Never skip gates. Non-visual projects must record formal exemption rationale in Gate G2 (`contracts/design/contract.json`).
+3. **Strict Gate Transitions**: Follow `core/lifecycle/lifecycle-fsm.json`. Never skip gates on your own. The only sanctioned shortcut is a named route (hotfix, ui-tweak, docs-only): when the user already knows the fix, propose the route, get their one-line approval and the files it may touch, then run `lifecycle --route`. Skipped gates are logged, tests and review still apply, and work outside the named files returns to the full lifecycle. Non-visual projects must record formal exemption rationale in Gate G2 (`contracts/design/contract.json`).
 4. **Preserve User Code & Conventions**: Never modify or overwrite uncommitted user changes found during session start. Preserve existing indentation, naming, and typing conventions.
 
 ---

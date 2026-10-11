@@ -285,5 +285,90 @@ class TestMCPProposedActions(unittest.TestCase):
             self.tools.run_project_checks(check_type="unauthorized_arbitrary_shell")
 
 
+class TestMCPRoutes(unittest.TestCase):
+    def setUp(self):
+        self.ws = _create_temp_workspace("G0")
+        self.addCleanup(shutil.rmtree, self.ws, ignore_errors=True)
+        shutil.rmtree(self.ws / "contracts", ignore_errors=True)  # a fresh project has no contracts yet
+        self.tools = ProjectIntelligenceTools(workspace_root=self.ws)
+
+    def _start(self, dry_run=False, **over):
+        args = dict(target_gate="G4", condition="ROUTE_START", route="hotfix", scope=["a.py"],
+                    exemption_justification="fix parser crash", approved_by="sahas", dry_run=dry_run)
+        args.update(over)
+        return self.tools.advance_lifecycle_gate(**args)
+
+    def _state(self):
+        return json.loads((self.ws / "memory" / "execution-state.json").read_text(encoding="utf-8"))
+
+    def test_mandatory_gate_still_blocked_without_route(self):
+        r = self.tools.advance_lifecycle_gate("G4", "G3_APPROVED", approved_by="sahas", dry_run=False)
+        self.assertFalse(r["success"])
+        self.assertEqual(self._state()["currentGate"], "G0")
+
+    def test_route_start_dry_run_does_not_persist(self):
+        r = self._start(dry_run=True)
+        self.assertTrue(r["success"])
+        self.assertEqual(self._state()["currentGate"], "G0")
+
+    def test_route_start_requires_approval_scope_and_reason(self):
+        self.assertFalse(self._start(approved_by="")["success"])
+        self.assertFalse(self._start(scope=[])["success"])
+        self.assertFalse(self._start(exemption_justification="short")["success"])
+        self.assertFalse(self._start(target_gate="G5")["success"])
+        self.assertEqual(self._state()["currentGate"], "G0")
+
+    def test_hotfix_full_run_without_contracts(self):
+        self.assertTrue(self._start()["success"])
+        st = self._state()
+        self.assertEqual(st["currentGate"], "G4")
+        self.assertEqual(st["activeRoute"]["id"], "hotfix")
+        self.assertEqual(self.tools.get_next_action()["nextAction"]["action"], "RUN_VERIFICATION_SUITES")
+        self.assertTrue(self.tools.advance_lifecycle_gate("G5", "G4_VERIFIED", dry_run=False)["success"])
+        self.assertTrue(self.tools.advance_lifecycle_gate("G6", "G5_PASSED", approved_by="sahas", dry_run=False)["success"])
+        self.assertEqual(self.tools.get_next_action()["nextAction"]["action"], "COMPLETE_ROUTE")
+        done = self.tools.advance_lifecycle_gate("G6", "ROUTE_COMPLETE", approved_by="sahas", dry_run=False)
+        self.assertTrue(done["success"])
+        st = self._state()
+        self.assertEqual(st["currentGate"], "G0")
+        self.assertNotIn("activeRoute", st)
+        self.assertIn("ROUTE_STARTED", [e["event"] for e in st["routeLog"]])
+
+    def test_cannot_skip_review_inside_route(self):
+        self._start()
+        r = self.tools.advance_lifecycle_gate("G6", "G4_VERIFIED", approved_by="sahas", dry_run=False)
+        self.assertFalse(r["success"])
+        self.assertEqual(self._state()["currentGate"], "G4")
+
+    def test_touching_files_outside_scope_escalates(self):
+        self._start()
+        r = self.tools.advance_lifecycle_gate("G5", "G4_VERIFIED", touched_files=["a.py", "b.py"], dry_run=False)
+        self.assertFalse(r["success"])
+        self.assertTrue(r["escalated"])
+        st = self._state()
+        self.assertEqual(st["currentGate"], "G0")
+        self.assertNotIn("activeRoute", st)
+        self.assertEqual(st["routeLog"][-1]["event"], "ROUTE_ESCALATED")
+
+    def test_plain_project_folder_without_framework_files(self):
+        """The server runs in the user's project; the engine comes from the installed package."""
+        plain = Path(tempfile.mkdtemp(prefix="pi_plain_"))
+        self.addCleanup(shutil.rmtree, plain, ignore_errors=True)
+        tools = ProjectIntelligenceTools(workspace_root=plain)
+        self.assertNotEqual(tools.framework_root, tools.workspace_root)
+        self.assertEqual(tools.get_next_action()["currentGate"], "G0")
+        r = tools.advance_lifecycle_gate("G4", "ROUTE_START", route="hotfix", scope=["a.py"],
+                                         exemption_justification="fix parser crash", approved_by="sahas", dry_run=False)
+        self.assertTrue(r["success"], r)
+        state = json.loads((plain / "memory" / "execution-state.json").read_text(encoding="utf-8"))
+        self.assertEqual(state["currentGate"], "G4")
+
+    def test_next_action_at_g0_points_to_the_shortcut(self):
+        na = self.tools.get_next_action()
+        self.assertEqual(na["nextAction"]["action"], "DRAFT_OR_APPROVE_CONTRACT")
+        self.assertTrue(any("hotfix" in p for p in na["nextAction"]["prerequisites"]))
+        self.assertIn("hotfix", na["availableRoutes"])
+
+
 if __name__ == "__main__":
     unittest.main()

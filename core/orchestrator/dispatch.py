@@ -46,6 +46,19 @@ def _current_gate(workspace: Path) -> Optional[str]:
     return None
 
 
+_DOC_WORDS = ("readme", "docs", "documentation", "comment", "docstring", "typo in the docs", "changelog")
+_SKIPPABLE_GATES = ("G0", "G1", "G2", "G3")
+
+
+def suggest_route(task: str, governance: str, gate: Optional[str]) -> Optional[str]:
+    """Suggest a shortcut route for a small task that the full lifecycle would otherwise block.
+    It is only a suggestion: the user confirms it, names the files, and the route is logged."""
+    if governance != "LIGHTWEIGHT" or (gate or "G0") not in _SKIPPABLE_GATES:
+        return None
+    lowered = task.lower()
+    return "docs-only" if any(w in lowered for w in _DOC_WORDS) else "hotfix"
+
+
 def skill_label(skill: str) -> str:
     """Human label for a council skill reference (vendor:/ext: prefixes from councils.json)."""
     if skill.startswith("vendor:"):
@@ -102,7 +115,17 @@ def dispatch(task: str, workspace: Optional[Path] = None, full_roster: bool = Fa
             result["specialist"] = {"personaId": persona, "title": persona, "skills": skills}
             result["steps"].append({"kind": "specialist", "personaId": persona, "title": persona, "skills": skills,
                                     "text": f"The {persona} agent handles this with {', '.join(skills)}."})
-        result["steps"].append({"kind": "gate", "text": "Changes go through the current gate's checks before they count as done."})
+        governance = route_request(task)["governanceLevel"]
+        suggested = suggest_route(task, governance, result["currentGate"])
+        if suggested:
+            result["suggestedRoute"] = suggested
+            cli = cli_command()
+            result["steps"].append({"kind": "route", "text": f"This is a small, scoped change, so the full lifecycle (now at {result['currentGate'] or 'G0'}) is not needed. "
+                                    f"Run it on the '{suggested}' route: name the files it may touch, confirm in one line, and the skipped gates are logged. "
+                                    + ("Verification still applies." if suggested == "docs-only" else "Tests and independent review still apply.")})
+            result["next"] = [f'{cli} lifecycle --route {suggested} --scope <files> --reason "<why>" --approved-by <you>']
+        else:
+            result["steps"].append({"kind": "gate", "text": "Changes go through the current gate's checks before they count as done."})
         return result
 
     sessions = plan["sessions"]
@@ -141,6 +164,8 @@ def render_text(result: Dict[str, Any]) -> str:
     ]
     if result.get("currentGate"):
         lines.append(f"Gate:  {result['currentGate']}")
+    if result.get("suggestedRoute"):
+        lines.append(f"Shortcut: '{result['suggestedRoute']}' route (skips gates this task does not need)")
     if result.get("confidence") == "low" and result["tier"] > 0:
         why = ", ".join(f"{e['personaId']} ({'/'.join(e['keywords'])})" for e in result.get("evidence", [])) or "no keywords matched"
         lines.append(f"Check: low confidence ({why}). Confirm the choice, or re-plan with --council <design|development|product> or --persona <id>.")

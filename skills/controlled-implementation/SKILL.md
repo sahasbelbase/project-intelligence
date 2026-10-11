@@ -9,8 +9,8 @@ whenToUse:
   - Executing bug fixes, feature extensions, or refactoring within designated file boundaries
   - Enforcing strict anti-slop rules (no decorative emoji, no fake prod data, no unapproved dependencies)
 prerequisites:
-  - Gate G3 approved (contracts/architecture/contract.json in APPROVED status)
-  - Assigned task from contracts/implementation/contract.json with defined fileOwnership
+  - Gate G3 approved (contracts/architecture/contract.json in APPROVED status), or an approved scoped route (hotfix, ui-tweak) whose named files are the file boundary
+  - Assigned task from contracts/implementation/contract.json with defined fileOwnership, or the route scope
   - Clean git working tree or documented uncommitted changes
 inputs:
   - name: taskId

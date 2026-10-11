@@ -5,6 +5,23 @@ All notable changes to the Project Intelligence framework will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.6.0] - 2026-10-11
+
+Summary: Shortcut gate routes so a known fix no longer stalls at G0, MCP tools that work in your own project, and a multi-agent evaluation framework.
+
+### Added
+- **Shortcut routes**: `hotfix`, `ui-tweak` and `docs-only` routes in `core/lifecycle/lifecycle-fsm.json` let a small, known fix skip the gates it does not need instead of stalling at G0. Starting a route needs your approval, the files it may touch and a reason; skipped gates are logged in `memory/execution-state.json` (`routeLog`). Code-changing routes keep tests (G4) and independent review (G5), and touching a file outside the named scope returns the work to the full lifecycle.
+- **Commands**: `project-intelligence lifecycle --route <id> --scope <files> --reason <why> --approved-by <you>`, plus `--complete-route` and `--touched`; `advance_lifecycle_gate` takes `route`, `scope` and `touched_files`; `get_next_action` reports the active route and points to the shortcut at G0; `ask` suggests a route for small tasks.
+- **Website**: A "Shortcut routes" section on the Gates page. Long commands now wrap instead of being cut off.
+
+- **Multi-agent evaluation**: `project-intelligence eval <traces>` (or `python3 -m core.eval`) scores run traces exported from any framework for tokens, cost, time, unsupported claims in handoffs, handoff fidelity and task success, grouped by model. Deterministic and offline; no model is called. See `core/eval/README.md` for the trace format, how claims are checked and the limits.
+
+### Fixed
+- **MCP in your project**: the server now reads and writes the gate state, contracts and memory of the folder it is started in, and loads the lifecycle spec and quality profiles from the installed package. Before, a plugin install used the plugin's own folder. A project with no state file starts at G0 instead of failing. The smoke test expects 11 tools.
+
+### Changed
+- Orchestrator, CLAUDE.md, Gemini and Copilot templates and the controlled-implementation skill now allow a user-approved route instead of "never skip gates".
+
 ## [1.5.1] - 2026-10-09
 
 Summary: The advisor works like a chat and only states facts from the repository; every command on the website works; Windows support.

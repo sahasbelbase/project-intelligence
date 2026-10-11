@@ -119,5 +119,32 @@
     { "fromGate": "G5", "toGate": "G6", "condition": "G5_PASSED", "requiresHumanApproval": true },
     { "fromGate": "G4", "toGate": "G4", "condition": "TASK_RETRY", "requiresHumanApproval": false },
     { "fromGate": "G5", "toGate": "G4", "condition": "REVIEW_DEFECTS_FOUND", "requiresHumanApproval": false }
-  ]
+  ],
+  "mandatoryForCodeChangingRoutes": ["G4", "G5"],
+  "routes": {
+    "feature": {
+      "title": "Feature",
+      "description": "The full lifecycle. Default for new features, redesigns and anything that changes behaviour or architecture.",
+      "gates": ["G0", "G1", "G2", "G3", "G4", "G5", "G6"],
+      "codeChanging": true, "contractsRequired": true, "requiresScope": false
+    },
+    "ui-tweak": {
+      "title": "UI tweak",
+      "description": "Small visual change on an existing design. Skips discovery, requirements and architecture.",
+      "gates": ["G2", "G4", "G5", "G6"],
+      "codeChanging": true, "contractsRequired": true, "requiresScope": true
+    },
+    "hotfix": {
+      "title": "Scoped fix",
+      "description": "You already know the fix. Implement it in the named files, verify with tests, get an independent review, and log it. No contracts and no scope growth.",
+      "gates": ["G4", "G5", "G6"],
+      "codeChanging": true, "contractsRequired": false, "requiresScope": true
+    },
+    "docs-only": {
+      "title": "Docs only",
+      "description": "Documentation or comment changes with no change to code behaviour.",
+      "gates": ["G4", "G6"],
+      "codeChanging": false, "contractsRequired": false, "requiresScope": true
+    }
+  }
 }

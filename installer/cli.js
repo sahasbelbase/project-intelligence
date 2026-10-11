@@ -45,11 +45,11 @@ function parseArgs(args) {
 
   for (let i = 0; i < args.length; i++) {
     const arg = args[i];
-    if (!parsed.command && ['init', 'doctor', 'update', 'uninstall', 'ask', 'council', 'mcp'].includes(arg)) {
+    if (!parsed.command && ['init', 'doctor', 'update', 'uninstall', 'ask', 'council', 'lifecycle', 'eval', 'mcp'].includes(arg)) {
       parsed.command = arg;
     } else if (arg === '--json') {
       parsed.json = true;
-    } else if (parsed.command === 'council' || parsed.command === 'mcp') {
+    } else if (parsed.command === 'council' || parsed.command === 'lifecycle' || parsed.command === 'eval' || parsed.command === 'mcp') {
       parsed.rest.push(arg); // passed through to the Python tool, flags included
     } else if (parsed.command === 'ask' && (arg === '--council' || arg === '--persona' || arg === '--include')) {
       parsed.rest.push(arg, args[++i] || '');
@@ -109,6 +109,10 @@ Commands:
   update        Update framework skills and rules while preserving user contracts
   uninstall     Cleanly remove created files and revert merged standing rules
   ask "<task>"  Plan a request: which tier, skills, agents or councils handle it (add --json for JSON)
+  lifecycle [--status | --route <hotfix|ui-tweak|docs-only> --scope <files> --reason <why> --approved-by <you> | --advance <gate> | --complete-route --approved-by <you> | --touched <files>]
+                Show or move this project's lifecycle gate. Routes skip the gates a small task does not need
+  eval <traces...> [--format json] [--price-in N --price-out N] [--max-unsupported 0.1]
+                Score multi-agent run traces: tokens, time, unsupported handoff claims, fidelity (see core/eval/README.md)
   council <plan|prompt|record|list|check> ...
                 Run the council referee (see core/council/referee.py)
   mcp           Start the MCP server on stdio (for Copilot CLI and other MCP clients)
@@ -415,6 +419,10 @@ async function main(args = process.argv.slice(2)) {
       return handleAsk(options, targetDir);
     case 'council':
       return runPython(['-m', 'core.council.referee', ...options.rest]);
+    case 'lifecycle':
+      return runPython(['-m', 'core.lifecycle.engine', '--repo-root', targetDir, ...options.rest]);
+    case 'eval':
+      return runPython(['-m', 'core.eval', ...options.rest]);
     case 'mcp':
       // stdio MCP server for Copilot CLI, Cursor and other clients; stdout carries JSON-RPC only.
       return runPython([path.join(PACKAGE_ROOT, 'adapters', 'mcp', 'server.py')]);

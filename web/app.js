@@ -51,7 +51,7 @@
   const initial = (s) => (String(s).replace(/^[^a-z0-9]+/i, '')[0] || '?').toUpperCase();
 
   function cmd(text, opts = {}) {
-    return html`<div class="cmd ${opts.large ? 'cmd-lg' : ''}">
+    return html`<div class="cmd ${opts.large ? 'cmd-lg' : ''} ${opts.wrap ? 'cmd-wrap' : ''}">
       <span class="prompt" aria-hidden="true">$</span><span class="text">${text}</span>
       <button class="btn btn-on-dark" type="button" data-copy="${text}" aria-label="Copy command: ${text}">Copy</button>
     </div>`;
@@ -321,7 +321,7 @@
     return html`
       <section class="hero" aria-labelledby="gates-title" style="padding-bottom:40px">
         <h1 id="gates-title">Every change passes the same gates.</h1>
-        <p class="lede">Seven gates take work from discovery to release. Each one needs a signed contract, and the quality baseline applies at every step.</p>
+        <p class="lede">Seven gates take work from discovery to release. Each one needs a signed contract, and the quality baseline applies at every step. Small, known fixes can take a shortcut route.</p>
       </section>
       <section class="section" style="padding-top:0" aria-label="Status">
         <div class="stats">
@@ -345,6 +345,21 @@
           </li>`)}
         </ol>
       </section>
+      ${DATA.routes && DATA.routes.length ? html`<section class="section" aria-labelledby="routes-title">
+        <h2 id="routes-title">Shortcut routes</h2>
+        <p class="section-intro" style="margin-bottom:24px">The full lifecycle is for features. When you already know the fix, a route skips the gates the task does not need. You name the files, approve it once, and every skipped gate is logged. Code-changing routes keep tests and independent review, and touching a file outside the named scope sends the work back to the full lifecycle.</p>
+        <div class="routes">
+          ${DATA.routes.map((r) => html`<article class="route ${r.id === 'feature' ? 'route-default' : ''}">
+            <div class="route-head"><h3>${r.title}</h3><code>${r.id}</code></div>
+            <p class="desc">${r.description}</p>
+            <ol class="route-gates" aria-label="Gates on the ${r.title} route">
+              ${DATA.gates.map((g) => html`<li class="${r.gates.includes(g.id) ? 'on' : 'off'}" title="${r.gates.includes(g.id) ? g.name : g.name + ' (skipped)'}"><span class="visually-hidden">${r.gates.includes(g.id) ? 'Included:' : 'Skipped:'} </span>${g.id}</li>`)}
+            </ol>
+            <p class="route-meta">${r.contractsRequired ? 'Gate contracts required' : 'No contracts, tests and review as evidence'}${r.requiresScope ? ' · files must be named' : ''}</p>
+            ${r.id === 'feature' ? '' : cmd(`${DATA.cli || 'npx -y @sahasbelbase/project-intelligence'} lifecycle --route ${r.id} --scope src/parser.py --reason "fix null check" --approved-by you`, { wrap: true })}
+          </article>`)}
+        </div>
+      </section>` : ''}
       <section class="section" aria-labelledby="rules-title">
         <h2 id="rules-title">The quality baseline</h2>
         <p class="section-intro" style="margin-bottom:24px">These rules apply to every project, whatever its quality profile.</p>

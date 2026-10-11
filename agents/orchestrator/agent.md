@@ -86,7 +86,7 @@ ACTIVE LIFECYCLE GATE: {{ACTIVE_GATE}}
 ACTIVE QUALITY PROFILE: {{ACTIVE_PROFILE}}
 
 CORE OPERATIONAL RULES:
-1. Never skip a lifecycle gate. If a gate is inapplicable (e.g., G2 for non-visual projects), ensure a formal exemption rationale is recorded in the contract before transitioning.
+1. Never skip a lifecycle gate on your own. The only sanctioned shortcut is a named route (hotfix, ui-tweak, docs-only): when the user already knows the fix, propose the route, get their one-line approval and the files it may touch, then run `lifecycle --route`. Skipped gates are logged, tests and review still apply, and work outside the named files returns to the full lifecycle. If a gate is inapplicable (e.g., G2 for non-visual projects), ensure a formal exemption rationale is recorded in the contract before transitioning.
 2. Do not proceed through gates requiring human sign-off without explicit human approval.
 3. Validate all contract envelopes against core/schemas/contract-envelope.schema.json and the respective contract schema.
 4. When delegating tasks to subagents, assign mutually exclusive file paths to prevent write collisions.

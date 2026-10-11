@@ -102,6 +102,23 @@ project-intelligence/
 | **G5** | Verification & Quality | `contracts/quality/contract.json` | Automated test telemetry, anti-slop evaluation, independent review verdict. |
 | **G6** | Release & Handoff | `contracts/release/contract.json` | Release manifest, migration notes, changelog, durable knowledge update. |
 
+### Shortcut routes
+
+The full chain is for features. When you already know the fix, a named route skips the gates the task does not need:
+
+| Route | Gates kept | Use for |
+|---|---|---|
+| `feature` (default) | G0–G6 | New features, redesigns, architecture changes |
+| `ui-tweak` | G2, G4, G5, G6 | Small visual change on an existing design |
+| `hotfix` | G4, G5, G6 | A fix you can already describe, in named files |
+| `docs-only` | G4, G6 | Documentation or comments |
+
+```bash
+npx -y @sahasbelbase/project-intelligence lifecycle --route hotfix --scope src/parser.py --reason "fix null check" --approved-by you
+```
+
+Starting a route needs your approval, the files it may touch and a reason. Skipped gates are logged in `memory/execution-state.json`. Code-changing routes keep tests (G4) and independent review (G5), and touching a file outside the named scope returns the work to the full lifecycle. Finish with `lifecycle --complete-route --approved-by you`.
+
 ---
 
 ## 5. Anti-Slop Quality Engine and Profiles
@@ -245,6 +262,10 @@ node web/server.js
 Serves the site at `http://localhost:3000` (bound to localhost) with six pages: Skills; How it works (a flowchart and a step-through demo of requests in Claude Code, Copilot CLI and a terminal, including council discussions from recorded sessions, plus a box that plans your own request with the real dispatcher); Councils (read-only decision records); Agents; Gates (lifecycle, quality baseline and a code checker); and Install (commands per client, plus ZIP downloads of the last commit built with `git archive`). Light and dark themes follow your system, with a toggle in the header. The same site is published to GitHub Pages on every push to `main` by `.github/workflows/pages.yml`, after the validation suite passes; the hosted copy has no local server, so the code checker, live planning and ZIP downloads appear only when you run it locally. Run `npm run build:data` after changing skills, agents, councils or records; every number on the site is read from repository files.
 
 ---
+
+### Evaluating multi-agent workflows
+
+`project-intelligence eval <traces>` scores run traces exported from any agent framework: tokens, time, unsupported claims in handoffs, handoff fidelity and task success. See [core/eval/README.md](core/eval/README.md).
 
 ## 10. Documentation Sitemap
 

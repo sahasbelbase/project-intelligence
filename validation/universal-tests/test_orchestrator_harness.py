@@ -128,3 +128,15 @@ class TestOrchestratorHarness(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class TestDispatchRouteSuggestion(unittest.TestCase):
+    def test_small_task_at_g0_gets_a_route_suggestion(self):
+        from core.orchestrator.dispatch import suggest_route
+        self.assertEqual(suggest_route("fix the null check in parser.py", "LIGHTWEIGHT", "G0"), "hotfix")
+        self.assertEqual(suggest_route("fix typo in README", "LIGHTWEIGHT", None), "docs-only")
+
+    def test_no_suggestion_for_big_work_or_late_gates(self):
+        from core.orchestrator.dispatch import suggest_route
+        self.assertIsNone(suggest_route("build a billing system", "STANDARD_LIFECYCLE", "G0"))
+        self.assertIsNone(suggest_route("fix the null check", "LIGHTWEIGHT", "G4"))

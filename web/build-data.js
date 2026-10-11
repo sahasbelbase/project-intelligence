@@ -260,6 +260,11 @@ const gates = lifecycle.gates.map((g) => ({
   id: g.gateId, name: g.name, description: g.description, exitCriteria: g.exitCriteria || [],
   allowedExemption: !!g.allowedExemption, contract: contracts[g.gateId] || null,
 }));
+const routes = Object.entries(lifecycle.routes || {}).map(([id, r]) => ({
+  id, title: r.title, description: r.description, gates: r.gates,
+  skipped: lifecycle.gates.map((g) => g.gateId).filter((g) => !r.gates.includes(g)),
+  contractsRequired: !!r.contractsRequired, requiresScope: !!r.requiresScope, codeChanging: !!r.codeChanging,
+}));
 const qualityRules = readJson('core/quality/profiles.json').mandatoryBaseline.rules;
 const validation = exists('validation/reports/master_validation_report.json')
   ? (({ timestamp, totalRun, passed, failed, skipped, durationSeconds }) => ({ timestamp, totalRun, passed, failed, skipped, durationSeconds }))(readJson('validation/reports/master_validation_report.json'))
@@ -699,6 +704,8 @@ const data = {
   tiers: councilConfig.tiers,
   sessions,
   gates,
+  routes,
+  cli: RUN,
   currentGate: executionState.currentGate,
   qualityRules,
   validation,

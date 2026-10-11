@@ -1,0 +1,71 @@
+{
+  "runId": "clean-run",
+  "model": "model-a",
+  "task": "Fix the null check in src/parser.py and confirm the tests pass.",
+  "expected": {
+    "finalContains": [
+      "tests pass"
+    ]
+  },
+  "steps": [
+    {
+      "stepId": "s1",
+      "agent": "explorer",
+      "model": "model-a",
+      "durationMs": 2100,
+      "tokensIn": 1200,
+      "tokensOut": 260,
+      "toolOutputs": [
+        {
+          "tool": "grep",
+          "output": "src/parser.py:42: if value == None:"
+        }
+      ],
+      "output": "The bug is in src/parser.py line 42.",
+      "handoff": {
+        "to": "s2",
+        "requiredFields": [
+          "file",
+          "line"
+        ],
+        "payload": {
+          "file": "src/parser.py",
+          "line": "42"
+        }
+      }
+    },
+    {
+      "stepId": "s2",
+      "agent": "implementer",
+      "model": "model-a",
+      "durationMs": 3400,
+      "tokensIn": 1500,
+      "tokensOut": 410,
+      "toolOutputs": [
+        {
+          "tool": "pytest",
+          "output": "12 passed in 0.8s"
+        }
+      ],
+      "output": "Changed the check in src/parser.py to use `is None`. 12 passed.",
+      "handoff": {
+        "to": "s3",
+        "requiredFields": [
+          "summary"
+        ],
+        "payload": {
+          "summary": "Edited src/parser.py, 12 passed."
+        }
+      }
+    },
+    {
+      "stepId": "s3",
+      "agent": "reviewer",
+      "model": "model-a",
+      "durationMs": 1800,
+      "tokensIn": 900,
+      "tokensOut": 150,
+      "output": "Reviewed the change. All tests pass."
+    }
+  ]
+}

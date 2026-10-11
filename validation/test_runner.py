@@ -34,6 +34,7 @@ def run_all_tests():
         validation_dir / "mcp-tests",
         validation_dir / "regression-tests",
         validation_dir / "universal-tests",
+        validation_dir / "eval-tests",
         validation_dir / "installer-tests"
     ]
 

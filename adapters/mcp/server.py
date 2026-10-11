@@ -268,7 +268,7 @@ class MCPServer:
         # 8. advance_lifecycle_gate
         self.register_tool(
             name="advance_lifecycle_gate",
-            description="Request a transition through the existing lifecycle engine. Enforces prerequisites, valid transitions, required approvals, and contract validation.",
+            description="Request a transition through the existing lifecycle engine. Enforces prerequisites, valid transitions, required approvals, and contract validation. Also starts, completes and escalates named routes (hotfix, ui-tweak, docs-only) that skip gates a task does not need, with approval, file scope and a logged reason.",
             schema={
                 "type": "object",
                 "required": ["target_gate", "condition"],
@@ -299,6 +299,21 @@ class MCPServer:
                         "type": "boolean",
                         "description": "If true, simulates transition without persisting state (default true)",
                         "default": True,
+                    },
+                    "route": {
+                        "type": "string",
+                        "enum": ["hotfix", "ui-tweak", "docs-only"],
+                        "description": "Start a named route that skips gates the task does not need. Set target_gate to the route's first gate, condition to ROUTE_START, put the reason in exemption_justification, and pass scope and approved_by.",
+                    },
+                    "scope": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Files (or folders ending in /) the route may touch",
+                    },
+                    "touched_files": {
+                        "type": "array",
+                        "items": {"type": "string"},
+                        "description": "Files changed so far. Any outside the active route's scope escalate back to the full lifecycle. To finish a route use condition ROUTE_COMPLETE.",
                     },
                 },
                 "additionalProperties": False,
@@ -596,8 +611,8 @@ def main() -> int:
     parser.add_argument(
         "--workspace-root",
         type=pathlib.Path,
-        default=WORKSPACE_ROOT,
-        help="Path to authorized workspace repository root",
+        default=pathlib.Path.cwd(),
+        help="Path to the project the tools may read and write (default: the folder the server was started in)",
     )
     parser.add_argument(
         "--test-smoke",
@@ -619,7 +634,7 @@ def main() -> int:
         list_req = json.dumps({"jsonrpc": "2.0", "id": 2, "method": "tools/list", "params": {}})
         resp2 = server.handle_message(list_req)
         tools = resp2.get("result", {}).get("tools", [])
-        assert len(tools) == 10, f"Expected 10 tools, found {len(tools)}"
+        assert len(tools) == 11, f"Expected 11 tools, found {len(tools)}"
 
         status_req = json.dumps({"jsonrpc": "2.0", "id": 3, "method": "tools/call", "params": {"name": "project_status", "arguments": {}}})
         resp3 = server.handle_message(status_req)

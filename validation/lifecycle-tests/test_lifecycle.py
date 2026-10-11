@@ -12,7 +12,9 @@ project_root = Path(__file__).resolve().parents[2]
 if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
-from core.lifecycle.engine import LifecycleEngine, LifecycleError
+from core.lifecycle.engine import (
+    LifecycleEngine, LifecycleError, scope_violations, start_route, end_route,
+)
 
 
 class TestLifecycleEngine(unittest.TestCase):
@@ -96,6 +98,68 @@ class TestLifecycleEngine(unittest.TestCase):
             self.engine.get_gate("G99")
         allowed, _ = self.engine.can_transition("G0", "G99", "FOO")
         self.assertFalse(allowed)
+
+
+class TestLifecycleRoutes(unittest.TestCase):
+    def setUp(self):
+        self.engine = LifecycleEngine()
+
+    def test_code_changing_routes_keep_tests_and_review(self):
+        for rid, route in self.engine.routes.items():
+            if route["codeChanging"]:
+                self.assertIn("G4", route["gates"], rid)
+                self.assertIn("G5", route["gates"], rid)
+
+    def test_route_that_drops_review_is_rejected_at_load(self):
+        import json, tempfile
+        spec = json.loads((project_root / "core" / "lifecycle" / "lifecycle-fsm.json").read_text(encoding="utf-8"))
+        spec["routes"]["hotfix"]["gates"] = ["G4", "G6"]
+        with tempfile.TemporaryDirectory() as d:
+            path = Path(d) / "fsm.json"
+            path.write_text(json.dumps(spec), encoding="utf-8")
+            with self.assertRaises(LifecycleError):
+                LifecycleEngine(path)
+
+    def test_hotfix_follows_its_own_gate_list(self):
+        self.assertTrue(self.engine.can_transition("G4", "G5", "G4_VERIFIED", route="hotfix")[0])
+        self.assertTrue(self.engine.can_transition("G5", "G6", "G5_PASSED", route="hotfix")[0])
+        self.assertFalse(self.engine.can_transition("G4", "G6", "G4_VERIFIED", route="hotfix")[0])
+        self.assertFalse(self.engine.can_transition("G0", "G1", "G0_APPROVED", route="hotfix")[0])
+
+    def test_docs_only_skips_review(self):
+        self.assertTrue(self.engine.can_transition("G4", "G6", "G4_VERIFIED", route="docs-only")[0])
+
+    def test_default_route_is_unchanged(self):
+        self.assertFalse(self.engine.can_transition("G0", "G4", "G0_APPROVED")[0])
+        self.assertFalse(self.engine.can_transition("G0", "G4", "G0_APPROVED", route="feature")[0])
+
+    def test_unknown_route_rejected(self):
+        with self.assertRaises(LifecycleError):
+            self.engine.can_transition("G4", "G5", "G4_VERIFIED", route="yolo")
+
+    def test_start_route_needs_approval_reason_and_scope(self):
+        for kwargs in (
+            dict(scope=["a.py"], reason="fix parser crash", approved_by=""),
+            dict(scope=["a.py"], reason="short", approved_by="sahas"),
+            dict(scope=[], reason="fix parser crash", approved_by="sahas"),
+        ):
+            with self.assertRaises(LifecycleError):
+                start_route(self.engine, {"currentGate": "G0"}, "hotfix", **kwargs)
+
+    def test_route_lifecycle_logs_and_returns_to_project_gate(self):
+        state = {"currentGate": "G0"}
+        start_route(self.engine, state, "hotfix", ["a.py"], "fix parser crash", "sahas")
+        self.assertEqual(state["currentGate"], "G4")
+        self.assertIn("SKIPPED(route=hotfix): G0", state["activeRoute"]["skippedGates"])
+        with self.assertRaises(LifecycleError):
+            start_route(self.engine, state, "docs-only", ["a.md"], "fix readme typo", "sahas")
+        end_route(self.engine, state, "ROUTE_COMPLETED", approvedBy="sahas")
+        self.assertEqual(state["currentGate"], "G0")
+        self.assertNotIn("activeRoute", state)
+        self.assertEqual([e["event"] for e in state["routeLog"]], ["ROUTE_STARTED", "ROUTE_COMPLETED"])
+
+    def test_scope_violations(self):
+        self.assertEqual(scope_violations(["a.py", "src/"], ["a.py", "./a.py", "src/x/y.py", ".github/ci.yml"]), [".github/ci.yml"])
 
 
 if __name__ == "__main__":

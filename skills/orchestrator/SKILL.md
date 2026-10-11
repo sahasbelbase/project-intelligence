@@ -141,7 +141,7 @@ The `orchestrator` skill serves as the canonical master entry point for the Univ
 
 ## 8. Failure and Recovery Behavior
 - **Ambiguous Intent**: Prompt the user with a focused multiple-choice clarification question instead of guessing.
-- **Illegal Gate Jump**: If a user attempts to skip from G1 directly to G4, refuse the jump and explain prerequisite contracts required for G2 and G3.
+- **Illegal Gate Jump**: If a user attempts to skip from G1 directly to G4, refuse the jump and explain prerequisite contracts required for G2 and G3, unless the user approves a named route (hotfix, ui-tweak, docs-only) with a file scope. Suggest the route when the user already knows the fix.
 - **Subagent Contention**: If two subagents require modifying the same file, serialize execution or partition the file into distinct modules.
 
 ## 9. Verification Criteria

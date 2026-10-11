@@ -50,18 +50,30 @@ def _load_reconciler_module(workspace_root: pathlib.Path):
 class ProjectIntelligenceTools:
     """Core adapter hosting the 11 Project Intelligence MCP tools."""
 
-    def __init__(self, workspace_root: Optional[pathlib.Path] = None):
+    def __init__(
+        self,
+        workspace_root: Optional[pathlib.Path] = None,
+        framework_root: Optional[pathlib.Path] = None,
+    ):
+        package_root = pathlib.Path(__file__).resolve().parents[2]
         if workspace_root is None:
-            # Default to repo root
-            workspace_root = pathlib.Path(__file__).resolve().parents[2]
+            workspace_root = package_root
+        # workspace_root is the user's project: gate state, contracts, memory, git.
         self.workspace_root = workspace_root.resolve(strict=True)
+        # framework_root holds the lifecycle spec, quality profiles, templates and the reconciler.
+        # A workspace that carries its own copy of the framework (this repo, test sandboxes) uses it;
+        # any other project uses the installed package, so the tools work in a plain project folder.
+        if framework_root is None:
+            has_own = (self.workspace_root / "core" / "lifecycle" / "lifecycle-fsm.json").exists()
+            framework_root = self.workspace_root if has_own else package_root
+        self.framework_root = pathlib.Path(framework_root).resolve(strict=True)
 
         # Core engines
         from core.lifecycle.engine import LifecycleEngine
         from core.quality.evaluator import QualityEvaluator
 
-        self.lifecycle_engine = LifecycleEngine(self.workspace_root / "core" / "lifecycle" / "lifecycle-fsm.json")
-        self.quality_evaluator = QualityEvaluator(self.workspace_root / "core" / "quality" / "profiles.json")
+        self.lifecycle_engine = LifecycleEngine(self.framework_root / "core" / "lifecycle" / "lifecycle-fsm.json")
+        self.quality_evaluator = QualityEvaluator(self.framework_root / "core" / "quality" / "profiles.json")
 
         # Security & filesystem adapters
         self.path_validator = PathSecurityValidator(self.workspace_root)
@@ -70,7 +82,15 @@ class ProjectIntelligenceTools:
         self.subprocess_runner = SafeSubprocessRunner(self.workspace_root)
 
         # Reconciler module
-        self.reconciler_mod = _load_reconciler_module(self.workspace_root)
+        self.reconciler_mod = _load_reconciler_module(self.framework_root)
+
+    def _load_state(self) -> Tuple[Dict[str, Any], Optional[str]]:
+        """Execution state of the user's project. A project with none yet starts at G0."""
+        state_file = self.workspace_root / "memory" / "execution-state.json"
+        if not state_file.exists():
+            return {"currentGate": "G0", "activePhase": 0, "activeTasks": [], "completedTasks": [], "blockedTasks": []}, None
+        state_data, _, err = self.reconciler_mod.load_execution_state(state_file)
+        return state_data, err
 
     # ========================================================================
     # READ-ONLY TOOL: plan_task (orchestrator entry point for MCP clients)
@@ -101,7 +121,7 @@ class ProjectIntelligenceTools:
         next actions using actual repository data.
         """
         state_file = self.workspace_root / "memory" / "execution-state.json"
-        template_file = self.workspace_root / "memory" / "templates" / "execution-state.template.json"
+        template_file = self.framework_root / "memory" / "templates" / "execution-state.template.json"
 
         state_data, initialized_from_template, load_err = self.reconciler_mod.load_execution_state(
             state_file, template_file
@@ -281,13 +301,16 @@ class ProjectIntelligenceTools:
         Use the actual lifecycle engine and contract state to identify the next
         valid action, its prerequisites, and required approvals.
         """
-        state_file = self.workspace_root / "memory" / "execution-state.json"
-        state_data, _, _ = self.reconciler_mod.load_execution_state(state_file)
+        state_data, _ = self._load_state()
 
         current_gate = state_data.get("currentGate", "G0")
         gate_info = self.lifecycle_engine.get_gate(current_gate)
         req_contract_type = gate_info.get("requiredContractType", "project")
         contract_path = self.workspace_root / "contracts" / req_contract_type / "contract.json"
+        active_route = state_data.get("activeRoute")
+        route_id = active_route["id"] if active_route else None
+        route_spec = self.lifecycle_engine.get_route(route_id) if route_id else None
+        contracts_needed = route_spec.get("contractsRequired", True) if route_spec else True
 
         contract_status = "MISSING"
         if contract_path.exists():
@@ -304,10 +327,13 @@ class ProjectIntelligenceTools:
         transitions_evaluated = []
         for trans in self.lifecycle_engine.transitions:
             if trans["fromGate"] == current_gate:
+                if route_id and trans["toGate"] != self.lifecycle_engine.next_gate(route_id, current_gate):
+                    continue
                 allowed, reason = self.lifecycle_engine.can_transition(
                     current_gate=current_gate,
                     target_gate=trans["toGate"],
                     condition=trans["condition"],
+                    route=route_id,
                 )
                 transitions_evaluated.append({
                     "targetGate": trans["toGate"],
@@ -327,7 +353,7 @@ class ProjectIntelligenceTools:
             action_name = "UNBLOCK_TASKS"
             action_detail = f"There are {len(blocked_tasks)} blocked task(s) in execution state. Resolve blockers before advancing."
             prerequisites.append("Resolve blocked task dependencies in memory/execution-state.json")
-        elif contract_status != "APPROVED":
+        elif contracts_needed and contract_status != "APPROVED":
             action_name = f"DRAFT_OR_APPROVE_CONTRACT"
             action_detail = (
                 f"Gate {current_gate} requires an APPROVED '{req_contract_type}' contract. "
@@ -335,6 +361,14 @@ class ProjectIntelligenceTools:
             )
             prerequisites.append(f"Create or review contracts/{req_contract_type}/contract.json")
             required_approvals.append(f"Approval for {req_contract_type} contract (status -> APPROVED)")
+            prerequisites.append(
+                "Shortcut: if the user already knows the exact fix, start the 'hotfix' route with advance_lifecycle_gate "
+                "(route='hotfix', scope=[files], reason, approved_by) instead of drafting this contract."
+            )
+        elif route_spec and current_gate == route_spec["gates"][-1]:
+            action_name = "COMPLETE_ROUTE"
+            action_detail = f"Route '{route_id}' is at its last gate. Complete it to return to {active_route['resumeGate']}."
+            required_approvals.append("Human sign-off to complete the route")
         elif current_gate == "G4":
             action_name = "RUN_VERIFICATION_SUITES"
             action_detail = "Gate G4 implementation requires executing automated test suites before advancing to review (G5)."
@@ -367,6 +401,11 @@ class ProjectIntelligenceTools:
                 "requiredApprovals": required_approvals,
             },
             "candidateTransitions": transitions_evaluated,
+            "activeRoute": active_route,
+            "availableRoutes": {
+                rid: {"title": r["title"], "gates": r["gates"], "requiresScope": r["requiresScope"]}
+                for rid, r in self.lifecycle_engine.routes.items()
+            },
         }
 
     # ========================================================================
@@ -650,18 +689,78 @@ class ProjectIntelligenceTools:
         is_exempt: bool = False,
         exemption_justification: Optional[str] = None,
         dry_run: bool = True,
+        route: Optional[str] = None,
+        scope: Optional[List[str]] = None,
+        touched_files: Optional[List[str]] = None,
     ) -> Dict[str, Any]:
         """
         Request a transition through the existing lifecycle engine.
         Enforce prerequisites, valid transitions, required approvals, and contract validation.
-        Do not provide a bypass for mandatory gates.
+        Mandatory gates are never bypassed. A named route (hotfix, ui-tweak, docs-only) is the one
+        sanctioned way to skip gates a task does not need: it needs human approval, a file scope and a
+        reason, it is logged, and it escalates to the full lifecycle if work leaves its scope.
         """
+        from core.lifecycle import engine as fsm
         state_file = self.workspace_root / "memory" / "execution-state.json"
-        state_data, _, load_err = self.reconciler_mod.load_execution_state(state_file)
+        state_data, load_err = self._load_state()
         if load_err:
             return {"success": False, "error": f"Failed to load execution state: {load_err}"}
 
         current_gate = state_data.get("currentGate", "G0")
+        active_route = state_data.get("activeRoute")
+        route_id = active_route["id"] if active_route else None
+
+        def persist(new_state: Dict[str, Any]) -> None:
+            new_state["lastReconciledAt"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
+            state_file.parent.mkdir(exist_ok=True)
+            self.fs_adapter.atomic_write_json(state_file, new_state)
+
+        try:
+            # Work left the named scope: drop back to the full lifecycle.
+            if active_route and touched_files:
+                outside = fsm.scope_violations(active_route["scope"], touched_files)
+                if outside:
+                    if not dry_run:
+                        fsm.end_route(self.lifecycle_engine, state_data, "ROUTE_ESCALATED", outsideScope=outside)
+                        persist(state_data)
+                    return {
+                        "success": False, "escalated": True, "dryRun": dry_run, "route": route_id,
+                        "outsideScope": outside, "resumeGate": active_route["resumeGate"],
+                        "error": f"Route '{route_id}' touched files outside its scope: {', '.join(outside)}. Back on the full lifecycle at {active_route['resumeGate']}.",
+                    }
+
+            # Start a route: skip the gates it does not need, with approval, scope and a logged reason.
+            if route and route != fsm.DEFAULT_ROUTE:
+                spec = self.lifecycle_engine.get_route(route)
+                if target_gate != spec["gates"][0]:
+                    return {"success": False, "error": f"Route '{route}' starts at {spec['gates'][0]}, not {target_gate}."}
+                preview = json.loads(json.dumps(state_data))
+                fsm.start_route(self.lifecycle_engine, preview, route, scope or [], exemption_justification or "", approved_by or "")
+                if not dry_run:
+                    persist(preview)
+                return {
+                    "success": True, "dryRun": dry_run, "routeStarted": route, "previousGate": current_gate,
+                    "currentGate": current_gate if dry_run else preview["currentGate"], "proposedGate": preview["currentGate"],
+                    "skippedGates": preview["activeRoute"]["skippedGates"], "scope": scope, "approvedBy": approved_by,
+                    "persisted": not dry_run,
+                }
+
+            # Finish a route: return to the project's own gate.
+            if active_route and condition == "ROUTE_COMPLETE":
+                if current_gate != self.lifecycle_engine.get_route(route_id)["gates"][-1]:
+                    return {"success": False, "error": f"Route '{route_id}' is not at its last gate yet ({current_gate})."}
+                if not approved_by or len(approved_by.strip()) < 3:
+                    return {"success": False, "requiresHumanApproval": True, "error": "Completing a route requires explicit human approval ('approved_by')."}
+                resume = active_route["resumeGate"]
+                if not dry_run:
+                    fsm.end_route(self.lifecycle_engine, state_data, "ROUTE_COMPLETED", approvedBy=approved_by.strip())
+                    persist(state_data)
+                return {"success": True, "dryRun": dry_run, "routeCompleted": route_id, "resumeGate": resume, "persisted": not dry_run}
+        except fsm.LifecycleError as err:
+            return {"success": False, "error": str(err)}
+
+        route_spec = self.lifecycle_engine.get_route(route_id) if route_id else None
+        contracts_needed = route_spec.get("contractsRequired", True) if route_spec else True
 
         # Verify contract for current gate is approved
         current_gate_spec = self.lifecycle_engine.get_gate(current_gate)
@@ -669,7 +768,7 @@ class ProjectIntelligenceTools:
         contract_file = self.workspace_root / "contracts" / req_contract_type / "contract.json"
 
         # Check required contract approval unless G2 exemption
-        if not (current_gate == "G1" and target_gate == "G3" and is_exempt):
+        if contracts_needed and not (current_gate == "G1" and target_gate == "G3" and is_exempt):
             if not contract_file.exists():
                 return {
                     "success": False,
@@ -693,6 +792,7 @@ class ProjectIntelligenceTools:
             condition=condition,
             is_exempt=is_exempt,
             exemption_justification=exemption_justification,
+            route=route_id,
         )
 
         if not is_allowed:
@@ -753,7 +853,7 @@ class ProjectIntelligenceTools:
         changes are persisted. Preserve uncommitted user work and never store secrets in memory.
         """
         state_file = self.workspace_root / "memory" / "execution-state.json"
-        template_file = self.workspace_root / "memory" / "templates" / "execution-state.template.json"
+        template_file = self.framework_root / "memory" / "templates" / "execution-state.template.json"
 
         reconciler = self.reconciler_mod.StateReconciler(
             repo_root=self.workspace_root,

@@ -2,10 +2,10 @@
 window.PROJECT_DATA = {
   "meta": {
     "name": "Project Intelligence",
-    "version": "1.5.1",
+    "version": "1.6.0",
     "license": "Apache-2.0",
-    "commit": "3bc06cb",
-    "generatedAt": "2026-10-09T13:17:59.187Z"
+    "commit": "d07c09c",
+    "generatedAt": "2026-10-11T14:25:33.154Z"
   },
   "counts": {
     "skills": 34,
@@ -5436,6 +5436,84 @@ window.PROJECT_DATA = {
       }
     }
   ],
+  "routes": [
+    {
+      "id": "feature",
+      "title": "Feature",
+      "description": "The full lifecycle. Default for new features, redesigns and anything that changes behaviour or architecture.",
+      "gates": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "skipped": [],
+      "contractsRequired": true,
+      "requiresScope": false,
+      "codeChanging": true
+    },
+    {
+      "id": "ui-tweak",
+      "title": "UI tweak",
+      "description": "Small visual change on an existing design. Skips discovery, requirements and architecture.",
+      "gates": [
+        "G2",
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "skipped": [
+        "G0",
+        "G1",
+        "G3"
+      ],
+      "contractsRequired": true,
+      "requiresScope": true,
+      "codeChanging": true
+    },
+    {
+      "id": "hotfix",
+      "title": "Scoped fix",
+      "description": "You already know the fix. Implement it in the named files, verify with tests, get an independent review, and log it. No contracts and no scope growth.",
+      "gates": [
+        "G4",
+        "G5",
+        "G6"
+      ],
+      "skipped": [
+        "G0",
+        "G1",
+        "G2",
+        "G3"
+      ],
+      "contractsRequired": false,
+      "requiresScope": true,
+      "codeChanging": true
+    },
+    {
+      "id": "docs-only",
+      "title": "Docs only",
+      "description": "Documentation or comment changes with no change to code behaviour.",
+      "gates": [
+        "G4",
+        "G6"
+      ],
+      "skipped": [
+        "G0",
+        "G1",
+        "G2",
+        "G3",
+        "G5"
+      ],
+      "contractsRequired": false,
+      "requiresScope": true,
+      "codeChanging": false
+    }
+  ],
+  "cli": "npx -y @sahasbelbase/project-intelligence",
   "currentGate": "G6",
   "qualityRules": [
     {
@@ -5475,14 +5553,19 @@ window.PROJECT_DATA = {
     }
   ],
   "validation": {
-    "timestamp": "2026-10-09T01:50:03Z",
+    "timestamp": "2026-10-09T13:18:00Z",
     "totalRun": 193,
     "passed": 193,
     "failed": 0,
     "skipped": 0,
-    "durationSeconds": 8.708
+    "durationSeconds": 4.482
   },
   "changelog": [
+    {
+      "version": "1.6.0",
+      "date": "2026-10-11",
+      "summary": "Shortcut gate routes so a known fix no longer stalls at G0, MCP tools that work in your own project, and a multi-agent evaluation framework."
+    },
     {
       "version": "1.5.1",
       "date": "2026-10-09",

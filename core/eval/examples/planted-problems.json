@@ -1,0 +1,69 @@
+{
+  "runId": "planted-problems",
+  "model": "model-b",
+  "task": "Fix the null check in src/parser.py and confirm the tests pass.",
+  "expected": {
+    "finalContains": [
+      "tests pass"
+    ]
+  },
+  "steps": [
+    {
+      "stepId": "s1",
+      "agent": "explorer",
+      "model": "model-b",
+      "durationMs": 2500,
+      "tokensIn": 1300,
+      "tokensOut": 300,
+      "toolOutputs": [
+        {
+          "tool": "grep",
+          "output": "src/parser.py:42: if value == None:"
+        }
+      ],
+      "output": "The bug is in src/parser.py line 42.",
+      "handoff": {
+        "to": "s2",
+        "requiredFields": [
+          "file",
+          "line",
+          "owner"
+        ],
+        "payload": {
+          "file": "src/parser.py",
+          "note": "Also see src/validators.py and `sanitize_input`."
+        }
+      }
+    },
+    {
+      "stepId": "s2",
+      "agent": "implementer",
+      "model": "model-b",
+      "durationMs": 4100,
+      "tokensIn": 1700,
+      "tokensOut": 520,
+      "toolOutputs": [
+        {
+          "tool": "pytest",
+          "output": "12 passed in 0.8s"
+        }
+      ],
+      "output": "Fixed it.",
+      "handoff": {
+        "to": "s3",
+        "requiredFields": [
+          "summary"
+        ],
+        "payload": {
+          "summary": "Edited src/parser.py. 40 tests passed, 3 files changed."
+        }
+      }
+    },
+    {
+      "stepId": "s3",
+      "agent": "reviewer",
+      "model": "model-b",
+      "output": "Looks good."
+    }
+  ]
+}

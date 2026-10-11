@@ -147,7 +147,7 @@ class TestRunsFromUserProject(unittest.TestCase):
             self.assertFalse((ROOT / "memory" / "council-briefs" / "dec-plugin-check.json").exists())
             res = subprocess.run(["node", cli, "ask", "Redesign the settings page navigation"], cwd=tmp, capture_output=True, text=True)
             self.assertEqual(res.returncode, 0, res.stderr)
-            self.assertIn("bin/cli.js\" council prompt design", res.stdout)
+            self.assertIn("bin/cli.js\" council prompt design", res.stdout.replace("\\", "/"))
             self.assertNotIn("python3 -m core", res.stdout)
 
 
@@ -173,10 +173,12 @@ class TestInvocation(unittest.TestCase):
         self.assertEqual(entry["args"][-1], "mcp")
 
     def test_normal_install_uses_absolute_path(self):
-        self.assertEqual(self._call("i.cliInvocation('/opt/pi')"), 'node "/opt/pi/bin/cli.js"')
+        # path.join uses backslashes on Windows; compare the shape, not the separator
+        slashes = lambda text: re.sub(r"\\+", "/", text)
+        self.assertEqual(slashes(self._call("i.cliInvocation('/opt/pi')")), 'node "/opt/pi/bin/cli.js"')
         entry = self._call("i.mcpServerEntry('/opt/pi', '/home/u/app')")
         self.assertEqual(entry["command"], "node")
-        self.assertEqual(entry["args"], ["/opt/pi/bin/cli.js", "mcp"])
+        self.assertEqual([slashes(a) for a in entry["args"]], ["/opt/pi/bin/cli.js", "mcp"])
         self.assertEqual(self._call("i.mcpServerEntry('/opt/pi', '/opt/pi')")["args"], ["bin/cli.js", "mcp"])
 
     def test_python_discovery_prefers_windows_launchers(self):

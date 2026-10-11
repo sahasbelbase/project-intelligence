@@ -212,7 +212,7 @@ class TestSavedRecords(unittest.TestCase):
 class TestVendoredSkills(unittest.TestCase):
     def test_vendored_skills_have_license_and_registry_entry(self):
         vendor = ROOT / "vendor" / "skills"
-        registry = json.loads((vendor / "registry.json").read_text())
+        registry = json.loads((vendor / "registry.json").read_text(encoding="utf-8"))
         entries = {e["id"]: e for e in registry["vendored"]}
         dirs = sorted(p.name for p in vendor.iterdir() if p.is_dir())
         self.assertEqual(dirs, sorted(entries))
@@ -222,11 +222,11 @@ class TestVendoredSkills(unittest.TestCase):
                 self.assertRegex(entry["commit"], r"^[0-9a-f]{40}$")
                 for f in entry["files"]:
                     self.assertTrue((vendor / sid / f).exists(), f"{sid}/{f} missing")
-                self.assertTrue((vendor / sid / "SKILL.md").read_text().startswith("---"))
+                self.assertTrue((vendor / sid / "SKILL.md").read_text(encoding="utf-8").startswith("---"))
 
     def test_referenced_skills_are_not_redistributed(self):
         vendor = ROOT / "vendor" / "skills"
-        registry = json.loads((vendor / "registry.json").read_text())
+        registry = json.loads((vendor / "registry.json").read_text(encoding="utf-8"))
         for entry in registry["referenced"]:
             self.assertFalse((vendor / entry["id"]).exists())
             self.assertTrue(entry["install"])
